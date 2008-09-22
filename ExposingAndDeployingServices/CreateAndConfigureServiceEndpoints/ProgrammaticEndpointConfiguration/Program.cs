@@ -15,6 +15,7 @@ namespace ProgrammaticEndpointConfiguration {
                 Binding wsBinding = new WSHttpBinding();
                 Binding tcpBinding = new NetTcpBinding();
 
+                // Can add multiple endpoints of the same type as long as they differ by URL
                 host.AddServiceEndpoint(typeof(IMyContract), wsBinding, "http://localhost:8000/MyService");
                 host.AddServiceEndpoint(typeof(IMyContract), tcpBinding, "net.tcp://localhost:8001/MyService");
                 host.AddServiceEndpoint(typeof(IMyContract), tcpBinding, "net.tcp://localhost:8002/MyService");
