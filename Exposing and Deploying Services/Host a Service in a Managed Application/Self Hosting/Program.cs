@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ServiceModel;
+using System.Diagnostics;
 
 namespace SelfHosting {
 
@@ -9,6 +10,7 @@ namespace SelfHosting {
             ServiceHost host = new ServiceHost(typeof(MyService));
             host.Open();
 
+            Process.Start(@"D:\Program Files\Internet Explorer\IEXPLORE.EXE", "http://localhost:8000");
             Console.ReadKey(true);
 
             host.Close();
