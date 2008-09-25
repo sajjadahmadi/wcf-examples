@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Administrative Configuration", "Administrative Configuration\Administrative Configuration.csproj", "{EDBC045B-7EC8-4A81-BF56-D53A03EB48C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Programmatic Configuration", "Programmatic Configuration\Programmatic Configuration.csproj", "{319A627E-235C-42B3-9F51-6F0E6B048810}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EDBC045B-7EC8-4A81-BF56-D53A03EB48C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDBC045B-7EC8-4A81-BF56-D53A03EB48C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDBC045B-7EC8-4A81-BF56-D53A03EB48C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDBC045B-7EC8-4A81-BF56-D53A03EB48C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{319A627E-235C-42B3-9F51-6F0E6B048810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{319A627E-235C-42B3-9F51-6F0E6B048810}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{319A627E-235C-42B3-9F51-6F0E6B048810}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{319A627E-235C-42B3-9F51-6F0E6B048810}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
