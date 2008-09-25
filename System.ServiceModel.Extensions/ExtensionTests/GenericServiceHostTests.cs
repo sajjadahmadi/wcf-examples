@@ -67,16 +67,15 @@ namespace System.ServiceModel.Tests
 
             host = new ServiceHost<TestService>("http://localhost:8080");
             host.AddServiceEndpoint("System.ServiceModel.Tests.ITestContract", new WSHttpBinding(), "Test");
-            host.EnableHttpGet();
-            Assert.IsTrue(host.HttpGetEnabled);
-            host.AddMexEndPoints();
+            host.EnableMetadataExchange();
+            Assert.IsTrue(host.MetadataExchangeEnabled);
             Assert.AreEqual(1, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
                 ep.Contract.ContractType == typeof(IMetadataExchange)));
 
             host = new ServiceHost<TestService>("http://localhost:8080", "net.tcp://localhost:8081");
             host.AddServiceEndpoint("System.ServiceModel.Tests.ITestContract", new WSHttpBinding(), "Test");
-            Assert.IsFalse(host.HttpGetEnabled);
-            host.AddMexEndPoints();
+            Assert.IsFalse(host.MetadataExchangeEnabled);
+            host.EnableMetadataExchange();
             Assert.AreEqual(2, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
                 ep.Contract.ContractType == typeof(IMetadataExchange)));
         }
