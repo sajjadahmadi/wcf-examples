@@ -70,7 +70,7 @@ namespace System.ServiceModel
         {
             get
             {
-                return Description.Behaviors.Any<IServiceBehavior>(b => b == typeof(ServiceMetadataBehavior));
+                return Description.Behaviors.Any(b => b == typeof(ServiceMetadataBehavior));
             }
         }
 
@@ -118,7 +118,7 @@ namespace System.ServiceModel
         {
             get
             {
-                return Description.Endpoints.Any<ServiceEndpoint>(ep =>
+                return Description.Endpoints.Any(ep =>
                     ep.Contract.ContractType == typeof(IMetadataExchange));
             }
         }
