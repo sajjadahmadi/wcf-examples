@@ -9,10 +9,8 @@ namespace System.ServiceModel
 {
     interface IEnableMetadataExchange
     {
-        bool HasMetadataBehavior { get; }
-        bool HttpGetEnabled { get; }
-        void EnableHttpGet();
-        void AddMexEndPoints();
+        bool MetadataExchangeEnabled { get; }
+        void EnableMetadataExchange();
     }
 
     public class ServiceHost<T> : ServiceHost, IEnableMetadataExchange
@@ -36,7 +34,7 @@ namespace System.ServiceModel
         }
 
         #region IEnableMetadataExchange Members
-        public bool HttpGetEnabled
+        public bool MetadataExchangeEnabled
         {
             get
             {
@@ -50,7 +48,7 @@ namespace System.ServiceModel
             }
         }
 
-        public void EnableHttpGet()
+        public void EnableMetadataExchange()
         {
             if (State == CommunicationState.Opened)
             {
@@ -64,22 +62,12 @@ namespace System.ServiceModel
                 metadataBehavior.HttpGetEnabled = true;
                 Description.Behaviors.Add(metadataBehavior);
             }
+            AddMexEndPoints();
         }
 
-        public bool HasMetadataBehavior
+        void AddMexEndPoints()
         {
-            get
-            {
-                return Description.Behaviors.Any(b => b == typeof(ServiceMetadataBehavior));
-            }
-        }
-
-        public void AddMexEndPoints()
-        {
-            if (!HasMetadataBehavior)
-            {
-                throw new InvalidOperationException("Must have ServiceMetadataBehavior");
-            }
+            System.Diagnostics.Debug.Assert(HasMexEndpoint == false);
             foreach (Uri baseAddress in BaseAddresses)
             {
                 BindingElement bindingElement = null;
