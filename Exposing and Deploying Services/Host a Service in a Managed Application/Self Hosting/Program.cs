@@ -10,7 +10,8 @@ namespace SelfHosting {
             ServiceHost host = new ServiceHost(typeof(MyService));
             host.Open();
 
-            Process.Start(@"D:\Program Files\Internet Explorer\IEXPLORE.EXE", "http://localhost:8000");
+            var iePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Internet Explorer\\IEXPLORE.EXE");
+            Process.Start(iePath, "http://localhost:8000");
             Console.ReadKey(true);
 
             host.Close();
