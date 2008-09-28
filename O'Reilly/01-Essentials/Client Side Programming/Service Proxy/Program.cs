@@ -7,10 +7,11 @@ namespace ServiceProxy
 {
     class Program
     {
+        // Start the Self Hosting example located at Repository\O'Reilly\01-Essentials\Hosting\Self Hosting
         static void Main(string[] args)
         {
-            MyServiceReference.MyContractClient proxy = new MyServiceReference.MyContractClient();
-            Console.WriteLine( proxy.MyOperation());
+            MyContractClient proxy = new MyContractClient();
+            Console.WriteLine(proxy.MyOperation());
             Console.ReadKey(true);
             proxy.Close();
         }
