@@ -3,17 +3,16 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel.Description;
 
 namespace System.ServiceModel.Tests
 {
     /// <summary>
-    /// Summary description for UnitTest1
+    /// Summary description for InProcFactoryTests
     /// </summary>
     [TestClass]
-    public class GenericServiceHostTests
+    public class InProcFactoryTests
     {
-        public GenericServiceHostTests()
+        public InProcFactoryTests()
         {
             //
             // TODO: Add constructor logic here
@@ -60,25 +59,23 @@ namespace System.ServiceModel.Tests
         //
         #endregion
 
+
         [TestMethod]
-        public void EnableMetadataExchangeTest()
+        public void CreateInstanceTest()
         {
-            ServiceHost<TestService> host;
+            ITestContract proxy1 = InProcFactory.CreateInstance<TestService, ITestContract>();
+            Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
+            InProcFactory.CloseProxy<ITestContract>(proxy1);
+        }
 
-            host = new ServiceHost<TestService>("http://localhost:8080");
-            host.AddServiceEndpoint("System.ServiceModel.Tests.ITestContract", new WSHttpBinding(), "Test");
-            host.EnableMetadataExchange();
-            Assert.IsTrue(host.MetadataExchangeEnabled);
-            Assert.AreEqual(1, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
-                ep.Contract.ContractType == typeof(IMetadataExchange)));
-
-            host = new ServiceHost<TestService>("http://localhost:8080", "net.tcp://localhost:8081");
-            host.AddServiceEndpoint("System.ServiceModel.Tests.ITestContract", new WSHttpBinding(), "Test");
-            Assert.IsFalse(host.MetadataExchangeEnabled);
-            host.EnableMetadataExchange();
-            Assert.AreEqual(2, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
-                ep.Contract.ContractType == typeof(IMetadataExchange)));
+        [TestMethod]
+        public void CreateMultipleInstancesTest()
+        {
+            ITestContract proxy1 = InProcFactory.CreateInstance<TestService, ITestContract>();
+            ITestContract proxy2 = InProcFactory.CreateInstance<TestService, ITestContract>();
+            Assert.AreNotSame(proxy1, proxy2);
+            Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
+            Assert.AreEqual<string>("MyResult", proxy2.MyOperation());
         }
     }
-
 }

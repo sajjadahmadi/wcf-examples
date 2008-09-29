@@ -41,6 +41,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InProcFactoryTests.cs" />
+    <Compile Include="TestService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GenericServiceHostTests.cs" />
   </ItemGroup>

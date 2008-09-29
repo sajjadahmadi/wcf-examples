@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.ServiceModel.Channels;
+using System.Diagnostics;
+
 namespace System.ServiceModel
 {
     // TODO: test
@@ -59,6 +62,13 @@ namespace System.ServiceModel
         {
             HostRecord hostRecord = GetHostRecord<S, I>();
             return ChannelFactory<I>.CreateChannel(NamedPipeBinding, new EndpointAddress(hostRecord.Address));
+        }
+
+        public static void CloseProxy<I>(I instance) where I : class
+        {
+            ICommunicationObject proxy = instance as ICommunicationObject;
+            Debug.Assert(proxy != null);
+            proxy.Close();
         }
     }
 }
