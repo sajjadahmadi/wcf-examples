@@ -3,10 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract Inheritance", "Contract Inheritance\Contract Inheritance.csproj", "{B05D3F88-00E0-4879-A638-74C3DC5DB4BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy Client", "..\Hierarchy Client\Hierarchy Client.csproj", "{AA70787B-129E-43CD-A7AC-9FF08F4537DB}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B05D3F88-00E0-4879-A638-74C3DC5DB4BA} = {B05D3F88-00E0-4879-A638-74C3DC5DB4BA}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy Client", "Hierarchy Client\Hierarchy Client.csproj", "{AA70787B-129E-43CD-A7AC-9FF08F4537DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
