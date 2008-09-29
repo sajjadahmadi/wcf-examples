@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contract Inheritance", "Contract Inheritance\Contract Inheritance.csproj", "{B05D3F88-00E0-4879-A638-74C3DC5DB4BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hierarchy Client", "..\Hierarchy Client\Hierarchy Client.csproj", "{AA70787B-129E-43CD-A7AC-9FF08F4537DB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B05D3F88-00E0-4879-A638-74C3DC5DB4BA} = {B05D3F88-00E0-4879-A638-74C3DC5DB4BA}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B05D3F88-00E0-4879-A638-74C3DC5DB4BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B05D3F88-00E0-4879-A638-74C3DC5DB4BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B05D3F88-00E0-4879-A638-74C3DC5DB4BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B05D3F88-00E0-4879-A638-74C3DC5DB4BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA70787B-129E-43CD-A7AC-9FF08F4537DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA70787B-129E-43CD-A7AC-9FF08F4537DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA70787B-129E-43CD-A7AC-9FF08F4537DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA70787B-129E-43CD-A7AC-9FF08F4537DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
