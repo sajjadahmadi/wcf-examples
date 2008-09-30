@@ -14,6 +14,6 @@ let n = Console.ReadLine()
 
 let supported = MetadataHelper.queryContract url ns n
 if supported
-    then printfn "Is supported."
+    then printfn "OK!"
     else printfn "Is NOT supported."
 do Console.ReadKey(true) |> ignore
