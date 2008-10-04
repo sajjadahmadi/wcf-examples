@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="GenericServiceHost.cs" />
     <Compile Include="InProcFactory.cs" />
+    <Compile Include="MetadataHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
