@@ -10,7 +10,7 @@ namespace System.ServiceModel.Extensions
 {
     class MetadataHelper
     {
-        const int MessageSizeMultiplier = 5; 
+        const int MessageSizeMultiplier = 5;
 
         static ServiceEndpointCollection GetEndpoints(
             string mexAddress,
@@ -51,7 +51,7 @@ namespace System.ServiceModel.Extensions
 
         public static bool SupportsContract(
             string mexAddress,
-            Type contractType) 
+            Type contractType)
         {
             if (contractType.IsInterface == false)
             {
@@ -65,7 +65,7 @@ namespace System.ServiceModel.Extensions
             ServiceContractAttribute attribute = attributes[0] as ServiceContractAttribute;
             if (attribute.Name == null)
             {
-                attribute.Name = contractType.ToString();
+                attribute.Name = contractType.Name;
             }
             if (attribute.Namespace == null)
             {
@@ -75,8 +75,8 @@ namespace System.ServiceModel.Extensions
         }
 
         public static bool SupportsContract(
-            string mexAddress, 
-            string contractNamespace, 
+            string mexAddress,
+            string contractNamespace,
             string contractName)
         {
             if (string.IsNullOrEmpty(contractNamespace))
@@ -87,19 +87,15 @@ namespace System.ServiceModel.Extensions
             {
                 throw new ArgumentException("Empty name", "contractName");
             }
-            try
+            ServiceEndpointCollection endpoints = GetEndpoints(mexAddress);
+            foreach (ServiceEndpoint endpoint in endpoints)
             {
-                ServiceEndpointCollection endpoints = GetEndpoints(mexAddress);
-                foreach (ServiceEndpoint endpoint in endpoints)
+                if (endpoint.Contract.Namespace == contractNamespace &&
+                    endpoint.Contract.Name == contractName)
                 {
-                    if (endpoint.Contract.Namespace == contractNamespace &&
-                        endpoint.Contract.Name == contractName)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
-            catch { }
             return false;
         }
     }

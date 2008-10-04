@@ -1,4 +1,4 @@
-﻿namespace System.ServiceModel.Tests
+﻿namespace System.ServiceModel.Test
 {
     [ServiceContract]
     interface ITestContract
