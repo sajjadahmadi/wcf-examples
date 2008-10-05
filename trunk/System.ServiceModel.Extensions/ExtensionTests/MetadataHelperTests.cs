@@ -36,24 +36,10 @@ namespace System.ServiceModel.Test
         }
 
         #region Additional test attributes
+
         ServiceHost host;
         ServiceEndpoint serviceEndpoint;
 
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
         //Use TestInitialize to run code before running each test
         [TestInitialize()]
         public void MyTestInitialize()
@@ -76,9 +62,8 @@ namespace System.ServiceModel.Test
         {
             host.Close();
         }
-
+        
         #endregion
-
 
         /// <summary>
         ///A test for SupportsContract
