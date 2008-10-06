@@ -63,7 +63,7 @@ namespace System.ServiceModel
         [TestMethod()]
         public void WriteObjectTest()
         {
-            DataContractSerializer<TestDataContract> serializer = new DataContractSerializer<TestDataContract>();
+            XmlObjectSerializer serializer = new DataContractSerializer<TestDataContract>();
             MemoryStream stream = new MemoryStream();
             TestDataContract graph = new TestDataContract();
             serializer.WriteObject(stream, graph);
