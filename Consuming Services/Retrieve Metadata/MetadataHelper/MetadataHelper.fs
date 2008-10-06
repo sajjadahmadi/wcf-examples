@@ -77,17 +77,18 @@ module MetadataHelper =
             tryQueryMexEndpoint mexAddress el
         | Http el    ->
             setMessageSize el
+            // Http offers a second chance through HttpGet
             match tryQueryMexEndpoint mexAddress el with
             | None -> tryQueryHttpEndpoint mexAddress el
             | es   -> es
         | Https el   ->
             setMessageSize el
+            // Https offers a second chance through HttpGet
             match tryQueryMexEndpoint mexAddress el with
             | None -> tryQueryHttpEndpoint mexAddress el
             | es   -> es
     
     let queryContract (mexAddress: string) (contractNamespace: string) (contractName: string) =
-       
         let matches (endpoint: ServiceEndpoint) =
             endpoint.Contract.Namespace = contractNamespace &&
             endpoint.Contract.Name = contractName
