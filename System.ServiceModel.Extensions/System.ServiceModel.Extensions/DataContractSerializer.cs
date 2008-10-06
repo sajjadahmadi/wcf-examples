@@ -15,14 +15,25 @@ namespace System.Runtime.Serialization
         {
             _serializer = new DataContractSerializer(typeof(T));
         }
+
+        public override bool IsStartObject(XmlDictionaryReader reader)
+        {
+          return  _serializer.IsStartObject(reader);
+        }
+
+        public override object ReadObject(XmlDictionaryReader reader, bool verifyObjectName)
+        {
+            return _serializer.ReadObject(reader, verifyObjectName);
+        }
         public new T ReadObject(Stream stream)
         {
             return (T)_serializer.ReadObject(stream);
         }
-        public new T ReadOjbect(XmlReader reader)
+        public new T ReadObject(XmlReader reader)
         {
             return (T)_serializer.ReadObject(reader);
         }
+
         public void WriteObject(Stream stream, T graph)
         {
             _serializer.WriteObject(stream, graph);
@@ -31,25 +42,17 @@ namespace System.Runtime.Serialization
         {
             _serializer.WriteObject(writer, graph);
         }
-        public override bool IsStartObject(System.Xml.XmlDictionaryReader reader)
+        public override void WriteEndObject(XmlDictionaryWriter writer)
         {
-            throw new NotImplementedException();
+            _serializer.WriteEndObject(writer);
         }
-        public override object ReadObject(System.Xml.XmlDictionaryReader reader, bool verifyObjectName)
+        public override void WriteObjectContent(XmlDictionaryWriter writer, object graph)
         {
-            throw new NotImplementedException();
+            _serializer.WriteObjectContent(writer, graph);
         }
-        public override void WriteEndObject(System.Xml.XmlDictionaryWriter writer)
+        public override void WriteStartObject(XmlDictionaryWriter writer, object graph)
         {
-            throw new NotImplementedException();
-        }
-        public override void WriteObjectContent(System.Xml.XmlDictionaryWriter writer, object graph)
-        {
-            throw new NotImplementedException();
-        }
-        public override void WriteStartObject(System.Xml.XmlDictionaryWriter writer, object graph)
-        {
-            throw new NotImplementedException();
+            _serializer.WriteStartObject(writer, graph);
         }
     }
 }
