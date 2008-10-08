@@ -13,6 +13,9 @@ namespace System.ServiceModel.Examples
             WSHttpBinding binding = new WSHttpBinding();
             host.AddServiceEndpoint("System.ServiceModel.Examples.ICalculator", binding, "Calculator");
             host.Open();
+
+            Console.WriteLine("Host Started");
+            Console.WriteLine(host.BaseAddresses.First().ToString());
             Console.ReadKey(true);
             host.Close();
         }
