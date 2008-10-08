@@ -5,7 +5,7 @@ using System.Text;
 
 namespace System.ServiceModel.Examples
 {
-    class Program
+    class HostProgram
     {
         static void Main(string[] args)
         {
