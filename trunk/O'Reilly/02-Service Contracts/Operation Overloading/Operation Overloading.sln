@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator Service", "Calculator Service\Calculator Service.csproj", "{411D22D3-938C-44A1-A017-9024D29243EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service Host", "Service Host\Service Host.csproj", "{16813672-9FFB-4C53-B963-A703EEF47C19}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator Service Client", "Calculator Service Client\Calculator Service Client.csproj", "{0813B93A-D31E-490F-9A58-753E36729854}"
 	ProjectSection(ProjectDependencies) = postProject
 		{411D22D3-938C-44A1-A017-9024D29243EB} = {411D22D3-938C-44A1-A017-9024D29243EB}
@@ -20,10 +18,6 @@ Global
 		{411D22D3-938C-44A1-A017-9024D29243EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{411D22D3-938C-44A1-A017-9024D29243EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{411D22D3-938C-44A1-A017-9024D29243EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{16813672-9FFB-4C53-B963-A703EEF47C19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{16813672-9FFB-4C53-B963-A703EEF47C19}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{16813672-9FFB-4C53-B963-A703EEF47C19}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{16813672-9FFB-4C53-B963-A703EEF47C19}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0813B93A-D31E-490F-9A58-753E36729854}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0813B93A-D31E-490F-9A58-753E36729854}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0813B93A-D31E-490F-9A58-753E36729854}.Release|Any CPU.ActiveCfg = Release|Any CPU
