@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.ServiceModel.Examples;
 
 namespace System.ServiceModel.Examples
 {
@@ -10,16 +9,26 @@ namespace System.ServiceModel.Examples
     {
         static void Main(string[] args)
         {
-            CalculatorServiceReference.CalculatorClient c = new CalculatorServiceReference.CalculatorClient();
-            double double1 = 3, double2 = 6;
-            double answer = c.Add(double1, double2);
-            Console.WriteLine("c.Add(double1, double2)=c.Add({0}, {1})={2}", double1, double2, answer);
+            double double1 = 10, double2 = 3;
+            double doubleA;
+            int int1 = 10, int2 = 3;
+            int intA;
 
+            Console.WriteLine("ServiceReferenceCalculator.CalculatorClient");
+            ServiceReferenceCalculator.CalculatorClient c1 = new ServiceReferenceCalculator.CalculatorClient();
+            doubleA = c1.AddDouble(double1, double2);
+            Console.WriteLine("c1.AddDouble(double1, double2)=c1.AddDouble({0}, {1})={2}", double1, double2, doubleA);
+            intA = c1.AddInt(int1, int2);
+            Console.WriteLine("c1.AddInt(integer1, integer2)=c1.AddInt({0}, {1})={2}", int1, int2, intA);
+
+            Console.WriteLine();
+
+            Console.WriteLine("Examples.CalculatorClient");
             CalculatorClient c2 = new CalculatorClient();
-            double1 = 3;
-            double2 = 6;
-            answer = c2.Add(double1, double2);
-            Console.WriteLine("c.Add(double1, double2)=c.Add({0}, {1})={2}", double1, double2, answer);
+            doubleA = c2.Add(double1, double2);
+            Console.WriteLine("c2.Add(double1, double2)=c2.Add({0}, {1})={2}", double1, double2, doubleA);
+            intA = c2.Add(int1, int2);
+            Console.WriteLine("c2.Add(int1, int2)=c2.Add({0}, {1})={2}", int1, int2, intA);
 
             Console.ReadKey(true);
         }

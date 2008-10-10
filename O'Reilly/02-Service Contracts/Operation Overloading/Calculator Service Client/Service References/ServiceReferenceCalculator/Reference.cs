@@ -8,33 +8,27 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace System.ServiceModel.Examples.CalculatorServiceReference {
+namespace System.ServiceModel.Examples.ServiceReferenceCalculator {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="CalculatorServiceReference.ICalculator")]
+    [System.ServiceModel.ServiceContractAttribute(ConfigurationName="ServiceReferenceCalculator.ICalculator")]
     public interface ICalculator {
         
-        [System.ServiceModel.OperationContractAttribute(
-            Name="AddInt",
-            Action="http://tempuri.org/ICalculator/AddInt", 
-            ReplyAction="http://tempuri.org/ICalculator/AddIntResponse")]
-        int Add(int operand1, int operand2);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ICalculator/AddInt", ReplyAction="http://tempuri.org/ICalculator/AddIntResponse")]
+        int AddInt(int operand1, int operand2);
         
-        [System.ServiceModel.OperationContractAttribute(
-            Name="AddDouble",
-            Action="http://tempuri.org/ICalculator/AddDouble", 
-            ReplyAction="http://tempuri.org/ICalculator/AddDoubleResponse")]
-        double Add(double operand1, double operand2);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/ICalculator/AddDouble", ReplyAction="http://tempuri.org/ICalculator/AddDoubleResponse")]
+        double AddDouble(double operand1, double operand2);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public interface ICalculatorChannel : System.ServiceModel.Examples.CalculatorServiceReference.ICalculator, System.ServiceModel.IClientChannel {
+    public interface ICalculatorChannel : System.ServiceModel.Examples.ServiceReferenceCalculator.ICalculator, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-    public partial class CalculatorClient : System.ServiceModel.ClientBase<System.ServiceModel.Examples.CalculatorServiceReference.ICalculator>, System.ServiceModel.Examples.CalculatorServiceReference.ICalculator {
+    public partial class CalculatorClient : System.ServiceModel.ClientBase<System.ServiceModel.Examples.ServiceReferenceCalculator.ICalculator>, System.ServiceModel.Examples.ServiceReferenceCalculator.ICalculator {
         
         public CalculatorClient() {
         }
@@ -55,12 +49,12 @@ namespace System.ServiceModel.Examples.CalculatorServiceReference {
                 base(binding, remoteAddress) {
         }
         
-        public int Add(int operand1, int operand2) {
-            return base.Channel.Add(operand1, operand2);
+        public int AddInt(int operand1, int operand2) {
+            return base.Channel.AddInt(operand1, operand2);
         }
         
-        public double Add(double operand1, double operand2) {
-            return base.Channel.Add(operand1, operand2);
+        public double AddDouble(double operand1, double operand2) {
+            return base.Channel.AddDouble(operand1, operand2);
         }
     }
 }

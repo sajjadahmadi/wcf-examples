@@ -6,37 +6,26 @@ using System.ServiceModel;
 
 namespace System.ServiceModel.Examples
 {
-    [ServiceContract(ConfigurationName = "System.ServiceModel.Examples.ICalculator")]
+    [ServiceContract(ConfigurationName = "ICalculator")]
     public interface ICalculator
     {
-        [OperationContract(
-            Name = "AddInt",
-            Action = "http://tempuri.org/ICalculator/AddInt",
-            ReplyAction = "http://tempuri.org/ICalculator/AddIntResponse")]
-        int Add(int arg1, int arg2);
+        [OperationContract(Name = "AddInt")]
+        int Add(int operand1, int operand2);
 
-        [OperationContract(
-            Name = "AddDouble",
-            Action = "http://tempuri.org/ICalculator/AddDouble",
-            ReplyAction = "http://tempuri.org/ICalculator/AddDoubleResponse")]
-        int Add(double arg1, double arg2);
+        [OperationContract(Name = "AddDouble")]
+        double Add(double operand1, double operand2);
     }
 
     class CalculatorClient : ClientBase<ICalculator>, ICalculator
     {
-
-        #region ICalculator Members
-
         public int Add(int operand1, int operand2)
         {
             return Channel.Add(operand1, operand2);
         }
 
-        public int Add(double operand1, double operand2)
+        public double Add(double operand1, double operand2)
         {
             return Channel.Add(operand1, operand2);
         }
-
-        #endregion
     }
 }
