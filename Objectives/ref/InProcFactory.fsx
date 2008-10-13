@@ -13,18 +13,18 @@ type InProcFactory(uri: Uri) =
     
     let mutable binding = new NetNamedPipeBinding(TransactionFlow = true)
     
-    let mutable started = false
+    let mutable disposed = false
     
     do AppDomain.CurrentDomain.ProcessExit.Add(fun e ->
         for pair in hosts do
             pair.Value.Host.Close())
 
-    new() = InProcFactory("net.pipe://localhost")
+    new() = new InProcFactory("net.pipe://localhost")
     
     [<OverloadID("new.string")>]
     new(address: string) =
         let uri = new Uri(address)
-        InProcFactory(uri)
+        new InProcFactory(uri)
 
     member this.Binding with get() = binding
                         and set v =
@@ -34,30 +34,40 @@ type InProcFactory(uri: Uri) =
                         
     member private this.GetHostRecord<'S,'I>() =
         let ts = typeof<'S>
-        if hosts.ContainsKey(ts)
-            then hosts.[ts]
+        let ti = typeof<'I>
+        if hosts.ContainsKey(ti)
+            then hosts.[ti]
             else
                 let host = new ServiceHost(ts, [| uri |])
                 let address = sprintf "%A%A" uri (Guid.NewGuid())
                 let result = { Host = host; Address = address}
-                hosts.Add(ts, result)
-                host.AddServiceEndpoint(typeof<'I>, binding, address) |> ignore
+                hosts.Add(ti, result)
+                host.AddServiceEndpoint(ti, binding, address) |> ignore
                 host.Open()
                 result
 
-    member this.CreateInstance<'S,'I when 'S : not struct and 'I : not struct>() =
+    member this.GetInstance<'S,'I when 'S : not struct and 'I : not struct>() =
         let hostRecord = this.GetHostRecord<'S,'I>()
         ChannelFactory<'I>.CreateChannel(binding, new EndpointAddress(hostRecord.Address))
 
     member this.CloseInstance<'I when 'I : not struct> (i: 'I) =
-        if hosts.Remove(i) then
+        if hosts.Remove(typeof<'I>) then
             let i = box i
             match i with
             | :? ICommunicationObject -> (i :?> ICommunicationObject).Close()
             | _ -> ()
-        
-        
-//// Example
+    
+    interface IDisposable with
+        member this.Dispose() =
+            if disposed
+                then ()
+                else
+                    for host in hosts do
+                        host.Value.Host.Close()
+                    disposed <- true
+    
+    
+// Example
 //[<ServiceContract>]
 //type IMyContract =
 //    [<OperationContract>]
@@ -67,14 +77,15 @@ type InProcFactory(uri: Uri) =
 //    interface IMyContract with
 //        member this.MyOperation() = "My Message"
 //
-//let fact = InProcFactory()
-//let proxy1 = fact.CreateInstance<MyService, IMyContract>()
+//let fact = new InProcFactory()
+//let proxy1 = fact.GetInstance<MyService, IMyContract>()
 //let result1 = proxy1.MyOperation()
 //printfn "%s" result1
 //
-//let proxy2 = fact.CreateInstance<MyService, IMyContract>()
+//let proxy2 = fact.GetInstance<MyService, IMyContract>()
 //let result2 = proxy2.MyOperation()
 //printfn "%s" result2
 //
 //fact.CloseInstance(proxy1)
 //fact.CloseInstance(proxy2)
+//(fact :> IDisposable).Dispose()
