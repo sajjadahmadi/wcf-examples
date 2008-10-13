@@ -59,12 +59,10 @@ type InProcFactory(uri: Uri) =
     
     interface IDisposable with
         member this.Dispose() =
-            if disposed
-                then ()
-                else
-                    for host in hosts do
-                        host.Value.Host.Close()
-                    disposed <- true
+            if not disposed then
+                for host in hosts do
+                    host.Value.Host.Close()
+                disposed <- true
     
     
 // Example
