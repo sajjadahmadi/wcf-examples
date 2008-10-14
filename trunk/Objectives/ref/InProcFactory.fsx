@@ -1,9 +1,11 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
+namespace Mcts_70_503
 open System
 open System.Collections.Generic
 open System.ServiceModel
+open System.ServiceModel.Channels
 open System.ServiceModel.Description
 
 type private HostRecord = { Host : ServiceHost; Address : string }
@@ -11,7 +13,7 @@ type private HostRecord = { Host : ServiceHost; Address : string }
 type InProcFactory(uri: Uri) =
     let hosts = new Dictionary<Type, HostRecord>()
     
-    let mutable binding = new NetNamedPipeBinding(TransactionFlow = true)
+    let mutable (binding: Binding) = new NetNamedPipeBinding(TransactionFlow = true) :> Binding
     
     let mutable disposed = false
     
@@ -27,7 +29,7 @@ type InProcFactory(uri: Uri) =
         new InProcFactory(uri)
 
     member this.Binding with get() = binding
-                        and set v =
+                        and set (v: Binding) =
                             if hosts.Count > 0
                                 then binding <- v
                                 else failwith "Cannot change binding while instances exist."
