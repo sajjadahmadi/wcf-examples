@@ -17,10 +17,6 @@ type InProcFactory(uri: Uri) =
     
     let mutable disposed = false
     
-    do AppDomain.CurrentDomain.ProcessExit.Add(fun e ->
-        for pair in hosts do
-            pair.Value.Host.Close())
-
     new() = new InProcFactory("net.pipe://localhost")
     
     [<OverloadID("new.string")>]
@@ -30,7 +26,7 @@ type InProcFactory(uri: Uri) =
 
     member this.Binding with get() = binding
                         and set (v: Binding) =
-                            if hosts.Count > 0
+                            if hosts.Count = 0
                                 then binding <- v
                                 else failwith "Cannot change binding while instances exist."
                         
