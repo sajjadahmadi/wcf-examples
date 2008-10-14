@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-
+using System.Diagnostics;
 
 namespace DemoApplication
 {
@@ -25,7 +25,13 @@ namespace DemoApplication
             Console.WriteLine("Singleton Counter Service.");
             Console.WriteLine("Call 1: {0}", singleton.IncrementAndReturnCount());
             Console.WriteLine("Call 2: {0}", singleton.IncrementAndReturnCount());
-                        
+
+            if (args.Length == 0)
+            {
+                // Start a second instance to show Singleton service in action
+                Process.Start("Demo Application.exe", "x");
+            }
+
             Console.ReadKey();
         }
     }
