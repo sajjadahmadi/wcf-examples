@@ -1,7 +1,7 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "../../../ref/InProcFactory.fsx"
+#load "../../ref/InProcFactory.fsx"
 open Mcts_70_503
 open System
 open System.Diagnostics
