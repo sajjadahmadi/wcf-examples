@@ -27,8 +27,20 @@ type MyService() =
         member this.Dispose() =
             printfn "MyService.Dispose()"
 
-let fact = new InProcFactory()
-let proxy = fact.GetInstance<MyService, IMyContract>()
+// Sessions are supported with net.pipe, net.tcp, and WS HTTP if security
+//   or reliable messaging are turned on.
+printfn "Per-Session (Named Pipe Binding)\n----------------------"
+let mutable fact = new InProcFactory()
+let mutable proxy = fact.GetInstance<MyService, IMyContract>()
+
+do proxy.MyMethod()
+do proxy.MyMethod()
+
+do fact.CloseInstance(proxy)
+
+printfn "\nPer-Session (Basic HTTP Binding)\n----------------------"
+fact <- new InProcFactory("http://localhost", Binding = new BasicHttpBinding())
+proxy <- fact.GetInstance<MyService, IMyContract>()
 
 do proxy.MyMethod()
 do proxy.MyMethod()
