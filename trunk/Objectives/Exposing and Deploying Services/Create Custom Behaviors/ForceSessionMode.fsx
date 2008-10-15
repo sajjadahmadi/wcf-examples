@@ -1,7 +1,7 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "../../ref/InProcFactory.fsx"
+#load "../../ref/InProcHost.fsx"
 open Mcts_70_503
 open System
 open System.Diagnostics
@@ -26,10 +26,10 @@ type MyService() =
         member this.Dispose() =
             printfn "MyService.Dispose()"
 
-let fact = new InProcFactory("http://localhost", Binding = new BasicHttpBinding())
-let proxy = fact.GetInstance<MyService, IMyContract>()
+let host = new InProcHost(new BasicHttpBinding(), "http://localhost")
+let proxy = host.Service<MyService, IMyContract>()
 
 do proxy.MyMethod()
 do proxy.MyMethod()
 
-do fact.CloseInstance(proxy)
+do host.CloseService(proxy)
