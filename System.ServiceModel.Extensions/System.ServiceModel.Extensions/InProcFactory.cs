@@ -4,7 +4,6 @@ using System.Diagnostics;
 
 namespace System.ServiceModel
 {
-    // TODO: test
     public static class InProcFactory
     {
         struct HostRecord

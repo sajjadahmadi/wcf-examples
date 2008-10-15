@@ -8,7 +8,7 @@ using System.Diagnostics;
 
 namespace System.ServiceModel.Extensions
 {
-    class MetadataHelper
+    public static class MetadataHelper
     {
         const int MessageSizeMultiplier = 5;
 

@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ChannelFactoryTests.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
     <Compile Include="InProcFactoryTests.cs" />
     <Compile Include="MetadataHelperTests.cs" />
