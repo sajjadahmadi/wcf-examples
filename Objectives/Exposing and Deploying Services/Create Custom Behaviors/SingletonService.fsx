@@ -7,7 +7,7 @@ open System
 open System.Diagnostics
 open System.ServiceModel
 
-[<ServiceContract(SessionMode = SessionMode.NotAllowed)>]
+[<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
     abstract MyMethod : unit -> unit
@@ -30,10 +30,10 @@ type MyService() =
             printfn "MyService.Dispose()"
 
 let host = new InProcHost(new BasicHttpBinding(), "http://localhost")
-let proxy = host.Service<MyService, IMyContract>()
+let proxy = host.CreateProxy<MyService, IMyContract>()
 
 do proxy.MyMethod()
 do proxy.MyMethod()
 do proxy.MyMethod()
 
-do host.CloseService(proxy)
+do host.CloseProxy(proxy)
