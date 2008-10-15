@@ -31,17 +31,17 @@ type MyService() =
 //   or reliable messaging are turned on.
 printfn "Per-Session (Named Pipe Binding)\n----------------------"
 let host = new InProcHost()
-let mutable proxy = host.Service<MyService, IMyContract>()
+let mutable proxy = host.CreateProxy<MyService, IMyContract>()
 
 do proxy.MyMethod()
 do proxy.MyMethod()
 
-do host.CloseService(proxy)
+do host.CloseProxy(proxy)
 
 printfn "\nPer-Session (Basic HTTP Binding)\n----------------------"
-proxy <- host.Service<MyService, IMyContract>(new BasicHttpBinding(), "http://localhost")
+proxy <- host.CreateProxy<MyService, IMyContract>(new BasicHttpBinding(), "http://localhost")
 
 do proxy.MyMethod()
 do proxy.MyMethod()
 
-do host.CloseService(proxy)
+do host.CloseProxy(proxy)
