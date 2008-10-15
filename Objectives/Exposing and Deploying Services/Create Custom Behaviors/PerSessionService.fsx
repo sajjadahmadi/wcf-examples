@@ -1,7 +1,7 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "../../ref/InProcFactory.fsx"
+#load "../../ref/InProcHost.fsx"
 open Mcts_70_503
 open System
 open System.Diagnostics
@@ -30,19 +30,18 @@ type MyService() =
 // Sessions are supported with net.pipe, net.tcp, and WS HTTP if security
 //   or reliable messaging are turned on.
 printfn "Per-Session (Named Pipe Binding)\n----------------------"
-let mutable fact = new InProcFactory()
-let mutable proxy = fact.GetInstance<MyService, IMyContract>()
+let host = new InProcHost()
+let mutable proxy = host.Service<MyService, IMyContract>()
 
 do proxy.MyMethod()
 do proxy.MyMethod()
 
-do fact.CloseInstance(proxy)
+do host.CloseService(proxy)
 
 printfn "\nPer-Session (Basic HTTP Binding)\n----------------------"
-fact <- new InProcFactory("http://localhost", Binding = new BasicHttpBinding())
-proxy <- fact.GetInstance<MyService, IMyContract>()
+proxy <- host.Service<MyService, IMyContract>(new BasicHttpBinding(), "http://localhost")
 
 do proxy.MyMethod()
 do proxy.MyMethod()
 
-do fact.CloseInstance(proxy)
+do host.CloseService(proxy)
