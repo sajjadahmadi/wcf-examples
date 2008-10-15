@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Counter Service Library", "Counter Service Library\Counter Service Library.csproj", "{9831862C-5760-4B39-8952-5C6BB8006207}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo Application", "Demo Application\Demo Application.csproj", "{00DD8F29-1407-4F3B-B6B7-9154ABE4298B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9831862C-5760-4B39-8952-5C6BB8006207} = {9831862C-5760-4B39-8952-5C6BB8006207}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
