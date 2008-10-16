@@ -77,5 +77,11 @@ namespace System.ServiceModel.Test
             Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
             Assert.AreEqual<string>("MyResult", proxy2.MyOperation());
         }
+
+        [TestMethod]
+        public void bla()
+        {
+        }
+
     }
 }
