@@ -55,7 +55,7 @@ namespace System.ServiceModel
             return hostRecord;
         }
 
-        public static TContract CreateInstance<TService, TContract>()
+        public static TContract CreateChannel<TService, TContract>()
             where TService : TContract
             where TContract : class
         {
@@ -63,7 +63,8 @@ namespace System.ServiceModel
             return ChannelFactory<TContract>.CreateChannel(NamedPipeBinding, new EndpointAddress(hostRecord.Address));
         }
 
-        public static void CloseProxy<I>(I instance) where I : class
+        public static void CloseChannel<TContract>(TContract instance) 
+            where TContract : class
         {
             ICommunicationObject proxy = instance as ICommunicationObject;
             Debug.Assert(proxy != null);

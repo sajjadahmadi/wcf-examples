@@ -63,24 +63,38 @@ namespace System.ServiceModel.Test
         [TestMethod]
         public void CreateInstanceTest()
         {
-            ITestContract proxy1 = InProcFactory.CreateInstance<TestService, ITestContract>();
+            ITestContract proxy1 = InProcFactory.CreateChannel<TestService, ITestContract>();
             Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
-            InProcFactory.CloseProxy<ITestContract>(proxy1);
+            InProcFactory.CloseChannel<ITestContract>(proxy1);
         }
 
         [TestMethod]
         public void CreateMultipleInstancesTest()
         {
-            ITestContract proxy1 = InProcFactory.CreateInstance<TestService, ITestContract>();
-            ITestContract proxy2 = InProcFactory.CreateInstance<TestService, ITestContract>();
+            ITestContract proxy1 = InProcFactory.CreateChannel<TestService, ITestContract>();
+            ITestContract proxy2 = InProcFactory.CreateChannel<TestService, ITestContract>();
             Assert.AreNotSame(proxy1, proxy2);
             Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
             Assert.AreEqual<string>("MyResult", proxy2.MyOperation());
         }
 
         [TestMethod]
-        public void bla()
+        public void NewTest()
         {
+            EndpointAddress addr = new EndpointAddress("net.pipe://localhost/Service");
+
+            NetNamedPipeBinding binding = new NetNamedPipeBinding();
+            binding.TransactionFlow=true;
+
+            ServiceHost<TestService> host = new ServiceHost<TestService>();
+            host.AddServiceEndpoint(typeof(ITestContract), binding, addr.Uri);
+            host.Open();
+
+            ITestContract proxy = ChannelFactory<ITestContract>.CreateChannel(binding, addr);
+            Assert.AreEqual<string>("MyResult", proxy.MyOperation());
+
+            ((ICommunicationObject)proxy).Close();
+            host.Close();
         }
 
     }
