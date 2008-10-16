@@ -112,4 +112,64 @@ namespace System.ServiceModel
         }
         #endregion
     }
+
+
+    //class LocalHost<TService> : ServiceHost<TService>
+    //{
+    //    public LocalHost()
+    //        : base()
+    //    { }
+    //    public LocalHost(params string[] baseAddresses)
+    //        : base(baseAddresses)
+    //    { }
+    //    public LocalHost(params Uri[] baseAddresses)
+    //        : base(baseAddresses)
+    //    { }
+
+    //    public ServiceEndpoint GetInProcEndpoint<TBinding>()
+    //        where TBinding : Binding, new()
+    //    {
+    //        ServiceEndpoint ep = this.Description.Endpoints.FirstOrDefault(e =>
+    //            e.Binding.GetType() == typeof(TBinding));
+    //        if (ep == null)
+    //        {
+    //            AddInProcEndpoint<TBinding>();
+    //        }
+    //        return ep;
+    //    }
+
+    //    public ServiceEndpoint AddInProcEndpoint<TBinding>()
+    //        where TBinding : Binding, new()
+    //    {
+    //        string baseAddress;
+    //        Binding binding;
+    //        string endpointAddress;
+
+    //        if (typeof(TBinding) == typeof(NetNamedPipeBinding))
+    //        {
+    //            baseAddress = "net.pipe://localhost/";
+    //            binding = new NetNamedPipeBinding();
+    //            ((NetNamedPipeBinding)binding).TransactionFlow = true;
+    //        }
+    //        else if (typeof(TBinding) == typeof(BasicHttpBinding))
+    //        {
+    //            baseAddress = "http://localhost/";
+    //            binding = new BasicHttpBinding();
+    //            //((BasicHttpBinding)binding).TransactionFlow = true;
+    //        }
+    //        else throw new ArgumentOutOfRangeException("TBinding", "Binding type not supported... Yet.");
+
+    //        Uri uri = new Uri(baseAddress);
+    //        if (Description == null)
+    //        {
+    //            UriSchemeKeyedCollection c = new UriSchemeKeyedCollection(uri);
+    //            InitializeDescription(typeof(TService), c);
+    //        }
+    //        else
+    //            AddBaseAddress(uri);
+    //        endpointAddress = baseAddress + Guid.NewGuid().ToString();
+    //        AddServiceEndpoint( typeof(TContract), binding, endpointAddress);
+    //        return null;
+    //    }
+    //}
 }

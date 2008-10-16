@@ -61,26 +61,37 @@ namespace System.ServiceModel.Test
 
 
         [TestMethod]
-        public void CreateInstanceTest()
+        public void CreateChannelTest()
         {
-            ITestContract proxy1 = ChannelFactory<TestService, ITestContract>.CreateChannel();
-            Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
-            InProcFactory.CloseProxy<ITestContract>(proxy1);
+            ITestContract channel = ChannelFactory<TestService, ITestContract>.CreateChannel();
+            Assert.AreEqual<string>("MyResult", channel.MyOperation());
+            ChannelFactory<TestService, ITestContract>.CloseChannel(channel);
         }
 
         [TestMethod]
-        public void CreateMultipleInstancesTest()
+        public void CreateMultipleChannelsTest()
         {
-            ITestContract proxy1 = ChannelFactory<TestService, ITestContract>.CreateChannel();
-            ITestContract proxy2 = ChannelFactory<TestService, ITestContract>.CreateChannel();
-            Assert.AreNotSame(proxy1, proxy2);
-            Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
-            Assert.AreEqual<string>("MyResult", proxy2.MyOperation());
+            ITestContract channel1 = ChannelFactory<TestService, ITestContract>.CreateChannel();
+            ITestContract channel2 = ChannelFactory<TestService, ITestContract>.CreateChannel();
+            Assert.AreNotSame(channel1, channel2);
+            Assert.AreEqual<string>("MyResult", channel1.MyOperation());
+            Assert.AreEqual<string>("MyResult", channel2.MyOperation());
+            ChannelFactory<TestService, ITestContract>.CloseChannel(channel1);
+            ChannelFactory<TestService, ITestContract>.CloseChannel(channel2);
+        }
+
+        [TestMethod]
+        public void CreateChannel_Binding()
+        {
+            ITestContract channel1 = ChannelFactory<TestService, ITestContract>.CreateChannel();
+            ITestContract channel2 = ChannelFactory<TestService, ITestContract>.CreateChannel(new WSHttpBinding(), "http://localhost");
+            Assert.AreNotSame(channel1, channel2);
+            Assert.AreEqual<string>("MyResult", channel1.MyOperation());
+            Assert.AreEqual<string>("MyResult", channel2.MyOperation());
+            ChannelFactory<TestService, ITestContract>.CloseChannel(channel1);
+            ChannelFactory<TestService, ITestContract>.CloseChannel(channel2);
         }
     }
 
-    public class ChannelFacotry<T1, T2, TBinding> : ChannelFactory<T1>
-    {
-    }
 
 }
