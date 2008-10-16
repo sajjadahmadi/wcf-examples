@@ -2,6 +2,7 @@
 using System.ServiceModel.Channels;
 using System.Diagnostics;
 using System.Linq;
+using System.ServiceModel.Description;
 
 namespace System.ServiceModel
 {
@@ -9,61 +10,73 @@ namespace System.ServiceModel
         where TService : TContract
         where TContract : class
     {
-        static List<ServiceHost> _hosts = new List<ServiceHost>();
-
-        class HostInfo
-        {
-            public readonly ServiceHost Host;
-            public readonly string Address;
-            public HostInfo(ServiceHost host, string address)
-            {
-                Host = host;
-                Address = address;
-            }
-        }
+        static Dictionary<Type, ServiceHost> _hosts = new Dictionary<Type, ServiceHost>();
 
         static ChannelFactory()
         {
             AppDomain.CurrentDomain.ProcessExit += delegate
             {
-                foreach (ServiceHost host in _hosts)
+                foreach (ServiceHost host in _hosts.Values)
                 {
                     host.Close();
                 }
             };
         }
 
-        static ServiceHost GetServiceHost(Binding binding, Uri baseAddress)
+        static ServiceHost GetLocalHost<TBinding>()
+            where TBinding : Binding
         {
             ServiceHost host;
-            host = _hosts.Find(r =>
-                r.Description.ServiceType == typeof(TService));
+            if (_hosts.ContainsKey(typeof(TService)))
             {
-                host = new ServiceHost(typeof(TService), baseAddress);
-                _hosts.Add(host);
+                host = _hosts[typeof(TService)];
             }
-
-            Description.ServiceEndpoint ep;
-            ep = host.Description.Endpoints.FirstOrDefault(e =>
-                e.Binding.GetType() == binding.GetType());
-            if (ep == null)
+            else
             {
-                string address = baseAddress.ToString() + Guid.NewGuid().ToString();
-                host.AddServiceEndpoint(typeof(TContract), binding, address);
-                host.Open();
+                host = CreateLocalHost<TBinding>();
+                _hosts.Add(typeof(TService), host);
             }
 
             return host;
         }
 
+        private static ServiceHost CreateLocalHost<TBinding>()
+            where TBinding : Binding
+        {
+            Uri baseAddress;
+            string address;
+
+            if (typeof(TBinding) == typeof(NetNamedPipeBinding))
+            {
+                baseAddress = new Uri("net.pipe://localhost/");
+                NetNamedPipeBinding pipeBinding = (NetNamedPipeBinding)binding;
+                pipeBinding.TransactionFlow = true;
+                address = baseAddress.ToString() + Guid.NewGuid().ToString();
+            }
+            else throw new ArgumentOutOfRangeException("binding", "Binding type not implemented.");
+
+            ServiceHost host;
+            host = new ServiceHost(typeof(TService), baseAddress);
+            host.AddServiceEndpoint(typeof(TContract), binding, address);
+            host.Open();
+            return host;
+        }
+
         public static TContract CreateChannel()
         {
-            NetNamedPipeBinding binding = new NetNamedPipeBinding();
-            binding.TransactionFlow = true;
-            Uri baseAddress = new Uri("net.pipe://localhost/");
+            return CreateChannel<NetNamedPipeBinding>();
+        }
 
-            ServiceHost host = GetServiceHost(binding, baseAddress);
-            return ChannelFactory<TContract>.CreateChannel(binding, host.Description.Endpoints.First().Address);
+        public static TContract CreateChannel<TBinding>()
+            where TBinding : Binding, new()
+        {
+            ServiceHost host = GetLocalHost<TBinding>();
+            ServiceEndpoint ep = host.Description.Endpoints.First();
+            return CreateChannel(ep.Binding, ep.Address);
+        }
+        public static TContract CreateChannel(Binding binding, EndpointAddress endpointAddress)
+        {
+            return ChannelFactory<TContract>.CreateChannel(binding, endpointAddress);
         }
 
         public static void CloseChannel(TContract instance)
