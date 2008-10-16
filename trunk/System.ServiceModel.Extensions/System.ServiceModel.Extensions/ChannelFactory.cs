@@ -10,7 +10,7 @@ namespace System.ServiceModel
         where TService : TContract
         where TContract : class
     {
-        static Dictionary<Type, ServiceHost> _hosts = new Dictionary<Type, ServiceHost>();
+        static Dictionary<Type, ServiceHost<TService>> _hosts = new Dictionary<Type, ServiceHost<TService>>();
 
         static ChannelFactory()
         {
@@ -23,59 +23,49 @@ namespace System.ServiceModel
             };
         }
 
-        static ServiceHost GetLocalHost<TBinding>()
-            where TBinding : Binding
+        static ServiceHost<TService> GetServiceHost()
         {
-            ServiceHost host;
+            ServiceHost<TService> host;
             if (_hosts.ContainsKey(typeof(TService)))
             {
                 host = _hosts[typeof(TService)];
             }
             else
             {
-                host = CreateLocalHost<TBinding>();
+                host = CreateServiceHost();
                 _hosts.Add(typeof(TService), host);
             }
-
             return host;
         }
-
-        private static ServiceHost CreateLocalHost<TBinding>()
-            where TBinding : Binding
+        static ServiceHost<TService> CreateServiceHost()
         {
-            Uri baseAddress;
-            string address;
-
-            if (typeof(TBinding) == typeof(NetNamedPipeBinding))
-            {
-                baseAddress = new Uri("net.pipe://localhost/");
-                NetNamedPipeBinding pipeBinding = (NetNamedPipeBinding)binding;
-                pipeBinding.TransactionFlow = true;
-                address = baseAddress.ToString() + Guid.NewGuid().ToString();
-            }
-            else throw new ArgumentOutOfRangeException("binding", "Binding type not implemented.");
-
-            ServiceHost host;
-            host = new ServiceHost(typeof(TService), baseAddress);
-            host.AddServiceEndpoint(typeof(TContract), binding, address);
+            ServiceHost<TService> host = new ServiceHost<TService>();
+            NetNamedPipeBinding binding = new NetNamedPipeBinding();
+            binding.TransactionFlow = true;
+            string endpointAddress = "net.pipe://localhost/" + Guid.NewGuid().ToString();
+            host.AddServiceEndpoint(typeof(TContract), binding, endpointAddress);
             host.Open();
             return host;
         }
 
         public static TContract CreateChannel()
         {
-            return CreateChannel<NetNamedPipeBinding>();
-        }
-
-        public static TContract CreateChannel<TBinding>()
-            where TBinding : Binding, new()
-        {
-            ServiceHost host = GetLocalHost<TBinding>();
-            ServiceEndpoint ep = host.Description.Endpoints.First();
+            ServiceHost<TService> host = GetServiceHost();
+            ServiceEndpoint ep = host.Description.Endpoints.FirstOrDefault(e =>
+                e.Binding.GetType() == typeof(NetNamedPipeBinding));
             return CreateChannel(ep.Binding, ep.Address);
         }
+        public static TContract CreateChannel(Binding binding, string uri)
+        { return CreateChannel(binding, new EndpointAddress(uri)); }
         public static TContract CreateChannel(Binding binding, EndpointAddress endpointAddress)
         {
+            ServiceHost<TService> host = GetServiceHost();
+            ServiceEndpoint ep = host.Description.Endpoints.FirstOrDefault(e =>
+                e.Binding.GetType() == binding.GetType() &&
+                e.Address.Uri == endpointAddress.Uri
+            );
+            if (ep == null)
+                host.AddServiceEndpoint(typeof(TContract), binding, endpointAddress.Uri);
             return ChannelFactory<TContract>.CreateChannel(binding, endpointAddress);
         }
 
