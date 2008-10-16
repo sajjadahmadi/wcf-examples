@@ -34,33 +34,33 @@ namespace System.ServiceModel
             };
         }
 
-        static HostRecord GetHostRecord<S, I>()
-            where I : class
-            where S : I
+        static HostRecord GetHostRecord<TService, TContract>()
+            where TService : TContract
+            where TContract : class
         {
             HostRecord hostRecord;
-            if (m_Hosts.ContainsKey(typeof(S)))
+            if (m_Hosts.ContainsKey(typeof(TService)))
             {
-                hostRecord = m_Hosts[typeof(S)];
+                hostRecord = m_Hosts[typeof(TService)];
             }
             else
             {
-                ServiceHost host = new ServiceHost(typeof(S), BaseAddress);
+                ServiceHost host = new ServiceHost(typeof(TService), BaseAddress);
                 string address = BaseAddress.ToString() + Guid.NewGuid().ToString();
                 hostRecord = new HostRecord(host, address);
-                m_Hosts.Add(typeof(S), hostRecord);
-                host.AddServiceEndpoint(typeof(I), NamedPipeBinding, address);
+                m_Hosts.Add(typeof(TService), hostRecord);
+                host.AddServiceEndpoint(typeof(TContract), NamedPipeBinding, address);
                 host.Open();
             }
             return hostRecord;
         }
 
-        public static I CreateInstance<S, I>()
-            where I : class
-            where S : I
+        public static TContract CreateInstance<TService, TContract>()
+            where TService : TContract
+            where TContract : class
         {
-            HostRecord hostRecord = GetHostRecord<S, I>();
-            return ChannelFactory<I>.CreateChannel(NamedPipeBinding, new EndpointAddress(hostRecord.Address));
+            HostRecord hostRecord = GetHostRecord<TService, TContract>();
+            return ChannelFactory<TContract>.CreateChannel(NamedPipeBinding, new EndpointAddress(hostRecord.Address));
         }
 
         public static void CloseProxy<I>(I instance) where I : class
