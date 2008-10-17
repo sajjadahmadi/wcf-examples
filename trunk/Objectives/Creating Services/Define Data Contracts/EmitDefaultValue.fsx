@@ -7,13 +7,13 @@ open System.Runtime.Serialization
 
 [<DataContract(Name="Person")>]
 type Person =
-    { [<DataMember>]
+    { [<DataMember>] // EmitDefaultValue=true
       mutable Name : string;
       
       [<DataMember(EmitDefaultValue=false)>]
       mutable Age : int }
 
-let p1 = { Name = "Ray Vernagus";
+let p1 = { Name = null;
            Age   = 0 }
 printfn "%s\n\n----------------------\n" (Helpers.serialize p1)
 
