@@ -14,9 +14,6 @@ namespace System.ServiceModel.Test
     {
         public ChannelFactoryTests()
         {
-            //
-            // TODO: Add constructor logic here
-            //
         }
 
         private TestContext testContextInstance;
