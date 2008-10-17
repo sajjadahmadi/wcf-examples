@@ -20,4 +20,4 @@ let deserialize<'a> (x: string) =
     stream.Write(data, 0, data.Length)
     stream.Position <- 0L
     let deserializer = new DataContractSerializer(typeof<'a>)
-    deserializer.ReadObject(stream)
+    deserializer.ReadObject(stream) :?> 'a

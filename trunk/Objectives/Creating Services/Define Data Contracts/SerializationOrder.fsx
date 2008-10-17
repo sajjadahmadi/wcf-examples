@@ -7,24 +7,21 @@ open System.Runtime.Serialization
 
 [<DataContract(Name="Person")>]
 type Person =
-    { [<DataMember>]
+    { [<DataMember(Order=1)>]
       mutable Name : string;
       
-      [<DataMember>]
+      [<DataMember(Order=2)>]
       mutable Age : int }
 
 [<DataContract(Name="Person")>]
 type Employee =
-    { [<DataMember(Name="Name")>]
-      mutable FullName : string;
+    { [<DataMember(Order=1)>]
+      mutable Name : string;
       
-      [<DataMember(Name="Age")>]
-      mutable AgeInYears : int
-      
-      [<DataMember>]
-      mutable ServiceYears : int }
+      [<DataMember(Order=2)>]
+      mutable Age : int }
 
-let person = { Name = "Ray"; Age = 35 }
+let person = { new Person with Name = "Ray" and Age = 35 }
 let persondata = Helpers.serialize person
 printfn "%s\n\n----------------------\n" persondata
 
