@@ -14,9 +14,6 @@ namespace System.ServiceModel.Test
     {
         public InProcFactoryTests()
         {
-            //
-            // TODO: Add constructor logic here
-            //
         }
 
         private TestContext testContextInstance;

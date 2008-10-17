@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.IO;
 using System.Text;
 
-namespace System.ServiceModel
+namespace System.ServiceModel.Test
 {
     /// <summary>
     ///This is a test class for DataContractSerializerTest and is intended
