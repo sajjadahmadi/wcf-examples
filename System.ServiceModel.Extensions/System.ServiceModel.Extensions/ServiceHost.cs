@@ -19,17 +19,22 @@ namespace System.ServiceModel
             : base(typeof(T))
         { }
         public ServiceHost(params string[] baseAddresses)
-            : base(typeof(T), Convert(baseAddresses))
+            : base(typeof(T), ConvertToUri(baseAddresses))
         { }
         public ServiceHost(params Uri[] baseAddresses)
             : base(typeof(T), baseAddresses)
         { }
-        static Uri[] Convert(string[] baseAddresses)
+        public ServiceHost(T singleton, params string[] baseAddresses)
+            : base(singleton, ConvertToUri(baseAddresses))
+        { }
+        public ServiceHost(T singleton, params Uri[] baseAddresses)
+            : base(singleton, baseAddresses)
+        { }
+
+        static Uri[] ConvertToUri(string[] baseAddresses)
         {
             Converter<string, Uri> convert = delegate(string address)
-            {
-                return new Uri(address);
-            };
+                { return new Uri(address); };
             return Array.ConvertAll(baseAddresses, convert);
         }
 
@@ -111,20 +116,17 @@ namespace System.ServiceModel
             }
         }
         #endregion
+
+        public virtual T Singleton
+        {
+            get
+            {
+                if (SingletonInstance == null) { return default(T); }
+                return (T)SingletonInstance;
+            }
+        }
     }
 
-
-    //class LocalHost<TService> : ServiceHost<TService>
-    //{
-    //    public LocalHost()
-    //        : base()
-    //    { }
-    //    public LocalHost(params string[] baseAddresses)
-    //        : base(baseAddresses)
-    //    { }
-    //    public LocalHost(params Uri[] baseAddresses)
-    //        : base(baseAddresses)
-    //    { }
 
     //    public ServiceEndpoint GetInProcEndpoint<TBinding>()
     //        where TBinding : Binding, new()
@@ -171,5 +173,4 @@ namespace System.ServiceModel
     //        AddServiceEndpoint( typeof(TContract), binding, endpointAddress);
     //        return null;
     //    }
-    //}
 }

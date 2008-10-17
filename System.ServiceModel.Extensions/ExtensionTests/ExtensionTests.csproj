@@ -54,11 +54,13 @@
   <ItemGroup>
     <Compile Include="ChannelFactoryTests.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="InProcFactoryTests.cs" />
     <Compile Include="MetadataHelperTests.cs" />
+    <Compile Include="SingletonService.cs" />
     <Compile Include="TestService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="GenericServiceHostTests.cs" />
+    <Compile Include="ServiceHostTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\System.ServiceModel.Extensions\System.ServiceModel.Extensions.csproj">

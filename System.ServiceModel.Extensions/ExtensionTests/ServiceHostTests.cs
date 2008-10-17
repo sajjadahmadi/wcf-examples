@@ -11,14 +11,10 @@ namespace System.ServiceModel.Test
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class GenericServiceHostTests
+    public class ServiceHostTests
     {
-        public GenericServiceHostTests()
-        {
-            //
-            // TODO: Add constructor logic here
-            //
-        }
+        public ServiceHostTests()
+        {        }
 
         private TestContext testContextInstance;
 
@@ -79,6 +75,11 @@ namespace System.ServiceModel.Test
             Assert.AreEqual(2, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
                 ep.Contract.ContractType == typeof(IMetadataExchange)));
         }
-    }
 
+        [TestMethod]
+        public void TypeSafeSingletonTest()
+        {
+
+        }
+    }
 }
