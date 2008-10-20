@@ -5,12 +5,11 @@ using System.Text;
 using System.Runtime.Serialization;
 using System.IO;
 using System.Xml.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 
-namespace System.ServiceModel
+namespace System.ServiceModel.Extensions
 {
-    class Helper
+    public class Helper
     {
         public static string Serialize<T>(T dataContract)
         {
@@ -32,28 +31,6 @@ namespace System.ServiceModel
                 obj = formatter.ReadObject(stream);
             }
             return obj;
-        }
-    }
-
-    [DataContract]
-    public class DataObject
-    {
-        [DataMember]
-        public int Value { get; set; }
-    }
-
-    [TestClass]
-    public class HelperTests
-    {
-        [TestMethod]
-        public void Test()
-        {
-            DataObject o = new DataObject();
-            o.Value=432;
-            string xml = Helper.Serialize<DataObject>(o);
-            Trace.WriteLine(XDocument.Parse(xml).ToString());
-            o = Helper.Deserialize<DataObject>(xml);
-            Assert.AreEqual(432, o.Value);
         }
     }
 }

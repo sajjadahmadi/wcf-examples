@@ -55,7 +55,7 @@
     <Compile Include="ChannelFactoryTests.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
     <Compile Include="DemarcatingOperations.cs" />
-    <Compile Include="Helper.cs" />
+    <Compile Include="Serialization.cs" />
     <Compile Include="InProcFactoryTests.cs" />
     <Compile Include="MetadataHelperTests.cs" />
     <Compile Include="SingletonService.cs" />

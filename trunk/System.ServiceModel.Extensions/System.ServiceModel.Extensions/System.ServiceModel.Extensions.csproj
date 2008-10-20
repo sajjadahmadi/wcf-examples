@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="ChannelFactory.cs" />
     <Compile Include="DataContractSerializer.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="ServiceHost.cs" />
     <Compile Include="InProcFactory.cs" />
     <Compile Include="MetadataHelper.cs" />
