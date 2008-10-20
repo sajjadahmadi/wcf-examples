@@ -7,7 +7,7 @@
     <ProjectGuid>{834D28AC-1DB8-483F-8D72-04E9A24A7245}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Versioning_Round_Trip</RootNamespace>
+    <RootNamespace>System.ServiceModel.Examples</RootNamespace>
     <AssemblyName>Versioning Round-Trip</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
