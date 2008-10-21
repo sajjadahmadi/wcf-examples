@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Dispatcher;
 
 namespace System.ServiceModel
 {
@@ -15,6 +16,8 @@ namespace System.ServiceModel
 
     public class ServiceHost<T> : ServiceHost, IEnableMetadataExchange
     {
+        private const string HOSTOPEN = "Host is already open";
+
         public ServiceHost()
             : base(typeof(T))
         { }
@@ -57,7 +60,7 @@ namespace System.ServiceModel
         {
             if (State == CommunicationState.Opened)
             {
-                throw new InvalidOperationException("Host is already open");
+                throw new InvalidOperationException(HOSTOPEN);
             }
             ServiceMetadataBehavior metadataBehavior;
             metadataBehavior = Description.Behaviors.Find<ServiceMetadataBehavior>();
@@ -125,52 +128,42 @@ namespace System.ServiceModel
                 return (T)SingletonInstance;
             }
         }
+
+        #region Throttling
+
+        public void SetThrottle(int maxCalls, int maxSessions, int maxInstances)
+        {
+            ServiceThrottlingBehavior throttleBehavior = new ServiceThrottlingBehavior();
+            throttleBehavior.MaxConcurrentCalls = maxCalls;
+            throttleBehavior.MaxConcurrentSessions = maxSessions;
+            throttleBehavior.MaxConcurrentInstances = maxInstances;
+            SetThrottle(throttleBehavior);
+        }
+
+        public void SetThrottle(ServiceThrottlingBehavior throttleBehavior)
+        { SetThrottle(throttleBehavior, false); }
+
+        public void SetThrottle(ServiceThrottlingBehavior throttleBehavior, bool overrideConfig)
+        {
+            if (State == CommunicationState.Opened)
+            { throw new InvalidOperationException(HOSTOPEN); }
+
+            ServiceThrottlingBehavior exitingThrottle = this.ThrottleBehavior;
+
+            if (exitingThrottle != null && overrideConfig == false)
+            { return; }
+
+            if (exitingThrottle != null && overrideConfig == true)
+            { Description.Behaviors.Remove(exitingThrottle); }
+
+            Description.Behaviors.Add(throttleBehavior);
+        }
+
+        public ServiceThrottlingBehavior ThrottleBehavior
+        {
+            get { return Description.Behaviors.Find<ServiceThrottlingBehavior>(); }
+        }
+
+        #endregion Throttling
     }
-
-
-    //    public ServiceEndpoint GetInProcEndpoint<TBinding>()
-    //        where TBinding : Binding, new()
-    //    {
-    //        ServiceEndpoint ep = this.Description.Endpoints.FirstOrDefault(e =>
-    //            e.Binding.GetType() == typeof(TBinding));
-    //        if (ep == null)
-    //        {
-    //            AddInProcEndpoint<TBinding>();
-    //        }
-    //        return ep;
-    //    }
-
-    //    public ServiceEndpoint AddInProcEndpoint<TBinding>()
-    //        where TBinding : Binding, new()
-    //    {
-    //        string baseAddress;
-    //        Binding binding;
-    //        string endpointAddress;
-
-    //        if (typeof(TBinding) == typeof(NetNamedPipeBinding))
-    //        {
-    //            baseAddress = "net.pipe://localhost/";
-    //            binding = new NetNamedPipeBinding();
-    //            ((NetNamedPipeBinding)binding).TransactionFlow = true;
-    //        }
-    //        else if (typeof(TBinding) == typeof(BasicHttpBinding))
-    //        {
-    //            baseAddress = "http://localhost/";
-    //            binding = new BasicHttpBinding();
-    //            //((BasicHttpBinding)binding).TransactionFlow = true;
-    //        }
-    //        else throw new ArgumentOutOfRangeException("TBinding", "Binding type not supported... Yet.");
-
-    //        Uri uri = new Uri(baseAddress);
-    //        if (Description == null)
-    //        {
-    //            UriSchemeKeyedCollection c = new UriSchemeKeyedCollection(uri);
-    //            InitializeDescription(typeof(TService), c);
-    //        }
-    //        else
-    //            AddBaseAddress(uri);
-    //        endpointAddress = baseAddress + Guid.NewGuid().ToString();
-    //        AddServiceEndpoint( typeof(TContract), binding, endpointAddress);
-    //        return null;
-    //    }
 }
