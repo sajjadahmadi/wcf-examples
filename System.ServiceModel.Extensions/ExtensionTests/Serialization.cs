@@ -7,6 +7,7 @@ using System.IO;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
+using System.ServiceModel.Extensions;
 
 namespace System.ServiceModel
 {
