@@ -14,23 +14,23 @@ namespace System.ServiceModel
         void EnableMetadataExchange();
     }
 
-    public class ServiceHost<T> : ServiceHost, IEnableMetadataExchange
+    public class ServiceHost<TService> : ServiceHost, IEnableMetadataExchange
     {
         private const string HOSTOPEN = "Host is already open";
 
         public ServiceHost()
-            : base(typeof(T))
+            : base(typeof(TService))
         { }
         public ServiceHost(params string[] baseAddresses)
-            : base(typeof(T), ConvertToUri(baseAddresses))
+            : base(typeof(TService), ConvertToUri(baseAddresses))
         { }
         public ServiceHost(params Uri[] baseAddresses)
-            : base(typeof(T), baseAddresses)
+            : base(typeof(TService), baseAddresses)
         { }
-        public ServiceHost(T singleton, params string[] baseAddresses)
+        public ServiceHost(TService singleton, params string[] baseAddresses)
             : base(singleton, ConvertToUri(baseAddresses))
         { }
-        public ServiceHost(T singleton, params Uri[] baseAddresses)
+        public ServiceHost(TService singleton, params Uri[] baseAddresses)
             : base(singleton, baseAddresses)
         { }
 
@@ -40,6 +40,9 @@ namespace System.ServiceModel
                 { return new Uri(address); };
             return Array.ConvertAll(baseAddresses, convert);
         }
+
+        public ServiceEndpoint AddServiceEndpoint<TContract>(Binding binding, string address)
+        { return base.AddServiceEndpoint(typeof(TContract), binding, address); }
 
         #region IEnableMetadataExchange Members
         public bool MetadataExchangeEnabled
@@ -120,12 +123,12 @@ namespace System.ServiceModel
         }
         #endregion
 
-        public virtual T Singleton
+        public virtual TService Singleton
         {
             get
             {
-                if (SingletonInstance == null) { return default(T); }
-                return (T)SingletonInstance;
+                if (SingletonInstance == null) { return default(TService); }
+                return (TService)SingletonInstance;
             }
         }
 
