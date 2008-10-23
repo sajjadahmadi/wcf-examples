@@ -52,7 +52,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChannelFactoryTests.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
     <Compile Include="DemarcatingOperations.cs" />
     <Compile Include="Serialization.cs" />

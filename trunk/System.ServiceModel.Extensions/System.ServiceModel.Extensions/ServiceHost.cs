@@ -5,6 +5,7 @@ using System.Text;
 using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
+using System.Diagnostics;
 
 namespace System.ServiceModel
 {
@@ -13,8 +14,24 @@ namespace System.ServiceModel
         bool MetadataExchangeEnabled { get; }
         void EnableMetadataExchange();
     }
+    interface IThrottling
+    {
+        void SetThrottle(System.ServiceModel.Description.ServiceThrottlingBehavior throttleBehavior);
+        void SetThrottle(int maxCalls, int maxSessions, int maxInstances);
+        void SetThrottle(System.ServiceModel.Description.ServiceThrottlingBehavior throttleBehavior, bool overrideConfig);
+        System.ServiceModel.Description.ServiceThrottlingBehavior ThrottleBehavior { get; }
+    }
+    interface IInProcFactory
+    {
+        TContract CreateChannel<TContract>(Binding binding, string address)
+            where TContract : class;
+    }
 
-    public class ServiceHost<TService> : ServiceHost, IEnableMetadataExchange
+    public class ServiceHost<TService> :
+        ServiceHost,
+        IEnableMetadataExchange,
+        IThrottling,
+        IInProcFactory
     {
         private const string HOSTOPEN = "Host is already open";
 
@@ -44,7 +61,7 @@ namespace System.ServiceModel
         public ServiceEndpoint AddServiceEndpoint<TContract>(Binding binding, string address)
         { return base.AddServiceEndpoint(typeof(TContract), binding, address); }
 
-        #region IEnableMetadataExchange Members
+        #region IEnableMetadataExchange
         public bool MetadataExchangeEnabled
         {
             get
@@ -121,7 +138,7 @@ namespace System.ServiceModel
                     ep.Contract.ContractType == typeof(IMetadataExchange));
             }
         }
-        #endregion
+        #endregion IEnableMetadataExchange
 
         public virtual TService Singleton
         {
@@ -132,7 +149,7 @@ namespace System.ServiceModel
             }
         }
 
-        #region Throttling
+        #region IThrottling
 
         public void SetThrottle(int maxCalls, int maxSessions, int maxInstances)
         {
@@ -167,6 +184,16 @@ namespace System.ServiceModel
             get { return Description.Behaviors.Find<ServiceThrottlingBehavior>(); }
         }
 
-        #endregion Throttling
+        #endregion IThrottling
+
+        #region IInProcFactory Members
+
+        public TContract CreateChannel<TContract>(Binding binding, string address)
+            where TContract : class
+        {
+            return ChannelFactory<TContract>.CreateChannel(binding, new EndpointAddress(address));
+        }
+
+        #endregion
     }
 }
