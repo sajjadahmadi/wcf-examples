@@ -29,8 +29,11 @@ type MyService() =
         member this.Dispose() =
             printfn "MyService.Dispose()"
 
-let host = new InProcHost(new BasicHttpBinding(), "http://localhost")
-let proxy = host.CreateProxy<MyService, IMyContract>()
+let host = new InProcHost<MyService>()
+host.AddEndPoint<IMyContract>(new BasicHttpBinding())
+host.Open()
+
+let proxy = host.CreateProxy<IMyContract>()
 
 do proxy.MyMethod()
 do proxy.MyMethod()
