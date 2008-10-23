@@ -12,11 +12,10 @@ open System.ServiceModel.Description
 
 type Endpoint = Type * Binding * string
 
-type InProcHost<'THost>(uris: Uri[]) =
-    let host = new ServiceHost(typeof<'THost>, uris)
-    let endpoints = new List<Endpoint>()
-    let mutable disposed = false
-    
+[<AutoOpen>]
+module internal InProcHost =
+    let defaultBaseAddresses = [| new Uri("net.pipe://localhost"); new Uri("http://localhost") |]
+
     let (|NetTcp|NetPipe|Http|Https|) (uri: Uri) =
         match uri.Scheme with
         | "net.tcp"  -> NetTcp
@@ -24,24 +23,43 @@ type InProcHost<'THost>(uris: Uri[]) =
         | "http"     -> Http
         | "https"    -> Https
         | _          -> failwith "unkown scheme"
-    
-    let getBaseAddress scheme =
+        
+    let getBaseAddress (host: ServiceHost) scheme =
         let tryScheme (u: Uri) =
             if u.Scheme = scheme
                 then Some u
                 else None
         host.BaseAddresses
         |> Seq.first tryScheme
-    
-    let addressForBinding (b: Binding) =
+
+    let addressForBinding (host: ServiceHost) (b: Binding) =
         match b with
-        | :? NetTcpBinding       -> getBaseAddress "net.tcp"
-        | :? NetNamedPipeBinding -> getBaseAddress "net.pipe"
-        | :? BasicHttpBinding    -> getBaseAddress "http"
+        | :? NetTcpBinding       -> getBaseAddress host "net.tcp"
+        | :? NetNamedPipeBinding -> getBaseAddress host "net.pipe"
+        | :? BasicHttpBinding    -> getBaseAddress host "http"
         | _                      -> failwith "unsupported binding"
+        
+type InProcHost<'THost>(host: ServiceHost) =
+    let endpoints = new List<Endpoint>()
+    let mutable disposed = false
     
+    [<OverloadID("ctor.1")>]
     new() =
-        new InProcHost<'THost>([| new Uri("net.pipe://localhost"); new Uri("http://localhost") |])
+        new InProcHost<'THost>(InProcHost.defaultBaseAddresses)
+    
+    [<OverloadID("ctor.2")>]
+    new(uris: Uri[]) =
+        let h = new ServiceHost(typeof<'THost>, uris)
+        new InProcHost<'THost>(h)
+    
+    [<OverloadID("ctor.3")>]
+    new(singletonInstance: obj) =
+        new InProcHost<'THost>(singletonInstance, InProcHost.defaultBaseAddresses)
+        
+    [<OverloadID("ctor.4")>]
+    new(singletonInstance: obj, uris) =
+        let h = new ServiceHost(singletonInstance, uris)
+        new InProcHost<'THost>(h)
     
     member this.Open() =
         host.Open()
@@ -56,7 +74,7 @@ type InProcHost<'THost>(uris: Uri[]) =
         this.AddEndPoint<'TContract>(binding, "")
         
     member this.AddEndPoint<'TContract>(binding: Binding, address: string) =
-        match addressForBinding binding with
+        match addressForBinding host binding with
         | Some addr -> endpoints.Add((typeof<'TContract>, binding, addr.ToString()))
         | None      -> endpoints.Add((typeof<'TContract>, binding, ""))
         host.AddServiceEndpoint(typeof<'TContract>, binding, address) |> ignore
