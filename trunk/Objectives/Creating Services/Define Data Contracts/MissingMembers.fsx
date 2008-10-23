@@ -28,9 +28,9 @@ type Person_New =
     member this.OnDeserializing(context: StreamingContext) =
         this.Address <- "N/A"
 
-let person = { new Person_Old with Name = "Ray" and Age = 35 }
-let persondata = Helpers.serialize person
-printfn "%s\n\n----------------------\n" persondata
+let pOld = { new Person_Old with Name = "Ray" and Age = 35 }
+let pOldData = Helpers.serialize pOld
+printfn "%s\n\n----------------------\n" pOldData
 
-let emp = Helpers.deserialize<Person_New> persondata
-printfn "%A" emp
+let pNew = Helpers.deserialize<Person_New> pOldData
+printfn "%A" pNew
