@@ -20,9 +20,15 @@ namespace System.ServiceModel.Test
         [OperationContract]
         void IncrementCounter();
     }
+    [ServiceContract]
+    interface ICounter : ISessionRequired
+    {
+        [OperationContract]
+        int GetCurrentValue();
+    }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
-    class SingletonCounter : ISessionRequired, ISessionNotAllowed, IDisposable
+    class SingletonCounter : ISessionRequired, ISessionNotAllowed, IDisposable, ICounter
     {
         int counter = 0;
 
@@ -53,6 +59,15 @@ namespace System.ServiceModel.Test
         {
             Trace.WriteLine("MySingleton.Dispose()");
         }
+
+        #region ICounter Members
+
+        public int GetCurrentValue()
+        {
+            return counter;
+        }
+
+        #endregion
     }
 
     [TestClass]
@@ -62,28 +77,29 @@ namespace System.ServiceModel.Test
         public void SingletonSessionsTests()
         {
             Binding binding = new WSHttpBinding();
-            ServiceHost<SingletonCounter> host = new ServiceHost<SingletonCounter>("http://localhost/");
+            using (ServiceHost<SingletonCounter> host =
+                      new ServiceHost<SingletonCounter>("http://localhost/"))
+            {
+                host.AddServiceEndpoint<ISessionRequired>(binding, "withSession");
+                host.AddServiceEndpoint<ISessionNotAllowed>(binding, "woutSession");
 
-            host.AddServiceEndpoint(typeof(ISessionRequired), binding, "withSession");
-            host.AddServiceEndpoint(typeof(ISessionNotAllowed), binding, "woutSession");
+                host.Open();
 
-            host.Open();
+                ISessionRequired withSession =
+                    ChannelFactory<ISessionRequired>.CreateChannel(
+                        binding,
+                        new EndpointAddress("http://localhost/withSession"));
+                withSession.IncrementCounter();
+                ((ICommunicationObject)withSession).Close();
 
-            ISessionRequired withSession =
-                ChannelFactory<ISessionRequired>.CreateChannel(
-                    binding,
-                    new EndpointAddress("http://localhost/withSession"));
-            withSession.IncrementCounter();
-            ((ICommunicationObject)withSession).Close();
+                ISessionNotAllowed woutSession =
+                    ChannelFactory<ISessionNotAllowed>.CreateChannel(
+                        binding,
+                        new EndpointAddress("http://localhost/woutSession"));
+                woutSession.IncrementCounter();
+                ((ICommunicationObject)woutSession).Close();
 
-            ISessionNotAllowed woutSession =
-                ChannelFactory<ISessionNotAllowed>.CreateChannel(
-                    binding,
-                    new EndpointAddress("http://localhost/woutSession"));
-            woutSession.IncrementCounter();
-            ((ICommunicationObject)woutSession).Close();
-
-            host.Close();
+            }
         }
 
         [TestMethod]
@@ -93,19 +109,21 @@ namespace System.ServiceModel.Test
             SingletonCounter myCounter = new SingletonCounter();
             myCounter.Counter = 5;
 
-            // Host
+            string address = "http://localhost/";
             Binding binding = new WSHttpBinding();
-            ServiceHost<SingletonCounter> host = 
-                new ServiceHost<SingletonCounter>(myCounter, "http://localhost/");
-            host.AddServiceEndpoint(typeof(ISessionRequired), binding, "Counter");
-            host.Open();
+            using (ServiceHost<SingletonCounter> host =
+                 new ServiceHost<SingletonCounter>(myCounter))
+            {
+                // Host
+                host.AddServiceEndpoint<ICounter>(binding, address);
+                host.Open();
 
-            // Client
-            ISessionRequired proxy = ChannelFactory<ISessionRequired>.CreateChannel(binding, new EndpointAddress("http://localhost/Counter"));
-            proxy.IncrementCounter();
-            ((ICommunicationObject)proxy).Close();
-
-            Debugger.Break();
+                // Client
+                ICounter counter = host.CreateChannel<ICounter>(binding, address);
+                counter.IncrementCounter();
+                Assert.AreEqual(6, counter.GetCurrentValue());
+                ((ICommunicationObject)counter).Close();
+            }
         }
     }
 }

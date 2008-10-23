@@ -36,16 +36,19 @@ namespace System.ServiceModel
         private const string HOSTOPEN = "Host is already open";
 
         public ServiceHost()
-            : base(typeof(TService))
+            : this(new Uri[] { })
         { }
         public ServiceHost(params string[] baseAddresses)
-            : base(typeof(TService), ConvertToUri(baseAddresses))
+            : this(ConvertToUri(baseAddresses))
         { }
         public ServiceHost(params Uri[] baseAddresses)
             : base(typeof(TService), baseAddresses)
         { }
+        public ServiceHost(TService singleton)
+            : this(singleton, new Uri[] { })
+        { }
         public ServiceHost(TService singleton, params string[] baseAddresses)
-            : base(singleton, ConvertToUri(baseAddresses))
+            : this(singleton, ConvertToUri(baseAddresses))
         { }
         public ServiceHost(TService singleton, params Uri[] baseAddresses)
             : base(singleton, baseAddresses)
@@ -142,11 +145,7 @@ namespace System.ServiceModel
 
         public virtual TService Singleton
         {
-            get
-            {
-                if (SingletonInstance == null) { return default(TService); }
-                return (TService)SingletonInstance;
-            }
+            get { return (TService)SingletonInstance; }
         }
 
         #region IThrottling
