@@ -2,8 +2,8 @@
 #r "System.Xml.Linq"
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "../../ref/MetadataHelper.fsx"
-#load "../../ref/InProcHost.fsx"
+#load "MetadataHelper.fsx"
+#load "InProcHost.fsx"
 open Mcts_70_503
 open System
 open System.ServiceModel
@@ -38,4 +38,3 @@ match endpoints with
     printfn "  %A" ep.Contract.Operations.[0].Messages.[0].Body.Parts.[0].Name
 
 host.Close()
-Console.ReadKey(true)

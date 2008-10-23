@@ -27,7 +27,7 @@ module internal InProcHost =
         | "https"    -> Https
         | _          -> failwith "unkown scheme"
         
-    let getBaseAddress (host: ServiceHost) scheme =
+    let getBaseUri (host: ServiceHost) scheme =
         let tryScheme (u: Uri) =
             if u.Scheme = scheme
                 then Some u
@@ -35,13 +35,14 @@ module internal InProcHost =
         host.BaseAddresses
         |> Seq.first tryScheme
 
-    let addressForBinding (host: ServiceHost) (b: Binding) =
+    let getBaseUriForBinding (host: ServiceHost) (b: Binding) =
         match b with
-        | :? NetTcpBinding       -> getBaseAddress host "net.tcp"
-        | :? NetNamedPipeBinding -> getBaseAddress host "net.pipe"
-        | :? BasicHttpBinding    -> getBaseAddress host "http"
+        | :? NetTcpBinding       -> getBaseUri host "net.tcp"
+        | :? NetNamedPipeBinding -> getBaseUri host "net.pipe"
+        | :? BasicHttpBinding |
+          :? WSHttpBinding       -> getBaseUri host "http"
         | _                      -> failwith "unsupported binding"
-        
+    
 type InProcHost<'THost>(host: ServiceHost) =
     let endpoints = new List<Endpoint>()
     let mutable disposed = false
@@ -78,11 +79,14 @@ type InProcHost<'THost>(host: ServiceHost) =
     member this.AddEndPoint<'TContract>(binding: Binding) =
         this.AddEndPoint<'TContract>(binding, "")
         
-    member this.AddEndPoint<'TContract>(binding: Binding, address: string) =
-        match addressForBinding host binding with
-        | Some addr -> endpoints.Add((typeof<'TContract>, binding, addr.ToString()))
-        | None      -> endpoints.Add((typeof<'TContract>, binding, ""))
-        host.AddServiceEndpoint(typeof<'TContract>, binding, address) |> ignore
+    member this.AddEndPoint<'TContract>(binding: Binding, relativeAddress: string) =
+        let baseUri = getBaseUriForBinding host binding
+        let absAddress =
+            match baseUri with
+            | Some uri -> (new Uri(uri, relativeAddress)).ToString()
+            | None     -> failwith "there is no base address for specified binding"
+        endpoints.Add((typeof<'TContract>, binding, absAddress))
+        host.AddServiceEndpoint(typeof<'TContract>, binding, absAddress) |> ignore
     
     member this.EnableMetadataExchange() =
         let add (el: BindingElement) =
