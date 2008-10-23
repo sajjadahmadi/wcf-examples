@@ -12,25 +12,23 @@ type IMyContract =
     [<OperationContract>]
     abstract MyMethod : unit -> unit
 
-// Try the following to highlight the differences
-//[<ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)>]
 [<ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)>]
-type MyService() =
+type MySingleton() =
     let mutable counter = 0
     
-    do printfn "MyService.MyService()"
+    member this.Counter with get() = counter
+                        and set v = counter <- v
     
     interface IMyContract with
         member this.MyMethod() =
             counter <- counter + 1
             printfn "Counter = %d" counter
-    
-    interface IDisposable with
-        member this.Dispose() =
-            printfn "MyService.Dispose()"
 
-let host = new InProcHost<MyService>()
-host.AddEndPoint<IMyContract>(new BasicHttpBinding())
+let singleton = new MySingleton()
+singleton.Counter <- 42
+
+let host = new InProcHost<MySingleton>(singleton)
+host.AddEndPoint<IMyContract>()
 host.Open()
 
 let proxy = host.CreateProxy<IMyContract>()
