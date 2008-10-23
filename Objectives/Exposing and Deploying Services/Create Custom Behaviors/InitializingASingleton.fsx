@@ -24,6 +24,7 @@ type MySingleton() =
             counter <- counter + 1
             printfn "Counter = %d" counter
 
+
 let singleton = new MySingleton()
 singleton.Counter <- 42
 
