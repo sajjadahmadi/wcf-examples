@@ -14,7 +14,10 @@ type Endpoint = Type * Binding * string
 
 [<AutoOpen>]
 module internal InProcHost =
-    let defaultBaseAddresses = [| new Uri("net.pipe://localhost"); new Uri("http://localhost") |]
+    let defaultBaseAddresses =
+        [| new Uri("net.pipe://localhost"); 
+           new Uri("net.tcp://localhost");
+           new Uri("http://localhost") |]
 
     let (|NetTcp|NetPipe|Http|Https|) (uri: Uri) =
         match uri.Scheme with
@@ -60,6 +63,8 @@ type InProcHost<'THost>(host: ServiceHost) =
     new(singletonInstance: obj, uris) =
         let h = new ServiceHost(singletonInstance, uris)
         new InProcHost<'THost>(h)
+    
+    member this.InnerHost = host
     
     member this.Open() =
         host.Open()
