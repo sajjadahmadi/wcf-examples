@@ -21,7 +21,6 @@ type IOrderManager =
     [<OperationContract(IsInitiating = false, IsTerminating = true)>]
     abstract ProcessOrders : unit -> bool
 
-[<ServiceBehavior>]
 type OrderManager() =
     let mutable total = 0
     
