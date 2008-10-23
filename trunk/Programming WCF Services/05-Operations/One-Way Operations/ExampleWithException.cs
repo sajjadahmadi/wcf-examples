@@ -61,7 +61,7 @@ namespace One_Way_Operations
         //
         #endregion
 
-        [ServiceContract(SessionMode = SessionMode.Required)]
+        [ServiceContract(SessionMode = SessionMode.NotAllowed)]
         interface IMyContract
         {
             [OperationContract(IsOneWay = true)]
@@ -86,7 +86,7 @@ namespace One_Way_Operations
             string address = "net.pipe://localhost/";
             using (ServiceHost<MyService> host = new ServiceHost<MyService>())
             {
-                host.AddServiceEndpoint(typeof(IMyContract), new NetNamedPipeBinding(), address);
+                host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
                 host.Open();
 
                 IMyContract service = ChannelFactory<IMyContract>.CreateChannel(new NetNamedPipeBinding(), new EndpointAddress(address));
@@ -96,13 +96,14 @@ namespace One_Way_Operations
                 service.OneWayCall(false);
                 Assert.AreEqual(CommunicationState.Opened, comm.State);
 
+                // Call causes exception inside service that silently terminates
+                service.OneWayCall(true);  
                 try
                 {
-                    service.OneWayCall(true);  // Call causes exception inside service
-                    service.OneWayCall(false); // Call fails 
+                    service.OneWayCall(false); 
+                    // Second call fails 
                 }
                 catch (CommunicationException) { };
-
                 Assert.AreEqual(CommunicationState.Faulted, comm.State);
 
                 try
