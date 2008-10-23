@@ -119,52 +119,72 @@ namespace Throttling
         [TestMethod]
         public void ReadThrottlingValues()
         {
-            ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>("http://localhost:8080/");
-            host.AddServiceEndpoint(typeof(IThrottlingInformation), new WSHttpBinding(), "");
-            host.SetThrottle(12, 34, 56);
-            host.Open();
+            NetNamedPipeBinding binding = new NetNamedPipeBinding();
+            ServiceThrottlingBehavior throttle = new ServiceThrottlingBehavior();
+            throttle.MaxConcurrentSessions = 1;
+            string address = "http://localhost:8080/";
 
-            IThrottlingInformation service = ChannelFactory<IThrottlingInformation>.CreateChannel(
-                new WSHttpBinding(),
-                new EndpointAddress("http://localhost:8080/"));
+            using (ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>(address))
+            {
+                host.AddServiceEndpoint(typeof(IThrottlingInformation), new WSHttpBinding(), "");
+                host.SetThrottle(12, 34, 56);
+                host.Open();
 
-            Assert.AreEqual(12, service.ReadMaxConcurrentCalls());
-            Assert.AreEqual(34, service.ReadMaxConcurrentSessions());
-            Assert.AreEqual(56, service.ReadMaxConcurrentInstances());
+                IThrottlingInformation service = ChannelFactory<IThrottlingInformation>.CreateChannel(
+                    new WSHttpBinding(),
+                    new EndpointAddress(address));
 
-            ((ICommunicationObject)service).Close();
-            host.Close();
+                Assert.AreEqual(12, service.ReadMaxConcurrentCalls());
+                Assert.AreEqual(34, service.ReadMaxConcurrentSessions());
+                Assert.AreEqual(56, service.ReadMaxConcurrentInstances());
+
+                ((ICommunicationObject)service).Close();
+            }
         }
 
         [TestMethod]
         public void MaxSessions()
         {
-            string address = "net.pipe://localhost/";
-            ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>(address);
             NetNamedPipeBinding binding = new NetNamedPipeBinding();
-            host.AddServiceEndpoint(typeof(IPingService), binding, "");
-            host.SetThrottle(12, 1, 56);
-            host.Open();
+            ServiceThrottlingBehavior throttle = new ServiceThrottlingBehavior();
+            throttle.MaxConcurrentSessions = 1;
+            string address = "net.pipe://localhost/";
 
-            IPingService service1 = ChannelFactory<IPingService>.CreateChannel(
-                new NetNamedPipeBinding(),
-                new EndpointAddress(address));
-            Assert.AreEqual(true, service1.Ping());
-
-            try
+            using (ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>(address))
             {
-                IPingService service2 = ChannelFactory<IPingService>.CreateChannel(
-                    new NetNamedPipeBinding() { SendTimeout = new TimeSpan(0, 0, 1) },
+                host.AddServiceEndpoint(typeof(IPingService), binding, "");
+                host.SetThrottle(throttle);
+                host.Open();
+
+                Assert.AreEqual(CommunicationState.Opened, host.State);
+                
+                IPingService service1 = ChannelFactory<IPingService>.CreateChannel(
+                    new NetNamedPipeBinding(),
+                    new EndpointAddress(address));
+                Assert.AreEqual(true, service1.Ping());
+                
+                IPingService service2;
+                try
+                {
+                    service2 = ChannelFactory<IPingService>.CreateChannel(
+                        new NetNamedPipeBinding() { SendTimeout = new TimeSpan(0, 0, 1) },
+                        new EndpointAddress(address));
+                    Assert.AreEqual(true, service2.Ping());
+                    ((ICommunicationObject)service2).Close();
+                    Assert.Fail("Expected SendTimeout exception.");
+                }
+                catch (TimeoutException) { }
+                finally
+                {
+                    ((ICommunicationObject)service1).Close();
+                }
+
+                // Service1 is Closed, so Service2 should now work
+                service2 = ChannelFactory<IPingService>.CreateChannel(
+                    new NetNamedPipeBinding(),
                     new EndpointAddress(address));
                 Assert.AreEqual(true, service2.Ping());
                 ((ICommunicationObject)service2).Close();
-                Assert.Fail("Expected SendTimeout exception.");
-            }
-            catch (TimeoutException) { }
-            finally
-            {
-                ((ICommunicationObject)service1).Close();
-                host.Close();
             }
         }
 
