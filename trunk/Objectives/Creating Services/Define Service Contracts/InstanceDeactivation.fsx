@@ -18,11 +18,13 @@ type IMyContract =
 [<ServiceBehavior>]
 type MyService() =
     interface IMyContract with
-        // Try this example with and without the following line
-        [<OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.AfterCall)>]
-        member this.MyMethod() = ()
+        // Try this example with none or one of the following lines
+        //[<OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.BeforeCall)>]
+        //[<OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.AfterCall)>]
+        //[<OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.BeforeAndAfterCall)>]
+        member this.MyMethod() = printfn "proxy.MyMethod()"; System.Threading.Thread.Sleep(100)
         
-        member this.MyOtherMethod() = ()
+        member this.MyOtherMethod() = printfn "proxy.MyOtherMethod()"; System.Threading.Thread.Sleep(100)
 
     interface IDisposable with
         member this.Dispose() =
@@ -33,9 +35,8 @@ host.AddEndPoint<IMyContract>()
 host.Open()
 
 let proxy = host.CreateProxy<IMyContract>()
-printfn "proxy.MyOtherMethod()"
+
 proxy.MyOtherMethod()
-printfn "proxy.MyMethod()"
 proxy.MyMethod()
 System.Threading.Thread.Sleep(100)
 printfn "-----------------"
