@@ -1,7 +1,7 @@
 #light
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#load "../../ref/Helpers.fsx"
+#load "Helpers.fsx"
 open System
 open System.Runtime.Serialization
 
@@ -28,4 +28,4 @@ let graph2 = "<Person xmlns=\"http://schemas.datacontract.org/2004/07/\" xmlns:i
 
 try
     Helpers.deserialize<Person> graph2 |> ignore
-with ex -> printfn "%s" ex.Message
+with ex -> printfn "\n%s" ex.Message

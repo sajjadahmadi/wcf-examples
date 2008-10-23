@@ -1,7 +1,7 @@
 #light
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#load "../../ref/Helpers.fsx"
+#load "Helpers.fsx"
 open System
 open System.Runtime.Serialization
 

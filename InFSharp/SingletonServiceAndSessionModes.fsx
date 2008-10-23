@@ -1,7 +1,7 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "../../ref/InProcHost.fsx"
+#load "InProcHost.fsx"
 open Mcts_70_503
 open System
 open System.Diagnostics
@@ -40,13 +40,17 @@ type MySingleton() =
         member this.Dispose() =
             printfn "MySingleton.Dispose()"
 
-let binding = new WSHttpBinding(SecurityMode.None, true)
-let host = new InProcHost(binding, "http://localhost")
+let host = new InProcHost<MySingleton>()
+host.AddEndPoint<IMyContract>(new WSHttpBinding(SecurityMode.None, true))
+host.AddEndPoint<IMyOtherContract>(new BasicHttpBinding(), "other")
+host.Open()
 
-let proxy1 = host.CreateProxy<MySingleton, IMyContract>()
-do proxy1.MyMethod()
-do host.CloseProxy(proxy1)
+let proxy1 = host.CreateProxy<IMyContract>()
+proxy1.MyMethod()
+proxy1.MyMethod()
+host.CloseProxy(proxy1)
 
-let proxy2 = host.CreateProxy<MySingleton, IMyOtherContract>()
-do proxy2.MyOtherMethod()
-do host.CloseProxy(proxy2)
+let proxy2 = host.CreateProxy<IMyOtherContract>()
+proxy2.MyOtherMethod()
+host.CloseProxy(proxy2)
+host.Close()
