@@ -76,6 +76,22 @@ namespace System.ServiceModel.Test
         }
 
         [TestMethod]
+        public void CreateMultipleInstancesTest2()
+        {
+            string address = "net.pipe://localhost/";
+            ServiceHost<TestService> host = new ServiceHost<TestService>();
+            host.AddServiceEndpoint<ITestContract>(new NetNamedPipeBinding(), address);
+            host.Open();
+            ITestContract proxy1 = host.CreateChannel<ITestContract>(new NetNamedPipeBinding(), address);
+            ITestContract proxy2 = host.CreateChannel<ITestContract>(new NetNamedPipeBinding(), address);
+            Assert.AreNotSame(proxy1, proxy2);
+            Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
+            Assert.AreEqual<string>("MyResult", proxy2.MyOperation());
+            ((ICommunicationObject)proxy1).Close();
+            ((ICommunicationObject)proxy2).Close();
+        }
+
+        [TestMethod]
         public void NewTest()
         {
             EndpointAddress addr = new EndpointAddress("net.pipe://localhost/Service");

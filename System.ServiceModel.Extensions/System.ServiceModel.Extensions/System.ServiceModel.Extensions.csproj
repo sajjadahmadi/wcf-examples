@@ -51,7 +51,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChannelFactory.cs" />
     <Compile Include="DataContractSerializer.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="ServiceHost.cs" />
