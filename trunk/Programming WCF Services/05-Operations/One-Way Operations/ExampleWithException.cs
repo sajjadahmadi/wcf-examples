@@ -12,9 +12,9 @@ namespace One_Way_Operations
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class UnitTest1
+    public class ExampleWithException
     {
-        public UnitTest1()
+        public ExampleWithException()
         {
             //
             // TODO: Add constructor logic here
@@ -65,16 +65,17 @@ namespace One_Way_Operations
         interface IMyContract
         {
             [OperationContract(IsOneWay = true)]
-            void FireAndForget();
+            void OneWayCall(bool throwException);
         }
 
         [ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
         class MyService : IMyContract
         {
-            public void FireAndForget()
-            { 
-                Trace.WriteLine("Operation fired");
-                throw new ApplicationException("Exception thrown in a One-Way operation");
+            public void OneWayCall(bool throwException)
+            {
+                Trace.WriteLine("Operation called");
+                if (throwException)
+                    throw new ApplicationException("Exception thrown in a One-Way operation");
             }
         }
 
@@ -89,8 +90,28 @@ namespace One_Way_Operations
                 host.Open();
 
                 IMyContract service = ChannelFactory<IMyContract>.CreateChannel(new NetNamedPipeBinding(), new EndpointAddress(address));
-                service.FireAndForget();
-                ((ICommunicationObject)service).Close();
+                ICommunicationObject comm = (ICommunicationObject)service;
+                Assert.AreEqual(CommunicationState.Created, comm.State);
+
+                service.OneWayCall(false);
+                Assert.AreEqual(CommunicationState.Opened, comm.State);
+
+                try
+                {
+                    service.OneWayCall(true);  // Call causes exception inside service
+                    service.OneWayCall(false); // Call fails 
+                }
+                catch (CommunicationException) { };
+
+                Assert.AreEqual(CommunicationState.Faulted, comm.State);
+
+                try
+                {
+                    // Cannot close because the connection is in a faulted state.
+                    ((ICommunicationObject)service).Close();
+                    Assert.Fail("Expected Close() to fail.");
+                }
+                catch (CommunicationObjectFaultedException) { };
             }
         }
     }
