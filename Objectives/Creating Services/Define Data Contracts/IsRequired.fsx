@@ -18,8 +18,8 @@ let graph1 = "<Person xmlns=\"http://schemas.datacontract.org/2004/07/\" xmlns:i
   <Name>Ray Vernagus</Name>
 </Person>"
 
-let p1 = Helpers.deserialize<Person> graph1
-printfn "%A" p1
+let person = Helpers.deserialize<Person> graph1
+printfn "%A" person
 
 // Cannot deserialize graph 2 because it's missing an Age element
 let graph2 = "<Person xmlns=\"http://schemas.datacontract.org/2004/07/\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">

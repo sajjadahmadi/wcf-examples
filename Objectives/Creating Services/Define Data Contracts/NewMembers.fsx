@@ -30,14 +30,23 @@ type Person_Old() =
     member this.Age with get () = age
                     and set v = age <- v
     
+    member this.ExtensionData with get() = extData
+                              and set v = extData <- v
+    
     interface IExtensibleDataObject with
-        member this.ExtensionData with get () = extData
+        member this.ExtensionData with get() = extData
                                   and set v = extData <- v
 
-let person = { Name = "Ray"; Age = 35; Address = "123 MAIN ST" }
-let persondata = Helpers.serialize person
-printfn "%s\n\n----------------------\n" persondata
+let pNew = { Name = "Ray"; Age = 35; Address = "123 MAIN ST" }
+let pNewData = Helpers.serialize pNew
+printfn "%s\n\n----------------------\n" pNewData
 
-let pserver = Helpers.deserialize<Person_Old> persondata
-let pdata = pserver :> IExtensibleDataObject
-printfn "%A" pdata.ExtensionData
+let pOld = Helpers.deserialize<Person_Old> pNewData
+printfn "{ Name = %s; Age = %d }\n" pOld.Name pOld.Age
+
+// Round Trip
+let pOldData = Helpers.serialize pOld
+printfn "%s\n\n----------------------\n" pOldData
+let pNewRoundTrip = Helpers.deserialize<Person_New> pOldData
+printfn "%A" pNewRoundTrip
+
