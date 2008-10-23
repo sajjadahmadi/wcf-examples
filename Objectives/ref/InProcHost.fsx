@@ -3,115 +3,106 @@
 #r "System.Runtime.Serialization"
 namespace Mcts_70_503
 open System
+open System.IO
 open System.Diagnostics
 open System.Collections.Generic
 open System.ServiceModel
 open System.ServiceModel.Channels
 open System.ServiceModel.Description
 
-type HostEntry =
-    { Type : Type; Host : ServiceHost; Binding : Binding; Uri : Uri } with
-        override this.ToString() =
-            this.Uri.ToString()
+type Endpoint = Type * Binding * string
 
-type InProcHost(binding, baseUri) =
-    let hosts = new List<HostEntry>()
-    
+type InProcHost<'THost>(uris: Uri[]) =
+    let host = new ServiceHost(typeof<'THost>, uris)
+    let endpoints = new List<Endpoint>()
     let mutable disposed = false
     
-    let entry tHost host binding uri =
-        { Type = tHost; Host = host; Binding = binding; Uri = uri }
+    let (|NetTcp|NetPipe|Http|Https|) (uri: Uri) =
+        match uri.Scheme with
+        | "net.tcp"  -> NetTcp
+        | "net.pipe" -> NetPipe
+        | "http"     -> Http
+        | "https"    -> Https
+        | _          -> failwith "unkown scheme"
     
-    let addHost he =
-        hosts.Add(he)
-        he
+    let getBaseAddress scheme =
+        let tryScheme (u: Uri) =
+            if u.Scheme = scheme
+                then Some u
+                else None
+        host.BaseAddresses
+        |> Seq.first tryScheme
+    
+    let addressForBinding (b: Binding) =
+        match b with
+        | :? NetTcpBinding       -> getBaseAddress "net.tcp"
+        | :? NetNamedPipeBinding -> getBaseAddress "net.pipe"
+        | :? BasicHttpBinding    -> getBaseAddress "http"
+        | _                      -> failwith "unsupported binding"
+    
+    new() =
+        new InProcHost<'THost>([| new Uri("net.pipe://localhost"); new Uri("http://localhost") |])
+    
+    member this.Open() =
+        host.Open()
+    
+    member this.Close() =
+        host.Close()
+    
+    member this.AddEndPoint<'TContract>(binding) =
+        this.AddEndPoint<'TContract>(binding, "")
         
-    let makeHost (tHost: Type, binding, uri: Uri) =
-        let host = new ServiceHost(tHost, [| uri |])
-        entry tHost host binding uri
+    member this.AddEndPoint<'TContract>(binding, address: string) =
+        match addressForBinding binding with
+        | Some addr -> endpoints.Add((typeof<'TContract>, binding, addr.ToString()))
+        | None      -> endpoints.Add((typeof<'TContract>, binding, ""))
+        host.AddServiceEndpoint(typeof<'TContract>, binding, address) |> ignore
     
-    let hasHost (he: HostEntry) =
-        hosts.Exists(fun x -> x.Equals(he))
-        
-    let addEndpoint he (tContract: Type) binding (uri: Uri) =
-        printfn "Adding %s Endpoint:\n  %A\n  %A" tContract.Name binding uri
-        he.Host.AddServiceEndpoint(tContract, binding, uri) |> ignore
-        he.Host.Open()
-    
-    [<OverloadID("new.0")>]
-    new() = new InProcHost("net.pipe://localhost")
-    
-    [<OverloadID("new.1")>]
-    new(baseAddress: string) =
-        let binding = new NetNamedPipeBinding(TransactionFlow = true) :> Binding
-        new InProcHost(binding, baseAddress)
-    
-    [<OverloadID("new.2")>]
-    new(binding: Binding, baseAddress: string) =
-        let uri = new Uri(baseAddress)
-        new InProcHost(binding, uri)
+    member this.EnableMetadataExchange() =
+        let add (el: BindingElement) =
+            let binding = new CustomBinding([| el |])
+            host.AddServiceEndpoint(typeof<IMetadataExchange>, binding, "mex") |> ignore
 
-    member private this.FindHostEntry(f) =
-        hosts |>
-        Seq.tryfind f
+        let behavior = host.Description.Behaviors.Find<ServiceMetadataBehavior>()
+        if behavior = null then
+            let mexBehavior = new ServiceMetadataBehavior()
+            mexBehavior.HttpGetEnabled <- true
+            host.Description.Behaviors.Add(mexBehavior)
+            
+            for uri in host.BaseAddresses do
+                match uri with
+                | NetTcp  -> add (new TcpTransportBindingElement())
+                | NetPipe -> add (new NamedPipeTransportBindingElement())
+                | Http    -> add (new HttpTransportBindingElement())
+                | Https   -> add (new HttpsTransportBindingElement())
 
-    member private this.GetHostEntry<'THost,'TContract>(?bnd, ?uri) =
-        let addept he =
-            addEndpoint he (typeof<'TContract>) he.Binding he.Uri
-            he
-        match bnd,uri with
-        | None,None     ->
-            match this.FindHostEntry(fun x -> x.Type = typeof<'THost>) with
-            | None    -> makeHost(typeof<'THost>, binding, baseUri) |> addHost |> addept
-            | Some he -> he    
-        | Some b,None   ->
-            match this.FindHostEntry(fun x -> x.Type = typeof<'THost> && x.Binding = b) with
-            | None    -> makeHost(typeof<'THost>, b, baseUri) |> addHost |> addept
-            | Some he -> he
-        | None,Some u   ->
-            match this.FindHostEntry(fun x -> x.Type = typeof<'THost> && x.Uri = u) with
-            | None    -> makeHost(typeof<'THost>, binding, u) |> addHost |> addept
-            | Some he -> he
-        | Some b,Some u ->
-            match this.FindHostEntry(fun x -> x.Type = typeof<'THost> && x.Binding = b && x.Uri = u) with
-            | None    -> makeHost(typeof<'THost>, b, u) |> addHost |> addept
-            | Some he -> he
+    member this.CreateProxy<'TContract>() =
+        if endpoints.Count = 0
+            then failwith "host has no endpoints"
+        let f ((t,_,_) as x) =
+            if t = typeof<'TContract>
+                then Some x
+                else None
+        let first = 
+            endpoints
+            |> Seq.first f
+        match first with
+        | None         -> failwith "host has no endpoints of that contract type"
+        | Some (_,b,a) ->
+            ChannelFactory<'TContract>.CreateChannel(b, new EndpointAddress(a))
 
-    [<OverloadID("CreateProxy.0")>]
-    member this.CreateProxy<'THost,'TContract when 'THost : not struct and 'TContract : not struct>() =
-        let he = this.GetHostEntry<'THost,'TContract>()
-        this.CreateProxy<'TContract>(he)
-
-    [<OverloadID("CreateProxy.1")>]
-    member this.CreateProxy<'THost,'TContract when 'THost : not struct and 'TContract : not struct>(relativeAddress: string) =
-        let aburi = new Uri(baseUri, relativeAddress)
-        let he = this.GetHostEntry<'THost,'TContract>(uri=aburi)
-        this.CreateProxy<'TContract>(he)
-        
-    [<OverloadID("CreateProxy.2")>]
-    member this.CreateProxy<'THost,'TContract when 'THost : not struct and 'TContract : not struct>(binding, baseAddress: string) =
-        this.CreateProxy<'THost,'TContract>(binding, new Uri(baseAddress))
-    
-    [<OverloadID("CreateProxy.3")>]
-    member this.CreateProxy<'THost,'TContract when 'THost : not struct and 'TContract : not struct>(binding, uri) =
-        let he = this.GetHostEntry<'THost,'TContract>(binding, uri)
-        this.CreateProxy<'TContract>(he)
-    
-    [<OverloadID("CreateProxy.4")>]
-    member private this.CreateProxy<'TContract when 'TContract : not struct>(he) =
-        ChannelFactory<'TContract>.CreateChannel(he.Binding, new EndpointAddress(he.ToString()))
-    
-    member this.CloseProxy<'TContract when 'TContract : not struct> (i: 'TContract) =
-        let i = box i
-        match i with
-        | :? ICommunicationObject -> (i :?> ICommunicationObject).Close()
+    member this.CloseProxy(instance) =
+        let instance = box instance
+        match instance with
+        | :? ICommunicationObject ->
+            let co = instance :?> ICommunicationObject
+            co.Close()
         | _ -> ()
-    
+
     interface IDisposable with
         member this.Dispose() =
             if not disposed then
-                for he in hosts do
-                    he.Host.Close()
+                this.Close()
                 disposed <- true
 
 // Example
@@ -131,26 +122,18 @@ type InProcHost(binding, baseUri) =
 //    interface IMyContract2 with
 //        member this.MyOperation() = "My Other Message"
 //        
-//let host = new InProcHost()
+//let host = new InProcHost<MyService>([| new Uri("net.pipe://localhost"); new Uri("http://localhost") |])
+//host.AddEndPoint<IMyContract>(new NetNamedPipeBinding())
+//let binding = new BasicHttpBinding()
+//host.AddEndPoint<IMyContract>(binding)
+//host.AddEndPoint<IMyContract2>(binding)
+//host.EnableMetadataExchange()
+//host.Open()
 //
-//let proxy1 = host.CreateProxy<MyService, IMyContract>()
-//let result1 = proxy1.MyOperation()
-//host.CloseProxy(proxy1)
-//printfn "%s" result1
+//let p = host.CreateProxy<IMyContract>()
+//printfn "%s" (p.MyOperation())
+//host.CloseProxy(p)
 //
-//let proxy2 = host.CreateProxy<MyService, IMyContract>()
-//let result2 = proxy2.MyOperation()
-//host.CloseProxy(proxy2)
-//printfn "%s" result2
+//System.Console.ReadKey(true)
 //
-//let proxy3 = host.CreateProxy<MyService, IMyContract2>("service2")
-//let result3 = proxy3.MyOperation()
-//host.CloseProxy(proxy3)
-//printfn "%s" result3
-//
-//let proxy4 = host.CreateProxy<MyService, IMyContract>(new BasicHttpBinding(), new Uri("http://localhost"))
-//let result4 = proxy4.MyOperation()
-//host.CloseProxy(proxy4)
-//printfn "%s" result4
-//
-//(host :> IDisposable).Dispose()
+//host.Close()
