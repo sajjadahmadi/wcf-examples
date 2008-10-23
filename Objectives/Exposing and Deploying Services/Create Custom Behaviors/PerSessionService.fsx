@@ -27,21 +27,29 @@ type MyService() =
         member this.Dispose() =
             printfn "MyService.Dispose()"
 
+
+
 // Sessions are supported with net.pipe, net.tcp, and WS HTTP if security
 //   or reliable messaging are turned on.
+
+let host = new InProcHost<MyService>()
+host.AddEndPoint<IMyContract>(new NetNamedPipeBinding())
+host.AddEndPoint<IMyContract>(new BasicHttpBinding())
+host.Open()
+
 printfn "Per-Session (Named Pipe Binding)\n----------------------"
-let host = new InProcHost()
-let mutable proxy = host.CreateProxy<MyService, IMyContract>()
+let mutable proxy = host.CreateProxy<IMyContract>()
 
-do proxy.MyMethod()
-do proxy.MyMethod()
+proxy.MyMethod()
+proxy.MyMethod()
 
-do host.CloseProxy(proxy)
+host.CloseProxy(proxy)
 
 printfn "\nPer-Session (Basic HTTP Binding)\n----------------------"
-proxy <- host.CreateProxy<MyService, IMyContract>(new BasicHttpBinding(), "http://localhost")
+proxy <- host.CreateProxy<IMyContract, BasicHttpBinding>()
 
-do proxy.MyMethod()
-do proxy.MyMethod()
+proxy.MyMethod()
+proxy.MyMethod()
 
-do host.CloseProxy(proxy)
+host.CloseProxy(proxy)
+host.Close()

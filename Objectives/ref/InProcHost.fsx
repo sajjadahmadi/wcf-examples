@@ -49,10 +49,13 @@ type InProcHost<'THost>(uris: Uri[]) =
     member this.Close() =
         host.Close()
     
-    member this.AddEndPoint<'TContract>(binding) =
+    member this.AddEndPoint<'TContract>() =
+        this.AddEndPoint<'TContract>(new NetNamedPipeBinding())
+    
+    member this.AddEndPoint<'TContract>(binding: Binding) =
         this.AddEndPoint<'TContract>(binding, "")
         
-    member this.AddEndPoint<'TContract>(binding, address: string) =
+    member this.AddEndPoint<'TContract>(binding: Binding, address: string) =
         match addressForBinding binding with
         | Some addr -> endpoints.Add((typeof<'TContract>, binding, addr.ToString()))
         | None      -> endpoints.Add((typeof<'TContract>, binding, ""))
@@ -75,19 +78,31 @@ type InProcHost<'THost>(uris: Uri[]) =
                 | NetPipe -> add (new NamedPipeTransportBindingElement())
                 | Http    -> add (new HttpTransportBindingElement())
                 | Https   -> add (new HttpsTransportBindingElement())
-
+    
+    [<OverloadID("CreateProxy.1")>]
     member this.CreateProxy<'TContract>() =
-        if endpoints.Count = 0
-            then failwith "host has no endpoints"
         let f ((t,_,_) as x) =
             if t = typeof<'TContract>
                 then Some x
                 else None
+        this.CreateProxy<'TContract>(f)
+        
+    [<OverloadID("CreateProxy.2")>]
+    member this.CreateProxy<'TContract, 'TBinding>() =
+        let f ((t,b,_) as x) =
+            if t = typeof<'TContract> && b.GetType() = typeof<'TBinding>
+                then Some x
+                else None
+        this.CreateProxy<'TContract>(f)
+    
+    member private this.CreateProxy<'TContract>(f) =
+        if endpoints.Count = 0
+            then failwith "host has no endpoints"
         let first = 
             endpoints
             |> Seq.first f
         match first with
-        | None         -> failwith "host has no endpoints of that contract type"
+        | None         -> failwith "host has no endpoints of that contract and/or binding type"
         | Some (_,b,a) ->
             ChannelFactory<'TContract>.CreateChannel(b, new EndpointAddress(a))
 
