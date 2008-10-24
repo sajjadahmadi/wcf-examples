@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel;
 using System.Diagnostics;
 
-namespace Operations
+namespace System.ServiceModel.Examples
 {
     [TestClass]
     public class OneWayCalls
