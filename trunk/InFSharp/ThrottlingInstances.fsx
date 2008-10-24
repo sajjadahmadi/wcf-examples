@@ -17,7 +17,7 @@ type MyService() =
         member this.MyMethod() = printfn "%s" "MyService.MyMethod()"
 
 let host = new InProcHost<MyService>()
-host.AddEndPoint<IMyContract>(new NetNamedPipeBinding(SendTimeout = new TimeSpan(0, 0, 5)))
+host.AddEndpoint<IMyContract>(new NetNamedPipeBinding(SendTimeout = new TimeSpan(0, 0, 5)))
 let throttle = new ServiceThrottlingBehavior(MaxConcurrentInstances = 1)
 host.InnerHost.Description.Behaviors.Add(throttle)
 host.Open()

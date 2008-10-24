@@ -41,8 +41,8 @@ type MySingleton() =
             printfn "MySingleton.Dispose()"
 
 let host = new InProcHost<MySingleton>()
-host.AddEndPoint<IMyContract>(new WSHttpBinding(SecurityMode.None, true))
-host.AddEndPoint<IMyOtherContract>(new BasicHttpBinding(), "other")
+host.AddEndpoint<IMyContract>(new WSHttpBinding(SecurityMode.None, true))
+host.AddEndpoint<IMyOtherContract>(new BasicHttpBinding(), "other")
 host.Open()
 
 let proxy1 = host.CreateProxy<IMyContract>()

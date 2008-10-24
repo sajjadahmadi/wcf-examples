@@ -31,7 +31,7 @@ type MyService() =
             printfn "Disposing..."
 
 let host = new InProcHost<MyService>()
-host.AddEndPoint<IMyContract>()
+host.AddEndpoint<IMyContract>()
 host.Open()
 
 let proxy = host.CreateProxy<IMyContract>()

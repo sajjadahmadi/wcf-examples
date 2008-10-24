@@ -33,8 +33,8 @@ type MyService() =
 //   or reliable messaging are turned on.
 
 let host = new InProcHost<MyService>()
-host.AddEndPoint<IMyContract>(new NetNamedPipeBinding())
-host.AddEndPoint<IMyContract>(new BasicHttpBinding())
+host.AddEndpoint<IMyContract>(new NetNamedPipeBinding())
+host.AddEndpoint<IMyContract>(new BasicHttpBinding())
 host.Open()
 
 printfn "Per-Session (Named Pipe Binding)\n----------------------"

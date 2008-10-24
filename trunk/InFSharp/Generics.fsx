@@ -24,7 +24,7 @@ type MyServiceHost() =
         member this.MyMethod(x) = ()
 
 let host = new InProcHost<MyServiceHost>()
-host.AddEndPoint<IMyContract>(new NetNamedPipeBinding())
+host.AddEndpoint<IMyContract>(new NetNamedPipeBinding())
 host.EnableMetadataExchange()
 host.Open()
 

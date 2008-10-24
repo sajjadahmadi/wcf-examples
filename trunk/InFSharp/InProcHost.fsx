@@ -73,13 +73,13 @@ type InProcHost<'THost>(host: ServiceHost) =
     member this.Close() =
         host.Close()
     
-    member this.AddEndPoint<'TContract>() =
-        this.AddEndPoint<'TContract>(new NetNamedPipeBinding())
+    member this.AddEndpoint<'TContract>() =
+        this.AddEndpoint<'TContract>(new NetNamedPipeBinding())
     
-    member this.AddEndPoint<'TContract>(binding: Binding) =
-        this.AddEndPoint<'TContract>(binding, "")
+    member this.AddEndpoint<'TContract>(binding: Binding) =
+        this.AddEndpoint<'TContract>(binding, "")
         
-    member this.AddEndPoint<'TContract>(binding: Binding, relativeAddress: string) =
+    member this.AddEndpoint<'TContract>(binding: Binding, relativeAddress: string) =
         let baseUri = getBaseUriForBinding host binding
         let absAddress =
             match baseUri with

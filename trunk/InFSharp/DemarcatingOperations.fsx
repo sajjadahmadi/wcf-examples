@@ -34,7 +34,7 @@ type OrderManager() =
         member this.ProcessOrders() = printfn "Processing orders..."; true
 
 let host = new InProcHost<OrderManager>()
-host.AddEndPoint<IOrderManager>()
+host.AddEndpoint<IOrderManager>()
 host.Open()
 
 let proxy = host.CreateProxy<IOrderManager>()
