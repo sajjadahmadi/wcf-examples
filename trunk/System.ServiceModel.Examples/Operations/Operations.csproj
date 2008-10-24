@@ -7,8 +7,8 @@
     <ProjectGuid>{1FF1A338-CD83-4272-8108-9C3218D30CAE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Operations</RootNamespace>
-    <AssemblyName>One-Way Operations</AssemblyName>
+    <RootNamespace>System.ServiceModel.Examples</RootNamespace>
+    <AssemblyName>Operations</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -41,6 +41,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Callback Operations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OneWayCalls.cs" />
   </ItemGroup>

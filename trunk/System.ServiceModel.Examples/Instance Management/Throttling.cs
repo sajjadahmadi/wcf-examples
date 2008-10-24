@@ -9,9 +9,6 @@ using System.ServiceModel.Description;
 
 namespace System.ServiceModel.Examples
 {
-    /// <summary>
-    /// Summary description for UnitTest1
-    /// </summary>
     [TestClass]
     public class Throttling
     {
