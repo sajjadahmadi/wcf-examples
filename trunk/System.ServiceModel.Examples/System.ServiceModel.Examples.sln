@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTests", "Extension
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Operations", "Operations\Operations.csproj", "{1FF1A338-CD83-4272-8108-9C3218D30CAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data Contracts", "Data Contracts\Data Contracts.csproj", "{834D28AC-1DB8-483F-8D72-04E9A24A7245}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = System.ServiceModel.Examples.vsmdi
@@ -34,6 +36,10 @@ Global
 		{1FF1A338-CD83-4272-8108-9C3218D30CAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FF1A338-CD83-4272-8108-9C3218D30CAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FF1A338-CD83-4272-8108-9C3218D30CAE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{834D28AC-1DB8-483F-8D72-04E9A24A7245}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{834D28AC-1DB8-483F-8D72-04E9A24A7245}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{834D28AC-1DB8-483F-8D72-04E9A24A7245}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{834D28AC-1DB8-483F-8D72-04E9A24A7245}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
