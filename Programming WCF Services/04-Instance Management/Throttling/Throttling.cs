@@ -13,9 +13,9 @@ namespace Throttling
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class ThrottlingTests
+    public class Throttling
     {
-        public ThrottlingTests()
+        public Throttling()
         {
             //
             // TODO: Add constructor logic here
