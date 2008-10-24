@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel.Description;
 
-namespace System.ServiceModel.Test
+namespace System.ServiceModel.Examples
 {
     /// <summary>
     /// Summary description for UnitTest1

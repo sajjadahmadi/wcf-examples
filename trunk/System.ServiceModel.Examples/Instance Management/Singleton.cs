@@ -6,7 +6,7 @@ using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel.Channels;
 
-namespace System.ServiceModel.Test
+namespace System.ServiceModel.Examples
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     interface ISessionRequired

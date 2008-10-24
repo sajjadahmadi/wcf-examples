@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace System.ServiceModel.Test
+namespace System.ServiceModel.Examples
 {
     /// <summary>
     /// Summary description for InProcFactoryTests

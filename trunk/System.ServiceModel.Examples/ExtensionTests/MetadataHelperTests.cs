@@ -4,7 +4,7 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System;
 
-namespace System.ServiceModel.Test
+namespace System.ServiceModel.Examples
 {
 
 

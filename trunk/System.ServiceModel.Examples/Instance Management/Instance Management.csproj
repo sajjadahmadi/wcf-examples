@@ -7,7 +7,7 @@
     <ProjectGuid>{ECAA06F3-F01F-47AB-9FDB-E276A1C650AC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Throttling</RootNamespace>
+    <RootNamespace>System.ServiceModel.Examples</RootNamespace>
     <AssemblyName>Throttling</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Singleton.cs" />
     <Compile Include="Throttling.cs" />
   </ItemGroup>
   <ItemGroup>
