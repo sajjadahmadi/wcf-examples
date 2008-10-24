@@ -1,0 +1,1 @@
+fsc --target library --out bin\Example.dll --reference System.ServiceModel.dll Example.svc.fs

@@ -1,1 +1,1 @@
-﻿<%@ ServiceHost Language="C#" Debug="true" Service="IISHosting.MyService" CodeBehind="Example.svc.cs" %>
+﻿<%@ ServiceHost Language="F#" Debug="true" Service="IISHosting.MyService" CodeBehind="Example.svc.fs" %>
