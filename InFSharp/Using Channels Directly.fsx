@@ -17,7 +17,7 @@ type MyService() =
         member this.MyOperation() = "My Message"
 
 let host = new InProcHost<MyService>()
-host.AddEndPoint<IMyContract>()
+host.AddEndpoint<IMyContract>()
 host.Open()
 
 let binding = new NetNamedPipeBinding() :> Binding

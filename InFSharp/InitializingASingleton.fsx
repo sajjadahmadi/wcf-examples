@@ -29,7 +29,7 @@ let singleton = new MySingleton()
 singleton.Counter <- 42
 
 let host = new InProcHost<MySingleton>(singleton)
-host.AddEndPoint<IMyContract>()
+host.AddEndpoint<IMyContract>()
 host.Open()
 
 let proxy = host.CreateProxy<IMyContract>()

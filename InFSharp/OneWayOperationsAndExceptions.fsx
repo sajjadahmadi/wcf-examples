@@ -23,7 +23,7 @@ type MyService() =
         member this.MethodWithoutError() = printfn "MyService.MethodWithoutError()"
 
 let host = new InProcHost<MyService>()
-host.AddEndPoint<IMyContract>()
+host.AddEndpoint<IMyContract>()
 host.Open()
 
 let proxy = host.CreateProxy<IMyContract>()
