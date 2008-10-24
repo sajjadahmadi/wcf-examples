@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 
-namespace System.ServiceModel.Test
+namespace System.ServiceModel.Examples
 {
     [ServiceContract(SessionMode = SessionMode.Required)]
     public interface IOrderManager
