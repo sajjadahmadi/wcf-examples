@@ -52,7 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataContractSerializer.cs" />
+    <Compile Include="DuplexChannelFactory.cs" />
+    <Compile Include="DuplexClientBase.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="InstanceContext.cs" />
     <Compile Include="ServiceHost.cs" />
     <Compile Include="InProcFactory.cs" />
     <Compile Include="MetadataHelper.cs" />
