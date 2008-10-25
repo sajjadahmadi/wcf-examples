@@ -6,29 +6,69 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.ServiceModel.Examples
 {
-    interface IServiceContractCallback
+    interface IConnectionMangement
     {
-        [OperationContract(IsOneWay=true)]
-        void OnCallback();
+        [OperationContract]
+        void Connect();
+        [OperationContract]
+        void Disconnect();
     }
 
-    [ServiceContract(CallbackContract = typeof(IServiceContractCallback))]
-    interface IServiceContract
+    [ServiceContract(CallbackContract = typeof(IMyContractCallback))]
+    interface IMyContract : IConnectionMangement
     {
         [OperationContract]
         void DoSomething();
     }
 
-    [ServiceBehavior(ConcurrencyMode=ConcurrencyMode.Reentrant)]
-    class MyService : IServiceContract
+    interface IMyContractCallback
     {
-        public void DoSomething()
-        {
-            throw new NotImplementedException();
-        }
+        [OperationContract(IsOneWay=true)]
+        void OnCallback();
     }
 
-    class ClientSideCallback : IServiceContractCallback
+
+    [ServiceBehavior(InstanceContextMode=InstanceContextMode.PerCall)]
+    class MyService : IMyContract
+    {
+        static List<IMyContractCallback> callbacks = new List<IMyContractCallback>();
+
+        public void DoSomething()
+        {
+            CallClients();
+        }
+
+        public static void CallClients()
+        {
+            callbacks.ForEach(c => c.OnCallback());
+        }
+
+        #region IConnectionMangement Members
+
+        public void Connect()
+        {
+            IMyContractCallback callback = OperationContext.Current.
+                GetCallbackChannel<IMyContractCallback>();
+            if (!callbacks.Contains(callback))
+            {
+                callbacks.Add(callback);
+            }
+        }
+
+        public void Disconnect()
+        {
+            IMyContractCallback callback = OperationContext.Current.
+                GetCallbackChannel<IMyContractCallback>();
+            if (callbacks.Contains(callback))
+            {
+                callbacks.Remove(callback);
+            }
+        }
+
+        #endregion
+    }
+
+    class ClientSideCallback : IMyContractCallback
     {
         public void OnCallback()
         {
@@ -42,7 +82,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void CallbackOperation()
         {
-            IServiceContractCallback callback = new ClientSideCallback();
+            IMyContractCallback callback = new ClientSideCallback();
             InstanceContext context = new InstanceContext(callback);
         }
     }
