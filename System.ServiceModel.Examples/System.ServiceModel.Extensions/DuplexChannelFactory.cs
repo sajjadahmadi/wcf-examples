@@ -7,8 +7,8 @@ using System.ServiceModel.Description;
 
 namespace System.ServiceModel
 {
-    class DuplexChannelFactory<T, C> : DuplexChannelFactory<T>
-        where T : class
+    public class DuplexChannelFactory<T, C> : DuplexChannelFactory<T>
+          where T : class
     {
         static DuplexChannelFactory()
         { DuplexClientBase<T, C>.ValidateCallback(); }
