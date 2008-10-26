@@ -77,11 +77,13 @@ namespace System.ServiceModel.Examples
     #endregion
 
     #region Client Side
-    partial class MyContractClient : DuplexClientBase<IMyContract>, IMyContract
+    partial class MyContractClient : DuplexClientBase<IMyContract, IMyContractCallback>, IMyContract, IMyContractCallback
     {
-        public MyContractClient(InstanceContext callback) : base(callback) { }
-        public MyContractClient(InstanceContext callback, string endpointName) : base(callback, endpointName) { }
-        public MyContractClient(InstanceContext callback, Binding binding, EndpointAddress remoteAddress) :
+        public MyContractClient(InstanceContext<IMyContractCallback> callback) : base(callback) { }
+        public MyContractClient(InstanceContext<IMyContractCallback> callback, string endpointName) : base(callback, endpointName) { }
+        public MyContractClient(InstanceContext<IMyContractCallback> callback, Binding binding, EndpointAddress remoteAddress) :
+            base(callback, binding, remoteAddress) { }
+        public MyContractClient(IMyContractCallback callback, Binding binding, EndpointAddress remoteAddress) :
             base(callback, binding, remoteAddress) { }
 
         #region IMyContract Members
@@ -91,9 +93,21 @@ namespace System.ServiceModel.Examples
 
         #region IConnectionMangement Members
         public void Connect()
-        { Channel.Connect(); }
+        { 
+            Channel.Connect();
+            InnerDuplexChannel.CallbackInstance = new InstanceContext(this);
+        }
         public void Disconnect()
-        { Channel.Disconnect(); }
+        { 
+            Channel.Disconnect();
+            InnerDuplexChannel.CallbackInstance = null;
+        }
+        #endregion
+
+        #region IMyContractCallback Members
+        public bool CallbackOccured = false;
+        public void OnCallback()
+        { CallbackOccured = true; }
         #endregion
     }
 
@@ -118,11 +132,13 @@ namespace System.ServiceModel.Examples
                 host.Open();
 
                 IMyContractCallback callback = new ClientSideCallback();
-                MyContractClient proxy = new MyContractClient(new InstanceContext(callback),new NetNamedPipeBinding(),new EndpointAddress(address));
+                MyContractClient proxy = new MyContractClient(callback, new NetNamedPipeBinding(), new EndpointAddress(address));
+
                 proxy.Connect();
                 proxy.DoSomething();
                 proxy.Disconnect();
-                Assert.IsTrue(((ClientSideCallback)callback).CallbackOccured);
+
+                Assert.IsTrue(proxy.CallbackOccured);
             }
         }
 
