@@ -2,13 +2,13 @@
 namespace System.ServiceModel.Examples
 {
     [ServiceContract]
-    interface ITestContract
+    public interface ITestContract
     {
         [OperationContract]
         string MyOperation();
     }
 
-    class TestService : ITestContract
+    public class TestService : ITestContract
     {
         public string MyOperation()
         {
