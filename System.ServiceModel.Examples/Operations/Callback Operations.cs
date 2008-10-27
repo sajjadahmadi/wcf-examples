@@ -10,7 +10,7 @@ namespace System.ServiceModel.Examples
 {
     #region Contracts
     [ServiceContract]
-    interface IConnectionMangement
+    interface IConnectionManagement
     {
         [OperationContract]
         void Connect();
@@ -19,7 +19,7 @@ namespace System.ServiceModel.Examples
     }
 
     [ServiceContract(CallbackContract = typeof(IMyContractCallback))]
-    interface IMyContract : IConnectionMangement
+    interface IMyContract : IConnectionManagement
     {
         [OperationContract]
         void DoSomething();
@@ -151,7 +151,7 @@ namespace System.ServiceModel.Examples
                 host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
                 host.Open();
 
-                IMyContractCallback callback = new ClientSideCallback();
+                ClientSideCallback callback = new ClientSideCallback();
                 IMyContract channel = DuplexChannelFactory<IMyContract, IMyContractCallback>
                     .CreateChannel(callback, new NetNamedPipeBinding(), new EndpointAddress(address));
                 channel.Connect();
