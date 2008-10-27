@@ -193,6 +193,13 @@ namespace System.ServiceModel
             return ChannelFactory<TContract>.CreateChannel(binding, new EndpointAddress(address));
         }
 
+        public TContract CreateChannel<TContract, TCallback>(TCallback callback, Binding binding, string address)
+            where TContract : class
+        {
+            return DuplexChannelFactory<TContract, TCallback>
+                    .CreateChannel(callback, binding, new EndpointAddress(address));
+        }
+
         #endregion
     }
 }
