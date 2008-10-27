@@ -39,8 +39,9 @@ module internal InProcHost =
         match b with
         | :? NetTcpBinding       -> getBaseUri host "net.tcp"
         | :? NetNamedPipeBinding -> getBaseUri host "net.pipe"
-        | :? BasicHttpBinding |
-          :? WSHttpBinding       -> getBaseUri host "http"
+        | :? BasicHttpBinding  |
+          :? WSHttpBinding     |
+          :? WSDualHttpBinding   -> getBaseUri host "http"
         | _                      -> failwith "unsupported binding"
     
 type InProcHost<'THost>(host: ServiceHost) =
