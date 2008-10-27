@@ -1,9 +1,5 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
 using System.ServiceModel.Channels;
 
 namespace System.ServiceModel.Examples
@@ -154,6 +150,26 @@ namespace System.ServiceModel.Examples
                 ClientSideCallback callback = new ClientSideCallback();
                 IMyContract channel = DuplexChannelFactory<IMyContract, IMyContractCallback>
                     .CreateChannel(callback, new NetNamedPipeBinding(), new EndpointAddress(address));
+                channel.Connect();
+                channel.DoSomething();
+                channel.Disconnect();
+                Assert.IsTrue(((ClientSideCallback)callback).CallbackOccured);
+            }
+        }
+
+        [TestMethod]
+        public void ServiceHostDuplexChannelFactoryTest()
+        {
+            string address = "net.pipe://localhost/";
+            using (ServiceHost<MyService> host = new ServiceHost<MyService>())
+            {
+                host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
+                host.Open();
+
+                ClientSideCallback callback = new ClientSideCallback();
+                IMyContract channel = host
+                    .CreateChannel<IMyContract, IMyContractCallback>(callback, new NetNamedPipeBinding(), address);
+                
                 channel.Connect();
                 channel.DoSomething();
                 channel.Disconnect();
