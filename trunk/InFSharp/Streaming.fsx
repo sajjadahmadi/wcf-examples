@@ -26,6 +26,7 @@ type IMyContract =
     [<OperationContract(IsOneWay = true)>]
     abstract OneWayStream : Stream -> unit
     
+    
 type MyService() =
     interface IMyContract with
         member this.StreamReply() =
@@ -36,6 +37,7 @@ type MyService() =
         
         member this.OneWayStream(stream) =
             printfn "%s" (read stream)
+            
             
 let host = new InProcHost<MyService>()
 let binding = new BasicHttpBinding(TransferMode = TransferMode.Streamed)
