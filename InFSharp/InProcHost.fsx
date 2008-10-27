@@ -58,12 +58,12 @@ type InProcHost<'THost>(host: ServiceHost) =
         new InProcHost<'THost>(h)
     
     [<OverloadID("ctor.3")>]
-    new(singletonInstance: obj) =
+    new(singletonInstance: 'THost) =
         new InProcHost<'THost>(singletonInstance, InProcHost.defaultBaseAddresses)
         
     [<OverloadID("ctor.4")>]
-    new(singletonInstance: obj, uris) =
-        let h = new ServiceHost(singletonInstance, uris)
+    new(singletonInstance: 'THost, uris) =
+        let h = new ServiceHost((singletonInstance :> obj), uris)
         new InProcHost<'THost>(h)
     
     member this.InnerHost = host
