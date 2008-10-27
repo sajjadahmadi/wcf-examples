@@ -11,7 +11,6 @@ open System.ServiceModel
 [<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
-    [<FaultContract(typeof<ExceptionDetail>)>]
     abstract MethodWithError : unit -> unit
 
 
