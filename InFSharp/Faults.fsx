@@ -14,22 +14,35 @@ type ICalculator =
 type Calculator() =
     interface ICalculator with
         member this.Divide(n1, n2) =
-            if n2 = 0.0 then
+            match n2 with
+            | 0.0  ->
                 let ex = new DivideByZeroException()
                 raise (new FaultException<DivideByZeroException>(ex, "n2 is 0"))
-            n1 / n2
+            | -1.0 -> failwith "Uncontracted exception"
+            | _    -> n1 / n2
 
 let host = new InProcHost<Calculator>()
 host.AddEndpoint<ICalculator>()
 host.Open()
 
 let proxy = host.CreateProxy<ICalculator>()
-printfn "%f / %f = %f" 4.0 2.0 (proxy.Divide(4.0, 2.0))
+printfn "%f / %f = %f\n\n" 4.0 2.0 (proxy.Divide(4.0, 2.0))
 
 try
     proxy.Divide(4.0, 0.0) |> ignore
-with ex -> printfn "%A: %s" (ex.GetType()) ex.Message
+with ex ->
+    printfn "%A: %s" (ex.GetType()) ex.Message
+    printfn "Proxy state = %A\n\n" (proxy :?> ICommunicationObject).State
 
-host.CloseProxy(proxy)
+// Exception not derived from FaultException will Fault the channel
+try
+    proxy.Divide(4.0, -1.0) |> ignore
+with ex ->
+    printfn "%A: %s" (ex.GetType()) ex.Message
+    printfn "Proxy state = %A" (proxy :?> ICommunicationObject).State
+
+try
+    host.CloseProxy(proxy)
+with _ -> ()
 host.Close()
 
