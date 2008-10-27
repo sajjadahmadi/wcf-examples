@@ -14,6 +14,7 @@ namespace Client
             Stream stream = new MemoryStream();
             StreamWriter writer = new StreamWriter(stream);
             writer.WriteLine("This is a test...");
+            writer.Flush();
             stream.Position = 0;
             Stream returnStream = client.EchoStream(stream);
 
