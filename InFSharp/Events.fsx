@@ -99,11 +99,11 @@ type MyEventClient() =
 
 let publisher = new MyPublisher()
 let host = new InProcHost<MyPublisher>(publisher)
-host.AddEndpoint<IMyContract>(new WSDualHttpBinding())
+host.AddEndpoint<IMyContract>()
 host.Open()
 
 let callback = new MyEventClient()
-let client = new MyContractClient(callback, new WSDualHttpBinding(), new EndpointAddress("http://localhost"))
+let client = new MyContractClient(callback, new NetNamedPipeBinding(), new EndpointAddress("net.pipe://localhost"))
 let proxy = client.ChannelFactory.CreateChannel()
 
 // Subscribe to events
