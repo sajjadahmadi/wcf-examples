@@ -67,7 +67,17 @@ type InProcHost<'THost>(host: ServiceHost) =
         new InProcHost<'THost>(h)
     
     member this.InnerHost = host
-    
+
+    member this.IncludeExceptionDetailInFaults
+        with get() =
+            let debuggingBehavior = host.Description.Behaviors.Find<ServiceBehaviorAttribute>()
+            debuggingBehavior.IncludeExceptionDetailInFaults
+        and set v =
+            if host.State = CommunicationState.Opened then
+                raise (new InvalidOperationException("Host is already opened"))
+            let debuggingBehavior = host.Description.Behaviors.Find<ServiceBehaviorAttribute>()
+            debuggingBehavior.IncludeExceptionDetailInFaults <- v
+            
     member this.Open() =
         host.Open()
     
