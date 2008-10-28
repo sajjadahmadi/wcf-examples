@@ -103,6 +103,7 @@ namespace System.ServiceModel.Examples
             using (ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>(address))
             {
                 host.AddServiceEndpoint(typeof(IPingService), binding, "");
+                host.OpenTimeout = new TimeSpan(0, 0, 30);
                 host.SetThrottle(throttle);
                 host.Open();
 
@@ -144,6 +145,7 @@ namespace System.ServiceModel.Examples
             string address = "net.pipe://localhost/";
             ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>(address);
             NetNamedPipeBinding binding = new NetNamedPipeBinding();
+            host.OpenTimeout = new TimeSpan(0, 0, 30);
             binding.MaxConnections = 1;
             host.AddServiceEndpoint(typeof(IPingService), binding, "");
             host.Open();

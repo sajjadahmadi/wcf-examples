@@ -164,6 +164,7 @@ namespace System.ServiceModel.Examples
             using (ServiceHost<MyService> host = new ServiceHost<MyService>())
             {
                 host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
+                host.OpenTimeout = new TimeSpan(0, 0, 30);
                 host.Open();
 
                 ClientSideCallback callback = new ClientSideCallback();
