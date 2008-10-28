@@ -26,14 +26,19 @@ namespace System.ServiceModel
         TContract CreateChannel<TContract>(Binding binding, string address)
             where TContract : class;
     }
+    interface IFaultBehavior
+    {
+        bool IncludeExceptionDetailInFaults { get; set; }
+    }
 
     public class ServiceHost<TService> :
         ServiceHost,
         IEnableMetadataExchange,
         IThrottling,
-        IInProcFactory
+        IInProcFactory,
+        IFaultBehavior
     {
-        private const string HOSTOPEN = "Host is already open";
+        private const string hostAlreadyOpen = "Host is already open";
 
         public ServiceHost()
             : this(new Uri[] { })
@@ -64,6 +69,11 @@ namespace System.ServiceModel
         public ServiceEndpoint AddServiceEndpoint<TContract>(Binding binding, string address)
         { return base.AddServiceEndpoint(typeof(TContract), binding, address); }
 
+        public virtual TService Singleton
+        {
+            get { return (TService)SingletonInstance; }
+        }
+
         #region IEnableMetadataExchange
         public bool MetadataExchangeEnabled
         {
@@ -83,7 +93,7 @@ namespace System.ServiceModel
         {
             if (State == CommunicationState.Opened)
             {
-                throw new InvalidOperationException(HOSTOPEN);
+                throw new InvalidOperationException(hostAlreadyOpen);
             }
             ServiceMetadataBehavior metadataBehavior;
             metadataBehavior = Description.Behaviors.Find<ServiceMetadataBehavior>();
@@ -143,11 +153,6 @@ namespace System.ServiceModel
         }
         #endregion IEnableMetadataExchange
 
-        public virtual TService Singleton
-        {
-            get { return (TService)SingletonInstance; }
-        }
-
         #region IThrottling
 
         public void SetThrottle(int maxCalls, int maxSessions, int maxInstances)
@@ -165,7 +170,7 @@ namespace System.ServiceModel
         public void SetThrottle(ServiceThrottlingBehavior throttleBehavior, bool overrideConfig)
         {
             if (State == CommunicationState.Opened)
-            { throw new InvalidOperationException(HOSTOPEN); }
+            { throw new InvalidOperationException(hostAlreadyOpen); }
 
             ServiceThrottlingBehavior exitingThrottle = this.ThrottleBehavior;
 
@@ -198,6 +203,26 @@ namespace System.ServiceModel
         {
             return DuplexChannelFactory<TContract, TCallback>
                     .CreateChannel(callback, binding, new EndpointAddress(address));
+        }
+
+        #endregion
+
+        #region IFaultBehavior Members
+
+        public bool IncludeExceptionDetailInFaults
+        {
+            get
+            {
+                ServiceBehaviorAttribute behavior = Description.Behaviors.Find<ServiceBehaviorAttribute>();
+                return behavior.IncludeExceptionDetailInFaults;
+            }
+            set
+            {
+                if (State == CommunicationState.Opened)
+                { throw new InvalidOperationException(hostAlreadyOpen); }
+                ServiceBehaviorAttribute behavior = Description.Behaviors.Find<ServiceBehaviorAttribute>();
+                behavior.IncludeExceptionDetailInFaults = value;
+            }
         }
 
         #endregion
