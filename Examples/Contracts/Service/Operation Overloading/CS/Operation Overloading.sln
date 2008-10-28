@@ -1,12 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator Service", "Calculator Service\Calculator Service.csproj", "{411D22D3-938C-44A1-A017-9024D29243EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator Service", "Service\Calculator Service.csproj", "{411D22D3-938C-44A1-A017-9024D29243EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator Service Client", "Calculator Service Client\Calculator Service Client.csproj", "{0813B93A-D31E-490F-9A58-753E36729854}"
-	ProjectSection(ProjectDependencies) = postProject
-		{411D22D3-938C-44A1-A017-9024D29243EB} = {411D22D3-938C-44A1-A017-9024D29243EB}
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calculator Client", "Client\Calculator Client.csproj", "{0813B93A-D31E-490F-9A58-753E36729854}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
