@@ -109,7 +109,7 @@ namespace System.ServiceModel.Examples
             SingletonCounter myCounter = new SingletonCounter();
             myCounter.Counter = 5;
 
-            string address = "http://localhost/";
+            string address = "http://localhost/" + Guid.NewGuid().ToString();
             Binding binding = new WSHttpBinding();
             using (ServiceHost<SingletonCounter> host =
                  new ServiceHost<SingletonCounter>(myCounter))

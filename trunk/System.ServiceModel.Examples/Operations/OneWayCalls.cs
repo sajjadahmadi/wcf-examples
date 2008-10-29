@@ -43,7 +43,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void OneWayCall()
         {
-            string address = "net.pipe://localhost/";
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
             using (ServiceHost<MyService> host = new ServiceHost<MyService>())
             {
                 host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
