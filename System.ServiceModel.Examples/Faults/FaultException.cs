@@ -7,7 +7,7 @@ namespace System.ServiceModel.Examples
     {
         #region Additional test attributes
         static NetNamedPipeBinding binding;
-        static string address = "net.pipe://localhost/";
+        static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         static ServiceHost<MyService> host;
 
         // Use ClassInitialize to run code before running the first test in the class

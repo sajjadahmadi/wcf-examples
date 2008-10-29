@@ -98,7 +98,7 @@ namespace System.ServiceModel.Examples
             NetNamedPipeBinding binding = new NetNamedPipeBinding();
             ServiceThrottlingBehavior throttle = new ServiceThrottlingBehavior();
             throttle.MaxConcurrentSessions = 1;
-            string address = "net.pipe://localhost/";
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
 
             using (ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>(address))
             {
@@ -142,7 +142,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void BindingMaxConnections()
         {
-            string address = "net.pipe://localhost/";
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
             ServiceHost<ThrottledService> host = new ServiceHost<ThrottledService>(address);
             NetNamedPipeBinding binding = new NetNamedPipeBinding();
             host.OpenTimeout = new TimeSpan(0, 0, 30);

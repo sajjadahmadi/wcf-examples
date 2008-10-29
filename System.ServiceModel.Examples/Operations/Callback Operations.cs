@@ -121,7 +121,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void DuplexClientBase()
         {
-            string address = "net.pipe://localhost/";
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
             using (ServiceHost<MyService> host = new ServiceHost<MyService>())
             {
                 host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
@@ -141,7 +141,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void DuplexChannelFactoryTest()
         {
-            string address = "net.pipe://localhost/";
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
             using (ServiceHost<MyService> host = new ServiceHost<MyService>())
             {
                 host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
@@ -160,7 +160,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void ServiceHostDuplexChannelFactoryTest()
         {
-            string address = "net.pipe://localhost/";
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
             using (ServiceHost<MyService> host = new ServiceHost<MyService>())
             {
                 host.AddServiceEndpoint<IMyContract>(new NetNamedPipeBinding(), address);
