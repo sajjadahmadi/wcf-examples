@@ -5,6 +5,7 @@
 open Mcts_70_503
 open System
 open System.ServiceModel
+open System.ServiceModel.Channels
 open System.ServiceModel.Description
 open System.ServiceModel.Dispatcher
 
@@ -29,6 +30,9 @@ type MyErrorHandler() =
         
         member this.ProvideFault(error, version, fault) =
             printfn "MyErrorHandler.ProvideFault(): %A" fault
+            let faultException = new FaultException<int>(3)
+            let messageFault = faultException.CreateMessageFault()
+            fault <- Message.CreateMessage(version, messageFault, faultException.Action)
 
 
 type ErrorServiceBehavior() =
