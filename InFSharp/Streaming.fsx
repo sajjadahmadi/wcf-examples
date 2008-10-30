@@ -9,7 +9,8 @@ open System.Text
 open System.ServiceModel
 
 let newStream (s: string) =
-    new MemoryStream(Encoding.UTF8.GetBytes(s)) :> Stream
+    let data = Encoding.UTF8.GetBytes(s)
+    new MemoryStream(data) :> Stream
 
 let read (s: Stream) =
     let reader = new StreamReader(s)
@@ -49,6 +50,8 @@ proxy.StreamRequest(newStream "proxy.StreamRequest()")
 
 let response = proxy.StreamReply()
 printfn "%s" (read response)
+// Client is always responsible for closing reply streams
+response.Close()
 
 proxy.OneWayStream(newStream "proxy.OneWayStream()")
 
