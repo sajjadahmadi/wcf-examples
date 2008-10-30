@@ -5,6 +5,7 @@
 open Mcts_70_503
 open System
 open System.ServiceModel
+open System.ServiceModel.Description
 open System.ServiceModel.Dispatcher
 
 [<ServiceContract>]
@@ -30,11 +31,24 @@ type MyErrorHandler() =
             printfn "MyErrorHandler.ProvideFault(): %A" fault
 
 
+type ErrorServiceBehavior() =
+    interface IServiceBehavior with
+        member this.AddBindingParameters(serviceDescription, serviceHostBase, endpoints, bindingParameters) =
+            ()
+            
+        member this.ApplyDispatchBehavior(serviceDescription, serviceHostBase) =
+            for cd in serviceHostBase.ChannelDispatchers do
+                (cd :?> ChannelDispatcher).ErrorHandlers.Add(new MyErrorHandler())
+
+        member this.Validate(serviceDescription, serviceHostBase) =
+            ()
+
+
 let host = new InProcHost<Calculator>()
 host.AddEndpoint<ICalculator>()
+host.InnerHost.Description.Behaviors.Add(new ErrorServiceBehavior())
 host.Open()
-let disp = host.InnerHost.ChannelDispatchers.[0] :?> ChannelDispatcher
-disp.ErrorHandlers.Add(new MyErrorHandler())
+
 
 let proxy = host.CreateProxy<ICalculator>()
 
@@ -49,3 +63,4 @@ try
 with _ -> ()
 host.Close()
 
+Threading.Thread.Sleep(100)
