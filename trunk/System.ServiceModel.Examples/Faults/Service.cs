@@ -64,20 +64,15 @@ namespace System.ServiceModel.Examples
         }
 
         public void ThrowUntypedFault()
-        {
-            throw new FaultException("Untyped Fault.");
-        }
+        { throw new FaultException("Untyped Fault."); }
 
         public void ThrowClrException()
-        {
-            throw new NotImplementedException();
-        }
+        { throw new NotImplementedException(); }
 
         public bool CallbackAndCatchFault()
         {
             IMyContract2Callback callback =
                 OperationContext.Current.GetCallbackChannel<IMyContract2Callback>();
-
             try
             { callback.OnCallback(); }
             catch (FaultException)

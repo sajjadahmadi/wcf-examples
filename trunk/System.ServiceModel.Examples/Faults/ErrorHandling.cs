@@ -1,23 +1,29 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.ServiceModel.Dispatcher;
+using System.Diagnostics;
+using System.ServiceModel.Channels;
 
 namespace System.ServiceModel.Examples
 {
     [TestClass]
-    public class FaultExceptionDetail
+    public class ErrorHandling
     {
         #region Additional test attributes
+        // Use ClassInitialize to run code before running the first test in the class
         static NetNamedPipeBinding binding;
         static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         static ServiceHost<MyService> host;
 
-        // Use ClassInitialize to run code before running the first test in the class
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
             binding = new NetNamedPipeBinding();
             host = new ServiceHost<MyService>();
             host.AddServiceEndpoint<IMyContract>(binding, address);
-            host.IncludeExceptionDetailInFaults = true;
             host.Open();
         }
 
@@ -29,20 +35,13 @@ namespace System.ServiceModel.Examples
         }
         #endregion
 
+
+
         [TestMethod]
-        [ExpectedException(typeof(FaultException<ExceptionDetail>))]
-        public void ExceptionDetail()
+        public void ProvideFault()
         {
-            MyContractClient client = new MyContractClient(binding, address);
-            client.Open();
-            try
-            { client.ThrowClrException(); }
-            catch (FaultException<ExceptionDetail> ex)
-            {
-                Assert.AreEqual("System.NotImplementedException", ex.Detail.Type);
-                throw;
-            }
-            client.Close();
+            BasicErrorHandlerBehaviorAttribute errHandler = new BasicErrorHandlerBehaviorAttribute();
+            Assert.IsTrue(errHandler.provideFaultCalled);
         }
     }
 }
