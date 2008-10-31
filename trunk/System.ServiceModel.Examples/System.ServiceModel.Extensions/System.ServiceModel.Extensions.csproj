@@ -54,6 +54,8 @@
     <Compile Include="DataContractSerializer.cs" />
     <Compile Include="DuplexChannelFactory.cs" />
     <Compile Include="DuplexClientBase.cs" />
+    <Compile Include="Errors\ErrorHandlerBehaviorAttribute.cs" />
+    <Compile Include="Errors\ErrorHandlerHelper.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="InstanceContext.cs" />
     <Compile Include="ServiceHost.cs" />
