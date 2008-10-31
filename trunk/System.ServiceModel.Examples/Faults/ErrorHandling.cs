@@ -10,26 +10,15 @@ using System.ServiceModel.Errors;
 
 namespace System.ServiceModel.Examples
 {
-    class BasicErrorHandler : IErrorHandler
-    {
-        internal bool ProvideFaultCalled { get; set; }
-        bool IErrorHandler.HandleError(Exception error)
-        { return false; }
-        void IErrorHandler.ProvideFault(Exception error, MessageVersion version, ref Message fault)
-        { ProvideFaultCalled = true; }
-    }
-
 
     [TestClass]
-    public class ErrorHandling
+    public class ErrorHandlingTest
     {
         #region Additional test attributes
         // Use ClassInitialize to run code before running the first test in the class
         static NetNamedPipeBinding binding;
         static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         static ServiceHost<MyService> host;
-        static BasicErrorHandler handler;
-
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
@@ -48,6 +37,17 @@ namespace System.ServiceModel.Examples
             host.Close();
         }
         #endregion
+
+        // Error handler
+        static BasicErrorHandler handler;
+        class BasicErrorHandler : IErrorHandler
+        {
+            internal bool ProvideFaultCalled { get; set; }
+            bool IErrorHandler.HandleError(Exception error)
+            { return false; }
+            void IErrorHandler.ProvideFault(Exception error, MessageVersion version, ref Message fault)
+            { ProvideFaultCalled = true; }
+        }
 
         [TestMethod]
         public void ProvideFault()

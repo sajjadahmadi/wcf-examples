@@ -16,7 +16,7 @@ namespace System.ServiceModel.Examples
         {
             binding = new NetNamedPipeBinding();
             host = new ServiceHost<MyService>();
-            host.AddServiceEndpoint<IMyContract2>(binding, address);
+            host.AddServiceEndpoint<IContractWithCallback>(binding, address);
             host.Open();
         }
 
