@@ -80,14 +80,14 @@ namespace System.ServiceModel
 
             //IServiceBehavior Members
             void IServiceBehavior.AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase host, System.Collections.ObjectModel.Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
-            { throw new NotImplementedException(); }
+            { }
             void IServiceBehavior.ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase host)
             {
                 foreach (ChannelDispatcher dispatcher in host.ChannelDispatchers)
                 { dispatcher.ErrorHandlers.Add(this); }
             }
             void IServiceBehavior.Validate(ServiceDescription serviceDescription, ServiceHostBase host)
-            { throw new NotImplementedException(); }
+            { }
 
             // IErrorHandler Members
             bool IErrorHandler.HandleError(Exception error)
@@ -97,27 +97,31 @@ namespace System.ServiceModel
         }
 
         List<IServiceBehavior> errorHandlers = new List<IServiceBehavior>();
-        public void AddErrorHandler(IErrorHandler errorHandler)
+        public void AddErrorHandler(IErrorHandler handler)
         {
             if (State == CommunicationState.Opened)
             { throw new InvalidOperationException(hostAlreadyOpen); }
-            IServiceBehavior errorHandlerBehavior = new ErrorHandlerBehavior(errorHandler);
+            IServiceBehavior errorHandlerBehavior = new ErrorHandlerBehavior(handler);
             errorHandlers.Add(errorHandlerBehavior);
         }
-        //TODO: Implement AddErrorHandler().
-        //public void AddErrorHandler()
-        //{
-        //    if (State == CommunicationState.Opened)
-        //    { throw new InvalidOperationException(hostAlreadyOpen); }
-        //    IServiceBehavior errorHandlerBehavior = new ErrorHandlerBehaviorAttribute();
-        //    errorHandlers.Add(errorHandlerBehavior);
-        //}
         #endregion
+
+        // Overrides
+        protected override void OnOpening()
+        {
+            foreach (IServiceBehavior handler in errorHandlers)
+            { Description.Behaviors.Add(handler); }
+
+            base.OnOpening();
+        }
 
         public ServiceEndpoint AddServiceEndpoint<TContract>(Binding binding, string address)
         { return base.AddServiceEndpoint(typeof(TContract), binding, address); }
 
-        public virtual TService Singleton
+        /// <summary>
+        /// Provides a type safe singleton instance
+        /// </summary>
+        public new TService SingletonInstance
         {
             get { return (TService)SingletonInstance; }
         }

@@ -6,9 +6,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel.Dispatcher;
 using System.Diagnostics;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Errors;
 
 namespace System.ServiceModel.Examples
 {
+    class BasicErrorHandler : IErrorHandler
+    {
+        internal bool ProvideFaultCalled { get; set; }
+        bool IErrorHandler.HandleError(Exception error)
+        { return false; }
+        void IErrorHandler.ProvideFault(Exception error, MessageVersion version, ref Message fault)
+        { ProvideFaultCalled = true; }
+    }
+
+
     [TestClass]
     public class ErrorHandling
     {
@@ -17,13 +28,16 @@ namespace System.ServiceModel.Examples
         static NetNamedPipeBinding binding;
         static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         static ServiceHost<MyService> host;
+        static BasicErrorHandler handler;
 
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
             binding = new NetNamedPipeBinding();
             host = new ServiceHost<MyService>();
+            handler = new BasicErrorHandler();
             host.AddServiceEndpoint<IMyContract>(binding, address);
+            host.AddErrorHandler(handler);
             host.Open();
         }
 
@@ -35,13 +49,19 @@ namespace System.ServiceModel.Examples
         }
         #endregion
 
-
-
         [TestMethod]
         public void ProvideFault()
         {
-            BasicErrorHandlerBehaviorAttribute errHandler = new BasicErrorHandlerBehaviorAttribute();
-            Assert.IsTrue(errHandler.provideFaultCalled);
+            MyContractClient client = new MyContractClient(binding, address);
+            try
+            {
+                client.ThrowUntypedFault();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(FaultException));
+            }
+            Assert.IsTrue(handler.ProvideFaultCalled);
         }
     }
 }

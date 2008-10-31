@@ -10,6 +10,14 @@ namespace System.ServiceModel.Errors
 {
     public static class ErrorHandlerHelper
     {
+        /// <summary>
+        /// Promote a CLR exception to a contracted fault if the exception type
+        /// matches the detailing type of any of the defined fault contracts.
+        /// </summary>
+        /// <param name="serviceType"></param>
+        /// <param name="error"></param>
+        /// <param name="version"></param>
+        /// <param name="fault"></param>
         public static void PromoteException(Type serviceType, Exception error, MessageVersion version, ref Message fault)
         {
             // TODO: Why are we checking this?
@@ -23,7 +31,6 @@ namespace System.ServiceModel.Errors
 
             try
             {
-                // TODO: Try to understand this.
                 Type faultUnboundedType = typeof(FaultException<>);
                 Type faultBoundedType = faultUnboundedType.MakeGenericType(error.GetType());
                 Exception newException = (Exception)Activator.CreateInstance(error.GetType(), error.Message);
@@ -48,7 +55,7 @@ namespace System.ServiceModel.Errors
                 MethodInfo[] methods = interfaceType.GetMethods();
                 foreach (MethodInfo methodInfo in methods)
                 {
-                    attributes = GetFaults(methodInfo);
+                    attributes = methodInfo.GetCustomAttributes<FaultContractAttribute>(false);
                     faultAttribs.AddRange(attributes);
                     bool faultExists = faultAttribs.Any<FaultContractAttribute>(fault => fault.DetailType == error.GetType());
                     return faultExists;
@@ -67,10 +74,11 @@ namespace System.ServiceModel.Errors
             string[] parts = trimmed.Split('(');
             return parts[0];
         }
-        static FaultContractAttribute[] GetFaults(MethodInfo methodInfo)
+        
+        static T[] GetCustomAttributes<T>(this MethodInfo methodInfo, bool inherit)
         {
-            object[] attributes = methodInfo.GetCustomAttributes(typeof(FaultContractAttribute), false);
-            return attributes as FaultContractAttribute[];
+            object[] attributes = methodInfo.GetCustomAttributes(typeof(T), inherit);
+            return attributes as T[];
         }
     }
 }
