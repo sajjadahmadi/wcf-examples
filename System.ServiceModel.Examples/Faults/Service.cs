@@ -2,7 +2,6 @@
 
 namespace System.ServiceModel.Examples
 {
-
     [ServiceContract]
     interface IMyContract
     {
@@ -17,14 +16,14 @@ namespace System.ServiceModel.Examples
         void ThrowClrException();
     }
 
-    [ServiceContract(CallbackContract = typeof(IMyContract2Callback))]
-    interface IMyContract2
+    [ServiceContract(CallbackContract = typeof(ICallbackContract))]
+    interface IContractWithCallback
     {
         [OperationContract]
         bool CallbackAndCatchFault();
     }
 
-    interface IMyContract2Callback
+    interface ICallbackContract
     {
         [OperationContract]
         [FaultContract(typeof(InvalidOperationException))]
@@ -48,7 +47,7 @@ namespace System.ServiceModel.Examples
     }
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
-    class MyService : IMyContract, IMyContract2
+    class MyService : IMyContract, IContractWithCallback
     {
         public void ThrowTypedFault()
         {
@@ -71,8 +70,8 @@ namespace System.ServiceModel.Examples
 
         public bool CallbackAndCatchFault()
         {
-            IMyContract2Callback callback =
-                OperationContext.Current.GetCallbackChannel<IMyContract2Callback>();
+            ICallbackContract callback =
+                OperationContext.Current.GetCallbackChannel<ICallbackContract>();
             try
             { callback.OnCallback(); }
             catch (FaultException)

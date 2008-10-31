@@ -22,10 +22,10 @@ namespace System.ServiceModel.Examples
         { Channel.ThrowClrException(); }
     }
 
-    class MyClientWithCallback : DuplexClientBase<IMyContract2, IMyContract2Callback>, IMyContract2
+    class MyClientWithCallback : DuplexClientBase<IContractWithCallback, ICallbackContract>, IContractWithCallback
     {
         public MyClientWithCallback(
-            IMyContract2Callback callback,
+            ICallbackContract callback,
             Binding binding,
             string remoteAddress) :
             base(callback, binding, new EndpointAddress(remoteAddress)) { }
@@ -34,7 +34,7 @@ namespace System.ServiceModel.Examples
         { return Channel.CallbackAndCatchFault(); }
     }
 
-    class MyContractCallback : IMyContract2Callback
+    class MyContractCallback : ICallbackContract
     {
         public void OnCallback()
         {
