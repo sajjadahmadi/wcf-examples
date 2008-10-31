@@ -6,9 +6,11 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using System.Diagnostics;
+using System.ServiceModel.Errors;
 
 namespace System.ServiceModel
 {
+    #region Interfaces
     interface IEnableMetadataExchange
     {
         bool MetadataExchangeEnabled { get; }
@@ -30,6 +32,7 @@ namespace System.ServiceModel
     {
         bool IncludeExceptionDetailInFaults { get; set; }
     }
+    #endregion
 
     public class ServiceHost<TService> :
         ServiceHost,
@@ -40,6 +43,7 @@ namespace System.ServiceModel
     {
         private const string hostAlreadyOpen = "Host is already open";
 
+        #region Constructors
         public ServiceHost()
             : this(new Uri[] { })
         { }
@@ -58,13 +62,57 @@ namespace System.ServiceModel
         public ServiceHost(TService singleton, params Uri[] baseAddresses)
             : base(singleton, baseAddresses)
         { }
-
         static Uri[] ConvertToUri(string[] baseAddresses)
         {
             Converter<string, Uri> convert = delegate(string address)
                 { return new Uri(address); };
             return Array.ConvertAll(baseAddresses, convert);
         }
+        #endregion
+
+        #region Error Handling
+        class ErrorHandlerBehavior : IServiceBehavior, IErrorHandler
+        {
+            IErrorHandler errorHandler;
+
+            public ErrorHandlerBehavior(IErrorHandler errorHandler)
+            { this.errorHandler = errorHandler; }
+
+            //IServiceBehavior Members
+            void IServiceBehavior.AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase host, System.Collections.ObjectModel.Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
+            { throw new NotImplementedException(); }
+            void IServiceBehavior.ApplyDispatchBehavior(ServiceDescription serviceDescription, ServiceHostBase host)
+            {
+                foreach (ChannelDispatcher dispatcher in host.ChannelDispatchers)
+                { dispatcher.ErrorHandlers.Add(this); }
+            }
+            void IServiceBehavior.Validate(ServiceDescription serviceDescription, ServiceHostBase host)
+            { throw new NotImplementedException(); }
+
+            // IErrorHandler Members
+            bool IErrorHandler.HandleError(Exception error)
+            { return errorHandler.HandleError(error); }
+            void IErrorHandler.ProvideFault(Exception error, MessageVersion version, ref Message fault)
+            { errorHandler.ProvideFault(error, version, ref fault); }
+        }
+
+        List<IServiceBehavior> errorHandlers = new List<IServiceBehavior>();
+        public void AddErrorHandler(IErrorHandler errorHandler)
+        {
+            if (State == CommunicationState.Opened)
+            { throw new InvalidOperationException(hostAlreadyOpen); }
+            IServiceBehavior errorHandlerBehavior = new ErrorHandlerBehavior(errorHandler);
+            errorHandlers.Add(errorHandlerBehavior);
+        }
+        //TODO: Implement AddErrorHandler().
+        //public void AddErrorHandler()
+        //{
+        //    if (State == CommunicationState.Opened)
+        //    { throw new InvalidOperationException(hostAlreadyOpen); }
+        //    IServiceBehavior errorHandlerBehavior = new ErrorHandlerBehaviorAttribute();
+        //    errorHandlers.Add(errorHandlerBehavior);
+        //}
+        #endregion
 
         public ServiceEndpoint AddServiceEndpoint<TContract>(Binding binding, string address)
         { return base.AddServiceEndpoint(typeof(TContract), binding, address); }
