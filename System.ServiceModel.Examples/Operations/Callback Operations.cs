@@ -89,12 +89,12 @@ namespace System.ServiceModel.Examples
 
         #region IConnectionMangement Members
         public void Connect()
-        { 
+        {
             Channel.Connect();
             InnerDuplexChannel.CallbackInstance = new InstanceContext(this);
         }
         public void Disconnect()
-        { 
+        {
             Channel.Disconnect();
             InnerDuplexChannel.CallbackInstance = null;
         }
@@ -170,7 +170,7 @@ namespace System.ServiceModel.Examples
                 ClientSideCallback callback = new ClientSideCallback();
                 IMyContract channel = host
                     .CreateChannel<IMyContract, IMyContractCallback>(callback, new NetNamedPipeBinding(), address);
-                
+
                 channel.Connect();
                 channel.DoSomething();
                 channel.Disconnect();
