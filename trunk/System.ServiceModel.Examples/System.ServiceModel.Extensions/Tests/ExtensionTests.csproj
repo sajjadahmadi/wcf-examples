@@ -7,7 +7,7 @@
     <ProjectGuid>{182D2818-5B2A-4B66-AB43-63D74FD5259C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.ServiceModel.Examples</RootNamespace>
+    <RootNamespace>System.ServiceModel.Extension.Test</RootNamespace>
     <AssemblyName>ExtensionTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -52,6 +52,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingRequirementAttribute.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
     <Compile Include="DemarcatingOperations.cs" />
     <Compile Include="Serialization.cs" />
