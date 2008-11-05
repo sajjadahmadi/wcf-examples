@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BindingRequirementAttribute.cs" />
     <Compile Include="DataContractSerializer.cs" />
     <Compile Include="DuplexChannelFactory.cs" />
     <Compile Include="DuplexClientBase.cs" />

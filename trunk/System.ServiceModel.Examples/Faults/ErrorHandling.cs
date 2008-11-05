@@ -10,7 +10,6 @@ using System.ServiceModel.Errors;
 
 namespace System.ServiceModel.Examples
 {
-
     [TestClass]
     public class ErrorHandlingTest
     {

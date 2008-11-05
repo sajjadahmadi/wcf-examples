@@ -62,7 +62,7 @@
     <Compile Include="ServiceHostTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\System.ServiceModel.Extensions\System.ServiceModel.Extensions.csproj">
+    <ProjectReference Include="..\System.ServiceModel.Extensions.csproj">
       <Project>{02565A66-4153-4217-BED5-55DAC69808D0}</Project>
       <Name>System.ServiceModel.Extensions</Name>
     </ProjectReference>
