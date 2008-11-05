@@ -78,6 +78,8 @@ namespace System.ServiceModel.Examples
 
 
         [TestMethod]
+        // Service-Only Mode:
+            //
         public void ServiceOnlyTranscationMode()
         {
             ServiceTxClient proxy = new ServiceTxClient(noTxBinding, address);
@@ -99,22 +101,42 @@ namespace System.ServiceModel.Examples
             proxy.Close();
         }
 
+        /// <summary>
+        /// Client/Serivce Mode: 
+        /// Use the client-side transaction if one exists, 
+        /// otherwise use a service-side transaction
+        /// </summary>
         [TestMethod]
-        public void ClientServiceTranscationMode()
+        public void ClientServiceMode()
         {
             ServiceTxClient proxy = new ServiceTxClient(txBinding, address);
             proxy.Open();
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
+                // Service-side transaction
                 TransactionInfo info = proxy.ClientTxNotAllowedMethod();
                 Assert.IsTrue(info.HasTransaction);
                 Assert.IsTrue(info.DistributedIdentifier == Guid.Empty);
+                Assert.IsFalse(info.ClientSideTransaction);
+                Assert.IsNotNull(info.LocalIdentifier);
             }
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
+                // Client-side transaction
                 TransactionInfo info = proxy.ClientTxAllowedMethod();
                 Assert.IsTrue(info.HasTransaction);
                 Assert.IsTrue(info.DistributedIdentifier != Guid.Empty);
+                Assert.IsTrue(info.ClientSideTransaction);
+                Assert.IsNotNull(info.LocalIdentifier);
+            }
+            // Client-side transaction is allowed here, but we didn't create one...
+            {
+                // Service-side transaction
+                TransactionInfo info = proxy.ClientTxAllowedMethod();
+                Assert.IsTrue(info.HasTransaction);
+                Assert.IsTrue(info.DistributedIdentifier == Guid.Empty);
+                Assert.IsFalse(info.ClientSideTransaction);
+                Assert.IsNotNull(info.LocalIdentifier);
             }
             proxy.Close();
         }
