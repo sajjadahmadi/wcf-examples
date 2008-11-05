@@ -1,52 +1,97 @@
 ﻿using System.ServiceModel.Channels;
 using System.Transactions;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace System.ServiceModel.Examples
 {
+    [DataContract]
+    struct TransactionInfo
+    {        
+        [DataMember]
+        public bool HasTransaction { get; set; }
+
+        [DataMember]
+        public Guid DistributedIdentifier { get; set; }
+
+        [DataMember]
+        public string LocalIdentifier { get; set; }
+    }
+
     [ServiceContract]
-    interface IClientTxNotAllowed
+    interface IServiceTxContract
     {
         [OperationContract]
         [TransactionFlow(TransactionFlowOption.NotAllowed)]
-        void MyMethod();
+        TransactionInfo ClientTxNotAllowedMethod();
+
+        [OperationContract]
+        [TransactionFlow(TransactionFlowOption.Allowed)]
+        TransactionInfo ClientTxAllowedMethod();
     }
+
+
     [ServiceContract]
-    interface IClientTxAllowed
+    interface IClientTxContract
     {
         [OperationContract]
         [TransactionFlow(TransactionFlowOption.Allowed)]
-        void MyMethod();
-    }
-    [ServiceContract]
-    interface IClientTxMandatory
-    {
+        TransactionInfo ClientTxAllowedMethod();
+
         [OperationContract]
         [TransactionFlow(TransactionFlowOption.Mandatory)]
-        void MyMethod();
+        TransactionInfo ClientTxMandatoryMethod();
     }
 
 
-    [BindingRequirementAttribute(TransactionFlowEnabled=true)]
-    class TxService : IClientTxNotAllowed, IClientTxAllowed, IClientTxMandatory
+    [BindingRequirementAttribute(TransactionFlowRequired = true)]
+    class TxService : IServiceTxContract, IClientTxContract
     {
-        [OperationBehavior(TransactionScopeRequired = true)]
-        void IClientTxNotAllowed.MyMethod()
+        TransactionInfo GetTransactionInfo()
         {
-            Debug.Assert(Transaction.Current != null);
+            TransactionInfo info = new TransactionInfo();
+            Transaction tx = Transaction.Current;
+            if (tx != null)
+            {
+                info.HasTransaction = true;
+                info.DistributedIdentifier = tx.TransactionInformation.DistributedIdentifier;
+                info.LocalIdentifier = tx.TransactionInformation.LocalIdentifier;
+            }
+            return info;
+        }
+
+        #region IServiceTxContract Members
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo IServiceTxContract.ClientTxNotAllowedMethod()
+        {
+            return GetTransactionInfo();
         }
 
         [OperationBehavior(TransactionScopeRequired = true)]
-        void IClientTxAllowed.MyMethod()
+        TransactionInfo IServiceTxContract.ClientTxAllowedMethod()
         {
-            Debug.Assert(Transaction.Current != null);
+            return GetTransactionInfo();
+        }
+
+        #endregion
+
+        #region IClientTxContract Members
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo IClientTxContract.ClientTxAllowedMethod()
+        {
+            return GetTransactionInfo();
         }
 
         [OperationBehavior(TransactionScopeRequired = true)]
-        void IClientTxMandatory.MyMethod()
+        TransactionInfo IClientTxContract.ClientTxMandatoryMethod()
         {
-            Debug.Assert(Transaction.Current != null);
+            return GetTransactionInfo();
         }
+
+        #endregion
+
     }
 
 }

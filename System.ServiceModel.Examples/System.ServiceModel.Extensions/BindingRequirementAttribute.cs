@@ -7,7 +7,7 @@ namespace System.ServiceModel
     [AttributeUsage(AttributeTargets.Class)]
     public class BindingRequirementAttribute : Attribute, IServiceBehavior, IEndpointBehavior
     {
-        public bool TransactionFlowEnabled { get; set; }
+        public bool TransactionFlowRequired { get; set; }
 
         #region IServiceBehavior Members
         void IServiceBehavior.AddBindingParameters(ServiceDescription description, ServiceHostBase host, Collection<ServiceEndpoint> endpoints, BindingParameterCollection parameters)
@@ -16,33 +16,27 @@ namespace System.ServiceModel
         { }
         void IServiceBehavior.Validate(ServiceDescription description, ServiceHostBase host)
         {
-            if (TransactionFlowEnabled == true)
+            if (TransactionFlowRequired == true)
             {
+                IEndpointBehavior behavior = this;
                 foreach (ServiceEndpoint endpoint in description.Endpoints)
-                {
-
-                }
+                { behavior.Validate(endpoint); }
             }
         }
         #endregion
 
         #region IEndpointBehavior Members
-
         void IEndpointBehavior.AddBindingParameters(ServiceEndpoint endpoint, BindingParameterCollection bindingParameters)
         { }
-
         void IEndpointBehavior.ApplyClientBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.ClientRuntime clientRuntime)
         { }
-
         void IEndpointBehavior.ApplyDispatchBehavior(ServiceEndpoint endpoint, System.ServiceModel.Dispatcher.EndpointDispatcher endpointDispatcher)
         { }
-
         void IEndpointBehavior.Validate(ServiceEndpoint endpoint)
         {
-            if (TransactionFlowEnabled)
+            if (TransactionFlowRequired)
             { ValidateTransactionFlow(endpoint); }
         }
-
         #endregion
 
         #region TransactionFlowRequirement
