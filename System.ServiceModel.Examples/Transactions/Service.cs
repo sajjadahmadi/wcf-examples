@@ -12,6 +12,9 @@ namespace System.ServiceModel.Examples
         public bool HasTransaction { get; set; }
 
         [DataMember]
+        public bool ClientSideTransaction { get; set; }
+
+        [DataMember]
         public Guid DistributedIdentifier { get; set; }
 
         [DataMember]
@@ -56,6 +59,7 @@ namespace System.ServiceModel.Examples
                 info.HasTransaction = true;
                 info.DistributedIdentifier = tx.TransactionInformation.DistributedIdentifier;
                 info.LocalIdentifier = tx.TransactionInformation.LocalIdentifier;
+                info.ClientSideTransaction = (tx.TransactionInformation.DistributedIdentifier != Guid.Empty);
             }
             return info;
         }
