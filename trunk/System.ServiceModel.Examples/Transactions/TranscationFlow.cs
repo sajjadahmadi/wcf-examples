@@ -14,16 +14,16 @@ namespace System.ServiceModel.Examples
     /// TransactionScopeRequire - Service requires transaction
     /// Scope   Binding	Flow	Result
     /// FALSE	FALSE	FALSE	Method executes without a transaction.
-    /// TRUE	FALSE	FALSE	Method creates and executes within a new transaction.
-    ///         FALSE	TRUE	A SOAP fault is returned for the transaction header.
     /// FALSE	TRUE	TRUE	Method executes without a transaction.
+    /// Any     FALSE	TRUE	A SOAP fault is returned for the transaction header.
+    /// TRUE	FALSE	FALSE	Method creates and executes within a new transaction.
     /// TRUE	TRUE	TRUE	Method executes under the flowed transaction.
     /// </summary>
     [TestClass]
-    public class Transcations
+    public class TranscationFlow
     {
-        static NetNamedPipeBinding txBinding;
-        static NetNamedPipeBinding noTxBinding;
+        static NetNamedPipeBinding txFlowBinding;
+        static NetNamedPipeBinding noFlowBinding;
 
         static ServiceHost<MyService> host;
         static string noFlowAddress = "net.pipe://localhost/" + Guid.NewGuid().ToString();
@@ -33,16 +33,16 @@ namespace System.ServiceModel.Examples
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
-            txBinding = new NetNamedPipeBinding();
-            txBinding.TransactionFlow = true;
-            txBinding.TransactionProtocol = TransactionProtocol.OleTransactions;
+            txFlowBinding = new NetNamedPipeBinding();
+            txFlowBinding.TransactionFlow = true;
+            txFlowBinding.TransactionProtocol = TransactionProtocol.OleTransactions;
 
-            noTxBinding = new NetNamedPipeBinding();
-            noTxBinding.TransactionFlow = false;
+            noFlowBinding = new NetNamedPipeBinding();
+            noFlowBinding.TransactionFlow = false;
 
             host = new ServiceHost<MyService>();
-            host.AddServiceEndpoint<ITxFlow>(txBinding, txFlowAddress);
-            host.AddServiceEndpoint<INoFlow>(txBinding, noFlowAddress);
+            host.AddServiceEndpoint<ITxFlow>(txFlowBinding, txFlowAddress);
+            host.AddServiceEndpoint<INoFlow>(txFlowBinding, noFlowAddress);
             host.IncludeExceptionDetailInFaults = true;
             host.Open();
         }
@@ -61,7 +61,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void ScopeNotRequired()
         {
-            NoFlowClient proxy = new NoFlowClient(noTxBinding, noFlowAddress);
+            NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
             proxy.Open();
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
@@ -81,7 +81,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void ScopeRequired_FlowUnspecified()
         {
-            NoFlowClient proxy = new NoFlowClient(noTxBinding, noFlowAddress);
+            NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
             proxy.Open();
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
@@ -102,7 +102,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void ScopeRequired_FlowNotAllowed()
         {
-            NoFlowClient proxy = new NoFlowClient(noTxBinding, noFlowAddress);
+            NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
             proxy.Open();
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
@@ -122,7 +122,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void ScopeRequired_FlowAllowed()
         {
-            TxFlowClient proxy = new TxFlowClient(txBinding, txFlowAddress);
+            TxFlowClient proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
             proxy.Open();
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
@@ -146,7 +146,7 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void ScopeRequired_FlowMandatory()
         {
-            TxFlowClient proxy = new TxFlowClient(txBinding, txFlowAddress);
+            TxFlowClient proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
             proxy.Open();
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
@@ -168,7 +168,7 @@ namespace System.ServiceModel.Examples
             "The service operation requires a transaction to be flowed.")]
         public void ScopeRequired_FlowMandatory_ProtocolException()
         {
-            TxFlowClient proxy = new TxFlowClient(txBinding, txFlowAddress);
+            TxFlowClient proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
             proxy.Open();
             TransactionInfo info = proxy.FlowMandatory();
             proxy.Close();
