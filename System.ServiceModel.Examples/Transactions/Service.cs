@@ -7,12 +7,21 @@ namespace System.ServiceModel.Examples
 {
     [DataContract]
     struct TransactionInfo
-    {        
-        [DataMember]
-        public bool HasTransaction { get; set; }
+    {
+        public bool HasAmbientTransaction
+        {
+            get
+            {
+                return (UsingServiceSideTransaction == true)
+                    || (UsingClientSideTransaction == true);
+            }
+        }
 
         [DataMember]
-        public bool ClientSideTransaction { get; set; }
+        public bool UsingServiceSideTransaction { get; set; }
+
+        [DataMember]
+        public bool UsingClientSideTransaction { get; set; }
 
         [DataMember]
         public Guid DistributedIdentifier { get; set; }
@@ -22,80 +31,87 @@ namespace System.ServiceModel.Examples
     }
 
     [ServiceContract]
-    interface IServiceTxContract
+    interface INoFlow
     {
+        [OperationContract]
+        TransactionInfo ScopeNotRequired();
+
+        [OperationContract]
+        TransactionInfo FlowUnspecified();
+
         [OperationContract]
         [TransactionFlow(TransactionFlowOption.NotAllowed)]
-        TransactionInfo ClientTxNotAllowedMethod();
-
-        [OperationContract]
-        [TransactionFlow(TransactionFlowOption.Allowed)]
-        TransactionInfo ClientTxAllowedMethod();
+        TransactionInfo FlowNotAllowed();
     }
 
-
     [ServiceContract]
-    interface IClientTxContract
+    interface ITxFlow
     {
         [OperationContract]
         [TransactionFlow(TransactionFlowOption.Allowed)]
-        TransactionInfo ClientTxAllowedMethod();
+        TransactionInfo FlowAllowed();
 
         [OperationContract]
         [TransactionFlow(TransactionFlowOption.Mandatory)]
-        TransactionInfo ClientTxMandatoryMethod();
+        TransactionInfo FlowMandatory();
     }
 
 
     [BindingRequirementAttribute(TransactionFlowRequired = true)]
-    class TxService : IServiceTxContract, IClientTxContract
+    class MyService : INoFlow, ITxFlow
     {
-        TransactionInfo GetTransactionInfo()
+        public static TransactionInfo GetTransactionInfo()
         {
             TransactionInfo info = new TransactionInfo();
             Transaction tx = Transaction.Current;
             if (tx != null)
             {
-                info.HasTransaction = true;
+                info.UsingServiceSideTransaction = (tx.TransactionInformation.DistributedIdentifier == Guid.Empty);
+                info.UsingClientSideTransaction = (tx.TransactionInformation.DistributedIdentifier != Guid.Empty);
                 info.DistributedIdentifier = tx.TransactionInformation.DistributedIdentifier;
                 info.LocalIdentifier = tx.TransactionInformation.LocalIdentifier;
-                info.ClientSideTransaction = (tx.TransactionInformation.DistributedIdentifier != Guid.Empty);
             }
             return info;
         }
 
-        #region IServiceTxContract Members
+        #region INoFlow Members
 
-        [OperationBehavior(TransactionScopeRequired = true)]
-        TransactionInfo IServiceTxContract.ClientTxNotAllowedMethod()
+        [OperationBehavior(TransactionScopeRequired = false)]
+        TransactionInfo INoFlow.ScopeNotRequired()
         {
             return GetTransactionInfo();
         }
 
         [OperationBehavior(TransactionScopeRequired = true)]
-        TransactionInfo IServiceTxContract.ClientTxAllowedMethod()
-        {
-            return GetTransactionInfo();
-        }
-
-        #endregion
-
-        #region IClientTxContract Members
-
-        [OperationBehavior(TransactionScopeRequired = true)]
-        TransactionInfo IClientTxContract.ClientTxAllowedMethod()
+        TransactionInfo INoFlow.FlowUnspecified()
         {
             return GetTransactionInfo();
         }
 
         [OperationBehavior(TransactionScopeRequired = true)]
-        TransactionInfo IClientTxContract.ClientTxMandatoryMethod()
+        TransactionInfo INoFlow.FlowNotAllowed()
         {
             return GetTransactionInfo();
         }
 
         #endregion
 
+        #region ITxFlow Members
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo ITxFlow.FlowAllowed()
+        {
+            return GetTransactionInfo();
+        }
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo ITxFlow.FlowMandatory()
+        {
+            return GetTransactionInfo();
+        }
+
+        #endregion
     }
+
 
 }
