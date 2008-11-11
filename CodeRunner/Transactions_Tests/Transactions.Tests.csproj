@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{90424F8C-A606-4C6D-A2F4-676A51735577}</ProjectGuid>
+    <ProjectGuid>{28E99C00-DCD3-4D2F-80A9-D498EC348962}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.ServiceModel.Examples</RootNamespace>
-    <AssemblyName>Transactions</AssemblyName>
+    <RootNamespace>Transactions.Tests</RootNamespace>
+    <AssemblyName>Transactions.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,28 +36,18 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
-    <Reference Include="System.Data" />
-    <Reference Include="System.Runtime.Serialization">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.ServiceModel">
-      <RequiredTargetFramework>3.0</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.Transactions" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
-    <Compile Include="InstanceManagement.cs" />
-    <Compile Include="IsolationLevel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service.cs" />
-    <Compile Include="TranscationFlow.cs" />
+    <Compile Include="TransactionalLock_Tests.cs" />
+    <Compile Include="Transactional_OperatorTests.cs" />
+    <Compile Include="Transactional_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\System.ServiceModel.Extensions\System.ServiceModel.Extensions.csproj">
-      <Project>{02565A66-4153-4217-BED5-55DAC69808D0}</Project>
-      <Name>System.ServiceModel.Extensions</Name>
+    <ProjectReference Include="..\Transactions\Transactions.csproj">
+      <Project>{FE702AED-3A15-48EE-8E46-04FCADF22D43}</Project>
+      <Name>Transactions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
