@@ -30,7 +30,9 @@ type MyService() =
     interface IMyContract with
         [<OperationBehavior(TransactionScopeRequired = true)>]
         member this.MyMethod() =
+            use scope = new TransactionScope()
             printTrans()
+            scope.Complete()
 
 // The Client/Service mode ensures the service uses the client transaction if
 //   if possible or a service-side transaction when the client does not have
@@ -41,11 +43,12 @@ let host = new InProcHost<MyService>()
 //   transaction flow enabled
 let binding = new NetNamedPipeBinding(TransactionFlow = true)
 host.AddEndpoint<IMyContract>(binding)
+host.IncludeExceptionDetailInFaults <- true
 host.Open()
 let proxy = host.CreateProxy<IMyContract>()
 
 printfn "No Scope"
-printTrans()
+proxy.MyMethod()
 printfn "---------------------"
 
 let scope = new TransactionScope()
