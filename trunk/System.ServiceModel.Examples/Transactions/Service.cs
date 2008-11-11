@@ -28,6 +28,9 @@ namespace System.ServiceModel.Examples
 
         [DataMember]
         public string LocalIdentifier { get; set; }
+
+        [DataMember]
+        public Guid InstanceIdentifier { get; set; }
     }
 
     [ServiceContract]
@@ -58,9 +61,11 @@ namespace System.ServiceModel.Examples
 
 
     [BindingRequirementAttribute(TransactionFlowRequired = true)]
-    class MyService : INoFlow, ITxFlow
+    partial class MyService : INoFlow, ITxFlow
     {
-        public static TransactionInfo GetTransactionInfo()
+        Guid instanceId = Guid.NewGuid();
+
+        public TransactionInfo GetTransactionInfo()
         {
             TransactionInfo info = new TransactionInfo();
             Transaction tx = Transaction.Current;
@@ -70,6 +75,7 @@ namespace System.ServiceModel.Examples
                 info.UsingClientSideTransaction = (tx.TransactionInformation.DistributedIdentifier != Guid.Empty);
                 info.DistributedIdentifier = tx.TransactionInformation.DistributedIdentifier;
                 info.LocalIdentifier = tx.TransactionInformation.LocalIdentifier;
+                info.InstanceIdentifier = instanceId;
             }
             return info;
         }
