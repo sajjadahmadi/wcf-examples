@@ -3,6 +3,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Transactions;
+using System.ServiceModel.Channels;
 
 namespace System.ServiceModel.Examples
 {
@@ -34,18 +36,63 @@ namespace System.ServiceModel.Examples
         //
         #endregion
 
+        #region Services
+        [ServiceContract]
+        interface IMyContract
+        {
+            [OperationContract]
+            Guid GetInstanceId();
+        }
+
+        class ServiceInstance
+        {
+            protected Guid instanceId = Guid.NewGuid();
+        }
+
+        [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = true)]
+        class PerCallService : ServiceInstance, IMyContract
+        {
+
+            [OperationBehavior(TransactionScopeRequired = true)]
+            public Guid GetInstanceId()
+            {
+                return base.instanceId;
+            }
+        }
+
+        [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = false)]
+        class PerSessionService : ServiceInstance, IMyContract
+        {
+            [OperationBehavior(TransactionScopeRequired = true)]
+            public Guid GetInstanceId()
+            {
+                return base.instanceId;
+            }
+        }
+
+        class ServiceClient : ClientBase<IMyContract>, IMyContract
+        {
+            public ServiceClient(Binding binding, string remoteAddress)
+                : base(binding, new EndpointAddress(remoteAddress)) { }
+            public Guid GetInstanceId()
+            { return Channel.GetInstanceId(); }
+        }
+
+        #endregion
+
+        NetNamedPipeBinding binding = new NetNamedPipeBinding();
+
         [TestMethod]
         public void PerCallTransactionService()
         {
-            NetNamedPipeBinding noFlowBinding = new NetNamedPipeBinding();
             string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-            using (ServiceHost<MyService> host = new ServiceHost<MyService>())
-            using (NoFlowClient proxy = new NoFlowClient(noFlowBinding, address))
+            using (ServiceHost<PerCallService> host = new ServiceHost<PerCallService>())
+            using (ServiceClient proxy = new ServiceClient(binding, address))
             {
-                host.AddServiceEndpoint<INoFlow>(noFlowBinding, address);
+                host.AddServiceEndpoint<IMyContract>(binding, address);
                 host.Open();
-                Guid first = proxy.FlowUnspecified().InstanceIdentifier;
-                Guid second = proxy.FlowUnspecified().InstanceIdentifier;
+                Guid first = proxy.GetInstanceId();
+                Guid second = proxy.GetInstanceId();
                 Assert.AreNotEqual(second, first);
             }
         }
@@ -53,15 +100,14 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void PerSessionTransactionService()
         {
-            NetNamedPipeBinding noFlowBinding = new NetNamedPipeBinding();
             string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-            using (ServiceHost<MyService> host = new ServiceHost<MyService>())
-            using (NoFlowClient proxy = new NoFlowClient(noFlowBinding, address))
+            using (ServiceHost<PerSessionService> host = new ServiceHost<PerSessionService>())
+            using (ServiceClient proxy = new ServiceClient(binding, address))
             {
-                host.AddServiceEndpoint<INoFlow>(noFlowBinding, address);
+                host.AddServiceEndpoint<IMyContract>(binding, address);
                 host.Open();
-                Guid first = proxy.FlowUnspecified().InstanceIdentifier;
-                Guid second = proxy.FlowUnspecified().InstanceIdentifier;
+                Guid first = proxy.GetInstanceId();
+                Guid second = proxy.GetInstanceId();
                 Assert.AreEqual(second, first);
             }
         }
