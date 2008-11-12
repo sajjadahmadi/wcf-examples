@@ -45,7 +45,7 @@
     <Compile Include="Transactional_Tests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Transactions\Transactions.csproj">
+    <ProjectReference Include="..\Transactions.csproj">
       <Project>{FE702AED-3A15-48EE-8E46-04FCADF22D43}</Project>
       <Name>Transactions</Name>
     </ProjectReference>
