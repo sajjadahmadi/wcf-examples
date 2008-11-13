@@ -14,43 +14,21 @@ namespace System.ServiceModel.Examples
     [TestClass]
     public class InstanceManagement
     {
-        #region Additional test attributes
-        //
-        // You can use the following additional attributes as you write your tests:
-        //
-        // Use ClassInitialize to run code before running the first test in the class
-        // [ClassInitialize()]
-        // public static void MyClassInitialize(TestContext testContext) { }
-        //
-        // Use ClassCleanup to run code after all tests in a class have run
-        // [ClassCleanup()]
-        // public static void MyClassCleanup() { }
-        //
-        // Use TestInitialize to run code before running each test 
-        // [TestInitialize()]
-        // public void MyTestInitialize() { }
-        //
-        // Use TestCleanup to run code after each test has run
-        // [TestCleanup()]
-        // public void MyTestCleanup() { }
-        //
-        #endregion
-
-        #region Services
+        #region  Service and Client
         [ServiceContract]
-        interface IMyContract
+        interface IInstanceIdGetter
         {
             [OperationContract]
             Guid GetInstanceId();
         }
 
-        class ServiceInstance
+        class InstanceIdSetter
         {
             protected Guid instanceId = Guid.NewGuid();
         }
 
         [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = true)]
-        class PerCallService : ServiceInstance, IMyContract
+        class PerCallService : InstanceIdSetter, IInstanceIdGetter
         {
 
             [OperationBehavior(TransactionScopeRequired = true)]
@@ -61,7 +39,7 @@ namespace System.ServiceModel.Examples
         }
 
         [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = false)]
-        class PerSessionService : ServiceInstance, IMyContract
+        class PerSessionService : InstanceIdSetter, IInstanceIdGetter
         {
             [OperationBehavior(TransactionScopeRequired = true)]
             public Guid GetInstanceId()
@@ -70,7 +48,7 @@ namespace System.ServiceModel.Examples
             }
         }
 
-        class ServiceClient : ClientBase<IMyContract>, IMyContract
+        class ServiceClient : ClientBase<IInstanceIdGetter>, IInstanceIdGetter
         {
             public ServiceClient(Binding binding, string remoteAddress)
                 : base(binding, new EndpointAddress(remoteAddress)) { }
@@ -89,7 +67,7 @@ namespace System.ServiceModel.Examples
             using (ServiceHost<PerCallService> host = new ServiceHost<PerCallService>())
             using (ServiceClient proxy = new ServiceClient(binding, address))
             {
-                host.AddServiceEndpoint<IMyContract>(binding, address);
+                host.AddServiceEndpoint<IInstanceIdGetter>(binding, address);
                 host.Open();
                 Guid first = proxy.GetInstanceId();
                 Guid second = proxy.GetInstanceId();
@@ -104,7 +82,7 @@ namespace System.ServiceModel.Examples
             using (ServiceHost<PerSessionService> host = new ServiceHost<PerSessionService>())
             using (ServiceClient proxy = new ServiceClient(binding, address))
             {
-                host.AddServiceEndpoint<IMyContract>(binding, address);
+                host.AddServiceEndpoint<IInstanceIdGetter>(binding, address);
                 host.Open();
                 Guid first = proxy.GetInstanceId();
                 Guid second = proxy.GetInstanceId();

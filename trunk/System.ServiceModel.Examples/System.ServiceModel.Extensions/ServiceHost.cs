@@ -27,6 +27,10 @@ namespace System.ServiceModel
     {
         TContract CreateChannel<TContract>(Binding binding, string address)
             where TContract : class;
+        TContract CreateChannel<TContract, TCallback>(TCallback callback, Binding binding, string address)
+            where TContract : class;
+        void CloseChannel<TContract>(TContract channel)
+            where TContract : class;
     }
     interface IFaultBehavior
     {
@@ -255,6 +259,16 @@ namespace System.ServiceModel
         {
             return DuplexChannelFactory<TContract, TCallback>
                     .CreateChannel(callback, binding, new EndpointAddress(address));
+        }
+
+        public void CloseChannel<TContract>(TContract channel)
+            where TContract : class
+        {
+            ICommunicationObject commObject = channel as ICommunicationObject;
+            if (commObject != null)
+            {
+                commObject.Close();
+            }
         }
 
         #endregion

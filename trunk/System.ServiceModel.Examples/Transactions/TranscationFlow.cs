@@ -6,9 +6,169 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Transactions;
 using System.ServiceModel.Channels;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace System.ServiceModel.Examples
 {
+    #region Service Contracts
+    [DataContract]
+    struct TransactionInfo
+    {
+        public bool HasAmbientTransaction
+        {
+            get
+            {
+                return (UsingServiceSideTransaction == true)
+                    || (UsingClientSideTransaction == true);
+            }
+        }
+
+        [DataMember]
+        public bool UsingServiceSideTransaction { get; set; }
+
+        [DataMember]
+        public bool UsingClientSideTransaction { get; set; }
+
+        [DataMember]
+        public Guid DistributedIdentifier { get; set; }
+
+        [DataMember]
+        public string LocalIdentifier { get; set; }
+
+        [DataMember]
+        public Guid InstanceIdentifier { get; set; }
+    }
+
+    [ServiceContract]
+    interface INoFlow
+    {
+        [OperationContract]
+        TransactionInfo ScopeNotRequired();
+
+        [OperationContract]
+        TransactionInfo FlowUnspecified();
+
+        [OperationContract]
+        [TransactionFlow(TransactionFlowOption.NotAllowed)]
+        TransactionInfo FlowNotAllowed();
+    }
+
+    [ServiceContract]
+    interface ITxFlow
+    {
+        [OperationContract]
+        [TransactionFlow(TransactionFlowOption.Allowed)]
+        TransactionInfo FlowAllowed();
+
+        [OperationContract]
+        [TransactionFlow(TransactionFlowOption.Mandatory)]
+        TransactionInfo FlowMandatory();
+    }
+
+    #endregion
+
+    #region Service
+    // Use the client's isolation level if one exists, otherwise Serializable
+    // Serializable - The highest degree of isolation
+    [ServiceBehavior(TransactionIsolationLevel = IsolationLevel.Unspecified)]
+    [BindingRequirementAttribute(TransactionFlowRequired = true)]
+    partial class TransactionFlowService : INoFlow, ITxFlow
+    {
+        Guid instanceId = Guid.NewGuid();
+
+        public TransactionInfo GetTransactionInfo()
+        {
+            TransactionInfo info = new TransactionInfo();
+            Transaction tx = Transaction.Current;
+            if (tx != null)
+            {
+                info.UsingServiceSideTransaction = (tx.TransactionInformation.DistributedIdentifier == Guid.Empty);
+                info.UsingClientSideTransaction = (tx.TransactionInformation.DistributedIdentifier != Guid.Empty);
+                info.DistributedIdentifier = tx.TransactionInformation.DistributedIdentifier;
+                info.LocalIdentifier = tx.TransactionInformation.LocalIdentifier;
+                info.InstanceIdentifier = instanceId;
+            }
+            return info;
+        }
+
+        #region INoFlow Members
+
+        [OperationBehavior(TransactionScopeRequired = false)]
+        TransactionInfo INoFlow.ScopeNotRequired()
+        {
+            return GetTransactionInfo();
+        }
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo INoFlow.FlowUnspecified()
+        {
+            return GetTransactionInfo();
+        }
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo INoFlow.FlowNotAllowed()
+        {
+            return GetTransactionInfo();
+        }
+
+        #endregion
+
+        #region ITxFlow Members
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo ITxFlow.FlowAllowed()
+        {
+            return GetTransactionInfo();
+        }
+
+        [OperationBehavior(TransactionScopeRequired = true)]
+        TransactionInfo ITxFlow.FlowMandatory()
+        {
+            return GetTransactionInfo();
+        }
+
+        #endregion
+    }
+    #endregion
+
+    #region Clients
+    class NoFlowClient : ClientBase<INoFlow>, INoFlow
+    {
+        public NoFlowClient(Binding binding, string remoteAddress)
+            : base(binding, new EndpointAddress(remoteAddress)) { }
+
+        #region IServiceTxContract Members
+
+        public TransactionInfo ScopeNotRequired()
+        { return Channel.ScopeNotRequired(); }
+
+        public TransactionInfo FlowUnspecified()
+        { return Channel.FlowUnspecified(); }
+
+        public TransactionInfo FlowNotAllowed()
+        { return Channel.FlowNotAllowed(); }
+
+        #endregion
+    }
+
+    class TxFlowClient : ClientBase<ITxFlow>, ITxFlow
+    {
+        public TxFlowClient(Binding binding, string remoteAddress)
+            : base(binding, new EndpointAddress(remoteAddress)) { }
+
+        #region IClientTxContract Members
+
+        public TransactionInfo FlowAllowed()
+        { return Channel.FlowAllowed(); }
+
+        public TransactionInfo FlowMandatory()
+        { return Channel.FlowMandatory(); }
+
+        #endregion
+    }
+
+    #endregion
+
     /// <summary>
     /// TransactionFlow - From the client
     /// TransactionScopeRequire - Service requires transaction
@@ -20,16 +180,15 @@ namespace System.ServiceModel.Examples
     /// TRUE	TRUE	TRUE	Method executes under the flowed transaction.
     /// </summary>
     [TestClass]
-    public class TranscationFlow
+    public class TranscationFlowTests
     {
         static NetNamedPipeBinding txFlowBinding;
         static NetNamedPipeBinding noFlowBinding;
 
-        static ServiceHost<MyService> host;
+        static ServiceHost<TransactionFlowService> host;
         static string noFlowAddress = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         static string txFlowAddress = "net.pipe://localhost/" + Guid.NewGuid().ToString();
 
-        // Use ClassInitialize to run code before running the first test in the class
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
@@ -40,7 +199,7 @@ namespace System.ServiceModel.Examples
             noFlowBinding = new NetNamedPipeBinding();
             noFlowBinding.TransactionFlow = false;
 
-            host = new ServiceHost<MyService>();
+            host = new ServiceHost<TransactionFlowService>();
             host.AddServiceEndpoint<ITxFlow>(txFlowBinding, txFlowAddress);
             host.AddServiceEndpoint<INoFlow>(txFlowBinding, noFlowAddress);
             host.IncludeExceptionDetailInFaults = true;
@@ -86,9 +245,25 @@ namespace System.ServiceModel.Examples
             using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
             {
                 TransactionInfo info = proxy.FlowUnspecified();
-                Assert.IsTrue(info.UsingServiceSideTransaction, "Expected service-side transaction");
-                Assert.IsFalse(info.UsingClientSideTransaction);
+                Assert.IsFalse(info.UsingClientSideTransaction, "Expected client-side transaction");
+                Assert.IsTrue(info.UsingServiceSideTransaction);
             }
+            proxy.Close();
+        }
+
+        /// <summary>
+        /// ScopeRequired_NoTransactionScopeOnClient() 
+        /// Transaction Mode: Service
+        /// Service creates a new transaction that client knows nothing about.
+        /// </summary>
+        [TestMethod]
+        public void ScopeRequired_NoTransactionScopeOnClient()
+        {
+            NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
+            proxy.Open();
+            TransactionInfo info = proxy.FlowUnspecified();
+            Assert.IsFalse(info.UsingClientSideTransaction, "Expected client-side transaction");
+            Assert.IsTrue(info.UsingServiceSideTransaction);
             proxy.Close();
         }
 
@@ -164,7 +339,7 @@ namespace System.ServiceModel.Examples
         /// Throws ProtocolException when transaction is not flowed.
         /// </summary>
         [TestMethod]
-        [ExpectedException(typeof(ProtocolException), 
+        [ExpectedException(typeof(ProtocolException),
             "The service operation requires a transaction to be flowed.")]
         public void ScopeRequired_FlowMandatory_ProtocolException()
         {
