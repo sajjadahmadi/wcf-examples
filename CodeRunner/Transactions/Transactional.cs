@@ -42,7 +42,6 @@ namespace CodeRunner.Transactions
             _lock.Unlock();
         }
 
-
         #region IEnlistmentNotification
         void IEnlistmentNotification.Commit(Enlistment enlistment)
         {
