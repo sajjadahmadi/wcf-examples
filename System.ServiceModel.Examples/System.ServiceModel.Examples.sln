@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transactions", "Transaction
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTests", "System.ServiceModel.Extensions\Tests\ExtensionTests.csproj", "{182D2818-5B2A-4B66-AB43-63D74FD5259C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "References", "References", "{0BE0D251-97FA-4E75-8E5C-BEF825BFA4AD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference Projects", "Reference Projects", "{0BE0D251-97FA-4E75-8E5C-BEF825BFA4AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transactions", "..\CodeRunner\Transactions\Transactions.csproj", "{FE702AED-3A15-48EE-8E46-04FCADF22D43}"
 EndProject
