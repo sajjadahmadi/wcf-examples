@@ -85,7 +85,7 @@ namespace System.ServiceModel.Examples
             {
                 Assert.AreEqual<int>(3, proxy.NextValue());
                 Assert.AreEqual<int>(4, proxy.NextValue());
-                // scope.Complete();
+                // No Complete, transaction will abort and roll back
             }
 
             using (TransactionScope scope = new TransactionScope())
