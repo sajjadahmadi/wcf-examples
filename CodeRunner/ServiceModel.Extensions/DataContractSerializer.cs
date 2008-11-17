@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace System.Runtime.Serialization
 {
-    class DataContractSerializer<T> : XmlObjectSerializer
+    public class DataContractSerializer<T> : XmlObjectSerializer
     {
         DataContractSerializer _serializer;
 
@@ -18,7 +18,7 @@ namespace System.Runtime.Serialization
 
         public override bool IsStartObject(XmlDictionaryReader reader)
         {
-          return  _serializer.IsStartObject(reader);
+            return _serializer.IsStartObject(reader);
         }
 
         public override object ReadObject(XmlDictionaryReader reader, bool verifyObjectName)
@@ -53,6 +53,29 @@ namespace System.Runtime.Serialization
         public override void WriteStartObject(XmlDictionaryWriter writer, object graph)
         {
             _serializer.WriteStartObject(writer, graph);
+        }
+
+        public static string Serialize(T dataContract)
+        {
+            DataContractSerializer<T> formatter = new DataContractSerializer<T>();
+            using (Stream stream = new MemoryStream())
+            {
+                formatter.WriteObject(stream, dataContract);
+                stream.Position = 0;
+                StreamReader reader = new StreamReader(stream);
+                return reader.ReadToEnd();
+            }
+        }
+
+        public static T Deserialize(string xmlData)
+        {
+            T obj;
+            DataContractSerializer<T> formatter = new DataContractSerializer<T>();
+            using (Stream stream = new MemoryStream(Text.Encoding.Default.GetBytes(xmlData)))
+            {
+                obj = formatter.ReadObject(stream);
+            }
+            return obj;
         }
     }
 }

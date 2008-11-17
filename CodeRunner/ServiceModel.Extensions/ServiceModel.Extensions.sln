@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Extensions", "ServiceModel.Extensions.csproj", "{02565A66-4153-4217-BED5-55DAC69808D0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{C104EB22-40EF-4E89-B497-C3627535A87A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTests", "Tests\ExtensionTests.csproj", "{182D2818-5B2A-4B66-AB43-63D74FD5259C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C} = {C104EB22-40EF-4E89-B497-C3627535A87A}
+	EndGlobalSection
+EndGlobal

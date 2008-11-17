@@ -45,17 +45,17 @@ namespace System.ServiceModel.Examples
         {
             // Serialize new Person
             Person p = new Person() { Name = "Mark", Age = 35 };
-            string xml = Helper.Serialize<Person>(p);
+            string xml = DataContractSerializer<Person>.Serialize(p);
 
             // Deserialize as Contact & expect Address to be default
-            Contact c = Helper.Deserialize<Contact>(xml);
+            Contact c = DataContractSerializer<Contact>.Deserialize(xml);
             Assert.AreEqual("Mark", c.Name);
             Assert.AreEqual(default(string), c.Address);
 
             // Reserialize Contact and Deserialize as Person
             // Expect Name & Age to have been preserved
-            xml = Helper.Serialize<Contact>(c);
-            p = Helper.Deserialize<Person>(xml);
+            xml = DataContractSerializer<Contact>.Serialize(c);
+            p = DataContractSerializer<Person>.Deserialize(xml);
             Assert.AreEqual("Mark", p.Name);
             Assert.AreEqual(35, p.Age);
         }
@@ -65,10 +65,10 @@ namespace System.ServiceModel.Examples
         {
             // Serialize new Contact
             Contact c = new Contact() { Name = "Mark", Address = "1234 South Main St." };
-            string xml = Helper.Serialize<Contact>(c);
+            string xml = DataContractSerializer<Contact>.Serialize(c);
 
             // Deserialize as Person & expect Age to be defaul
-            Person p = Helper.Deserialize<Person>(xml);
+            Person p = DataContractSerializer<Person>.Deserialize(xml);
             Assert.AreEqual("Mark", c.Name);
             Assert.AreEqual(default(int), p.Age);
 
@@ -76,8 +76,8 @@ namespace System.ServiceModel.Examples
             // Expect Name to have been preserved, 
             // Expect Address to be null because Person does 
             // not implement IExtensibleDataObject
-            xml = Helper.Serialize<Person>(p);
-            c = Helper.Deserialize<Contact>(xml);
+            xml = DataContractSerializer<Person>.Serialize(p);
+            c = DataContractSerializer<Contact>.Deserialize(xml);
             Assert.AreEqual("Mark", c.Name);
             Assert.IsNull(c.Address);
         }
