@@ -45,9 +45,9 @@
     <Compile Include="Versioning.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\System.ServiceModel.Extensions\System.ServiceModel.Extensions.csproj">
+    <ProjectReference Include="..\..\CodeRunner\ServiceModel.Extensions\ServiceModel.Extensions.csproj">
       <Project>{02565A66-4153-4217-BED5-55DAC69808D0}</Project>
-      <Name>System.ServiceModel.Extensions</Name>
+      <Name>ServiceModel.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
