@@ -1,9 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Diagnostics;
 
 namespace System.ServiceModel.Examples
 {
@@ -56,31 +54,36 @@ namespace System.ServiceModel.Examples
     [TestClass]
     public class DemarcatingOperations
     {
-        public DemarcatingOperations()
-        { }
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException), 
+            "The operation 'AddItem' cannot be the first operation to be called because IsInitiating is false.")]
+        public void IsInitiating_False()
+        {
+            IOrderManager manager = InProcFactory.CreateChannel<OrderManager, IOrderManager>();
+            manager.AddItem(4); // Invalid
+            ((ICommunicationObject)manager).Close();
+        }
 
         [TestMethod]
-        public void TestMethod1()
+        [ExpectedException(typeof(InvalidOperationException),
+            "This channel cannot send any more messages because IsTerminating operation 'ProcessItems' has already been called.")]
+        public void IsTerminating_True()
+        {
+            IOrderManager manager = InProcFactory.CreateChannel<OrderManager, IOrderManager>();
+            manager.SetCustomerId(123);
+            manager.ProcessItems();
+            manager.AddItem(4); // Invalid
+            ((ICommunicationObject)manager).Close();
+        }
+
+        [TestMethod]
+        public void NormalDemarcation()
         {
             IOrderManager manager = InProcFactory.CreateChannel<OrderManager, IOrderManager>();
             manager.SetCustomerId(123);
             manager.AddItem(4);
-            manager.SetCustomerId(123);
-            manager.AddItem(5);
-            manager.AddItem(6);
-            Assert.AreEqual(3, manager.GetItemCount());
+            manager.GetItemCount();
             manager.ProcessItems();
-            try
-            {
-                manager.GetItemCount();
-                Assert.Fail("This call shouldn't have been allowed.");
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex.Message);
-                Assert.IsInstanceOfType(ex, typeof(InvalidOperationException));
-            }
-
             ((ICommunicationObject)manager).Close();
         }
     }
