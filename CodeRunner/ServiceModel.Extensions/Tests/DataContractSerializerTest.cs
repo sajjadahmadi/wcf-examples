@@ -14,6 +14,28 @@ namespace System.ServiceModel.Examples
     [TestClass()]
     public class DataContractSerializerTest
     {
+        /// <summary>
+        /// Basic object to serialize and deserialize
+        /// </summary>
+        [DataContract]
+        public class DataObject
+        {
+            [DataMember]
+            public int Value { get; set; }
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserialize()
+        {
+            DataObject o = new DataObject();
+            o.Value = 432;
+            string xml = DataContractSerializer<DataObject>.Serialize(o);
+            Trace.WriteLine(XDocument.Parse(xml).ToString());
+            o = DataContractSerializer<DataObject>.Deserialize(xml);
+            Assert.AreEqual(432, o.Value);
+        }       
+        
+
         [TestMethod()]
         public void WriteObjectTest()
         {
@@ -92,26 +114,6 @@ namespace System.ServiceModel.Examples
         }
 
 
-        /// <summary>
-        /// Basic object to serialize and deserialize
-        /// </summary>
-        [DataContract]
-        public class DataObject
-        {
-            [DataMember]
-            public int Value { get; set; }
-        }
-
-        [TestMethod]
-        public void SerializeAndDeserialize()
-        {
-            DataObject o = new DataObject();
-            o.Value = 432;
-            string xml = DataContractSerializer<DataObject>.Serialize(o);
-            Trace.WriteLine(XDocument.Parse(xml).ToString());
-            o = DataContractSerializer<DataObject>.Deserialize(xml);
-            Assert.AreEqual(432, o.Value);
-        }
     }
 
 
