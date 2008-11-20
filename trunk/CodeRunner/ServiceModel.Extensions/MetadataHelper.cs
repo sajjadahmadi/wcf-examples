@@ -45,7 +45,7 @@ namespace System.ServiceModel.Extensions
                     endpoints = GetEndpoints(mexAddress, pipeBindingElement);
                     return endpoints;
                 default:
-                    return null;
+                    throw new NotImplementedException("Support for scheme type not implemented.");
             }
         }
 
