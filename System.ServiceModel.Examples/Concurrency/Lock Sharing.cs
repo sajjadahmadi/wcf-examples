@@ -1,11 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel;
-
-namespace Concurrency
+﻿
+namespace System.ServiceModel.Examples
 {
-    static class MyResource
+    static class Counter
     {
-        public static void DoWork()
+        public static void Increment()
         {
             // Lock on the service type
             lock (typeof(MyService))
@@ -28,10 +26,10 @@ namespace Concurrency
     {
         public void MyMethod()
         {
-            /// Lock on the service type
+            // Lock on the service type
             lock (typeof(MyService))
             {
-                MyResource.DoWork(); 
+                Counter.Increment(); 
             }
         }
     }
