@@ -63,8 +63,12 @@ namespace System.ServiceModel.Examples
                 {
                     // Subsequent calls fails 
                     service.OneWayCall();
+                    // This is why Juval believes one-way operations on sessionful
+                    // services is a bad design.  Here the client doesn't know that 
+                    // the serivce is in a faulted state until the next call.
                 }
                 catch (CommunicationException) { };
+                
                 Assert.AreEqual(CommunicationState.Faulted, comm.State);
 
                 try

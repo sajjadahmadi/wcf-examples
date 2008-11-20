@@ -17,6 +17,8 @@ namespace System.ServiceModel.Examples
     [ServiceContract(CallbackContract = typeof(IMyContractCallback))]
     interface IMyContract : IConnectionManagement
     {
+        // Transcender suggests making these one-way operations, also.
+        // However, Juval (pg 172) recommends against it.  
         [OperationContract]
         void DoSomething();
     }
