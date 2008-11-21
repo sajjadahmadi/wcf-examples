@@ -50,6 +50,7 @@
             this.countTextBox.Name = "countTextBox";
             this.countTextBox.Size = new System.Drawing.Size(100, 20);
             this.countTextBox.TabIndex = 1;
+            this.countTextBox.Text = "0";
             // 
             // statusStrip1
             // 
