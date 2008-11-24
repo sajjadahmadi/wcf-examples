@@ -124,6 +124,8 @@ namespace System.ServiceModel
 
         /// <summary>
         /// Provides a type safe singleton instance
+        /// It is acceptable to shadow SingletonInstance in this case, 
+        /// because the behavior will be the same with or without the cast.
         /// </summary>
         public new TService SingletonInstance
         {
