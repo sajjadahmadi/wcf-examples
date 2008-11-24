@@ -25,6 +25,12 @@ namespace CodeRunner
         int GetCount();
     }
 
+    /// <summary>
+    /// CounterService hosted by a form.
+    /// Note:  The Windows Form designer is incapable of rendering a form that has 
+    /// an abstract base class.  You will have to change the base class to Form to 
+    /// use the designer, and then revert it back to FormHost.
+    /// </summary>
     public partial class CounterForm : FormHost<CounterForm>, ICounter
     {
         [ThreadStatic]
