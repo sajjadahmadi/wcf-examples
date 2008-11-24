@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Counter Service", "Counter Service.csproj", "{12DE461B-CFA7-445C-805B-E67A47A000BD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Project References", "Project References", "{2D75C4CB-BBEC-4EFF-B35A-1171218DB2CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Extensions", "C:\MyData\MCTS\WCF\CodeRunner\ServiceModel.Extensions\ServiceModel.Extensions.csproj", "{02565A66-4153-4217-BED5-55DAC69808D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12DE461B-CFA7-445C-805B-E67A47A000BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12DE461B-CFA7-445C-805B-E67A47A000BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12DE461B-CFA7-445C-805B-E67A47A000BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12DE461B-CFA7-445C-805B-E67A47A000BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{02565A66-4153-4217-BED5-55DAC69808D0} = {2D75C4CB-BBEC-4EFF-B35A-1171218DB2CF}
+	EndGlobalSection
+EndGlobal
