@@ -41,6 +41,7 @@
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -57,9 +58,12 @@
     <Compile Include="DuplexClientBase.cs" />
     <Compile Include="Errors\ErrorHandlerBehaviorAttribute.cs" />
     <Compile Include="Errors\ErrorHandlerHelper.cs" />
+    <Compile Include="Hosting\FormHost.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="InstanceContext.cs" />
-    <Compile Include="ServiceHost.cs" />
-    <Compile Include="InProcFactory.cs" />
+    <Compile Include="Hosting\ServiceHost.cs" />
+    <Compile Include="Hosting\InProcFactory.cs" />
     <Compile Include="MetadataHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
