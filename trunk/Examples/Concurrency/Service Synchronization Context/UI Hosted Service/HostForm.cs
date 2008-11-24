@@ -20,13 +20,13 @@ namespace CodeRunner
 
         ServiceHost<CounterService> host;
 
-        public HostForm()
+        public HostForm(string baseAddress)
         {
             InitializeComponent();
 
             Current = this;
 
-            host = new ServiceHost<CounterService>();
+            host = new ServiceHost<CounterService>(new Uri(baseAddress));
             host.Opening += new EventHandler(host_StateChanged);
             host.Opened += new EventHandler(host_StateChanged);
             host.Closing += new EventHandler(host_StateChanged);
