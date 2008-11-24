@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace CodeRunner
 {
@@ -13,7 +14,18 @@ namespace CodeRunner
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new HostForm());
+
+            ParameterizedThreadStart threadMethod = delegate(object baseAddress)
+                    {
+                        string address = baseAddress as string;
+                        Application.Run(new HostForm(address));
+                    };
+
+            Thread thread1 = new Thread(threadMethod);
+            thread1.Start("net.pipe://localhost/UIHostedSerice1");
+            
+            Thread thread2 = new Thread(threadMethod);
+            thread2.Start("net.pipe://localhost/UIHostedSerice2");
         }
     }
 }
