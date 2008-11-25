@@ -7,7 +7,7 @@
     <ProjectGuid>{182D2818-5B2A-4B66-AB43-63D74FD5259C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.ServiceModel.Extension.Test</RootNamespace>
+    <RootNamespace>CodeRunner.ServiceModel.Test</RootNamespace>
     <AssemblyName>ExtensionTests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,12 +46,14 @@
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ThreadAffinity\AffinitySynchronizerTests.cs" />
     <Compile Include="BindingRequirementAttribute.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
     <Compile Include="InProcFactoryTests.cs" />
@@ -63,11 +65,11 @@
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Extensions.csproj">
       <Project>{02565A66-4153-4217-BED5-55DAC69808D0}</Project>
-      <Name>System.ServiceModel.Extensions</Name>
+      <Name>ServiceModel.Extensions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Shadow Include="Test References\System.ServiceModel.Extensions.accessor" />
+    <Shadow Include="Test References\ServiceModel.Extensions.accessor" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

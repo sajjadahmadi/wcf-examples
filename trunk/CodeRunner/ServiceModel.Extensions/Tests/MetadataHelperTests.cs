@@ -1,8 +1,7 @@
-﻿using System.ServiceModel.Extensions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel.Channels;
+﻿using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
-using System;
+using System.ServiceModel.Extensions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.ServiceModel.Examples
 {
