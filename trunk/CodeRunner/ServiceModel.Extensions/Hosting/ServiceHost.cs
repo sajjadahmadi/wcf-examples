@@ -7,6 +7,8 @@ using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using System.Diagnostics;
 using System.ServiceModel.Errors;
+using CodeRunner.ServiceModel.ThreadAffinity;
+using System.Threading;
 
 namespace System.ServiceModel
 {
@@ -36,6 +38,11 @@ namespace System.ServiceModel
     {
         bool IncludeExceptionDetailInFaults { get; set; }
     }
+    interface IThreadAffinity
+    {
+        void SetThreadAffinity();
+        void SetThreadAffinity(string name);
+    }
     #endregion
 
     public class ServiceHost<TService> :
@@ -43,7 +50,8 @@ namespace System.ServiceModel
         IEnableMetadataExchange,
         IThrottling,
         IInProcFactory,
-        IFaultBehavior
+        IFaultBehavior,
+        IThreadAffinity
     {
         private const string hostAlreadyOpen = "Host is already open";
 
@@ -110,7 +118,7 @@ namespace System.ServiceModel
         }
         #endregion
 
-        // Overrides
+        #region ServiceHost Overrides
         protected override void OnOpening()
         {
             foreach (IServiceBehavior handler in errorHandlers)
@@ -118,6 +126,14 @@ namespace System.ServiceModel
 
             base.OnOpening();
         }
+        protected override void OnClosing()
+        {
+            /* Object could be null.  Wrap with using to handle this. */
+            using (m_AffinitySynchronizer)
+            { }
+            base.OnClosing();
+        } 
+        #endregion
 
         public ServiceEndpoint AddServiceEndpoint<TContract>(Binding binding, string address)
         { return base.AddServiceEndpoint(typeof(TContract), binding, address); }
@@ -293,6 +309,24 @@ namespace System.ServiceModel
             }
         }
 
+        #endregion
+
+        #region IThreadAffinity Members
+        AffinitySynchronizer m_AffinitySynchronizer;
+
+        public void SetThreadAffinity()
+        {
+            SetThreadAffinity("Executing all endpoints of " + typeof(TService));
+        }
+
+        public void SetThreadAffinity(string threadName)
+        {
+            if (State == CommunicationState.Opened)
+                throw new InvalidOperationException(hostAlreadyOpen);
+
+            m_AffinitySynchronizer = new AffinitySynchronizer(threadName);
+            SynchronizationContext.SetSynchronizationContext(m_AffinitySynchronizer);
+        }
         #endregion
     }
 }

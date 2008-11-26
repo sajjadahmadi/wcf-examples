@@ -53,6 +53,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Hosting\IThreadAffinityTests.cs" />
+    <Compile Include="ThreadAffinityBehaviorAttributeTests.cs" />
     <Compile Include="ThreadAffinity\AffinitySynchronizerTests.cs" />
     <Compile Include="BindingRequirementAttribute.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
