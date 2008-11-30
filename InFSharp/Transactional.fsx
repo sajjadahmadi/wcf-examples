@@ -2,18 +2,27 @@
 #r "System.Transactions"
 open System.Transactions
 
-type Transactional<'T>(value : 'T) as this =
-    let mutable currentValue = value
-    do Transaction.Current.EnlistVolatile((this :> ISinglePhaseNotification), EnlistmentOptions.None)
-    |> ignore
+type ITransactional<'T> =
+    inherit ISinglePhaseNotification
+    abstract Value : 'T with get, set
+    abstract Rollback : unit -> unit
     
-    member this.Value with get() = currentValue
-                      and set v  = currentValue <- v
+
+let enlist<'T> (x : ITransactional<'T>) =
+    if Transaction.Current <> null then
+        Transaction.Current.EnlistVolatile((x :> ISinglePhaseNotification), EnlistmentOptions.None) 
+        |> ignore
+    x
     
-    member this.Rollback() =
-        currentValue <- value
-    
-    interface ISinglePhaseNotification with
+let transactional<'T> (v : 'T) =
+    let valStore = ref v
+    enlist { new ITransactional<'T> with
+        member this.Value with get() = !valStore
+                          and set newVal = valStore := newVal
+                          
+        member this.Rollback() =
+            valStore := v
+            
         member this.SinglePhaseCommit(singlePhaseEnlistment) =
             printfn "SINGLEPHASECOMMIT"
             singlePhaseEnlistment.Committed()
@@ -33,19 +42,20 @@ type Transactional<'T>(value : 'T) as this =
         member this.Rollback(enlistment) =
             printfn "ROLLBACK"
             this.Rollback()
-            enlistment.Done()
+            enlistment.Done() }
+    
 
 
 let scope1 = new TransactionScope()
-let ts1 = new Transactional<int>(1)
+let ts1 = transactional(1)
 printfn "%A" ts1.Value
 ts1.Value <- 2
 printfn "%A" ts1.Value
 scope1.Dispose()
-printfn "%A\n\n" ts1.Value
+printfn "%A\n\n" ts1.Value  
 
 let scope2 = new TransactionScope()
-let ts2 = new Transactional<int>(1)
+let ts2 = transactional(1)
 printfn "%A" ts2.Value
 ts2.Value <- 2
 printfn "%A" ts2.Value
