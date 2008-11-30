@@ -59,6 +59,7 @@ proxy.MyMethod()
 printfn "---------------------"
 
 scope.Complete()
+scope.Dispose()
 
 
 host.CloseProxy(proxy)
