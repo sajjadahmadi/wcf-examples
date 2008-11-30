@@ -31,16 +31,14 @@ type MyService() =
         //   sure to rethrow it
         member this.MyMethod() =
             try
-                use scope = new TransactionScope()
                 // some work
-                scope.Complete()
+                ()
             with ex -> raise ex 
 
         // EXPLICIT VOTING
         [<OperationBehavior(TransactionScopeRequired = true, TransactionAutoComplete = false)>]
         member this.MyOtherMethod() =
             try
-                use scope = new TransactionScope()
                 // some work
                 OperationContext.Current.SetTransactionComplete()
             with ex -> raise ex
@@ -57,6 +55,7 @@ let scope = new TransactionScope()
 proxy.MyMethod()
 proxy.MyOtherMethod()
 scope.Complete()
+scope.Dispose()
 
 host.CloseProxy(proxy)
 host.Close()
