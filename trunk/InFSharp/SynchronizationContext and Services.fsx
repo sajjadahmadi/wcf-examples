@@ -18,19 +18,25 @@ type MyResource() =
 [<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
-    abstract MyMethod : unit -> unit
+    abstract MySynchronizedMethod : unit -> unit
+    
+    [<OperationContract>]
+    abstract MyUnsynchronizedMethod : unit -> unit
 
 
 type MyService() =
     let resource = new MyResource()
     
     interface IMyContract with
-        member this.MyMethod() =
-            printfn "MyService.MyMethod(): %d" Thread.CurrentThread.ManagedThreadId
+        member this.MySynchronizedMethod() =
+            printfn "MyService.MySynchronizedMethod(): %d" Thread.CurrentThread.ManagedThreadId
             let context = resource.SynchronizationContext
             context.Send((fun state ->
-                resource.DoWork()
-                printfn "doWork(): %d" Thread.CurrentThread.ManagedThreadId), null)
+                resource.DoWork()), null)
+
+        member this.MyUnsynchronizedMethod() =
+            printfn "MyService.MyUnsynchronizedMethod(): %d" Thread.CurrentThread.ManagedThreadId
+
 
 printfn "main(): %d" Thread.CurrentThread.ManagedThreadId
 let host = new InProcHost<MyService>()
@@ -38,4 +44,5 @@ host.AddEndpoint<IMyContract>()
 host.Open()
 
 let proxy = host.CreateProxy<IMyContract>()
-proxy.MyMethod()
+proxy.MySynchronizedMethod()
+proxy.MyUnsynchronizedMethod()
