@@ -67,6 +67,7 @@
     <Compile Include="MetadataHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ThreadAffinity\AffinitySynchronizer.cs" />
+    <Compile Include="ThreadAffinity\CallbackThreadAffinityBehaviorAttribute.cs" />
     <Compile Include="ThreadAffinity\ThreadAffinityBehaviorAttribute.cs" />
     <Compile Include="ThreadAffinity\ThreadAffinityHelper.cs" />
   </ItemGroup>
