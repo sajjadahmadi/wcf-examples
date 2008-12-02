@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Self Hosting", "Basic\Self Hosting\Self Hosting.csproj", "{96625DD1-8A7B-475F-B912-F0F4820928F0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Basic", "Basic", "{7C75BF7F-41DE-4521-92B7-DE22459EC26B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Channels", "Basic\Channels\Channels.csproj", "{05F0771F-D83A-4D88-89EE-0B38E68D0996}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service Proxy", "Basic\Proxy\Service Proxy.csproj", "{CD253D65-7953-4EFF-A162-CC4F7BADEF53}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Operations", "Operations", "{BB24BC9F-CF74-45D4-8494-E4DBE3BEF85F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Streaming", "Streaming", "{C18C73B9-5FCA-450D-ADB0-50B32E5A038D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Operations\Streaming\Client\Client.csproj", "{CE16B7E3-A300-445A-B50E-E84B6703CD6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Operations\Streaming\Service\Service.csproj", "{04E92433-D595-4AEC-AA4C-B5C1D1BF19F8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05F0771F-D83A-4D88-89EE-0B38E68D0996}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05F0771F-D83A-4D88-89EE-0B38E68D0996}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05F0771F-D83A-4D88-89EE-0B38E68D0996}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05F0771F-D83A-4D88-89EE-0B38E68D0996}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD253D65-7953-4EFF-A162-CC4F7BADEF53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD253D65-7953-4EFF-A162-CC4F7BADEF53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD253D65-7953-4EFF-A162-CC4F7BADEF53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD253D65-7953-4EFF-A162-CC4F7BADEF53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE16B7E3-A300-445A-B50E-E84B6703CD6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE16B7E3-A300-445A-B50E-E84B6703CD6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE16B7E3-A300-445A-B50E-E84B6703CD6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE16B7E3-A300-445A-B50E-E84B6703CD6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04E92433-D595-4AEC-AA4C-B5C1D1BF19F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04E92433-D595-4AEC-AA4C-B5C1D1BF19F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04E92433-D595-4AEC-AA4C-B5C1D1BF19F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04E92433-D595-4AEC-AA4C-B5C1D1BF19F8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{96625DD1-8A7B-475F-B912-F0F4820928F0} = {7C75BF7F-41DE-4521-92B7-DE22459EC26B}
+		{05F0771F-D83A-4D88-89EE-0B38E68D0996} = {7C75BF7F-41DE-4521-92B7-DE22459EC26B}
+		{CD253D65-7953-4EFF-A162-CC4F7BADEF53} = {7C75BF7F-41DE-4521-92B7-DE22459EC26B}
+		{C18C73B9-5FCA-450D-ADB0-50B32E5A038D} = {BB24BC9F-CF74-45D4-8494-E4DBE3BEF85F}
+		{CE16B7E3-A300-445A-B50E-E84B6703CD6E} = {C18C73B9-5FCA-450D-ADB0-50B32E5A038D}
+		{04E92433-D595-4AEC-AA4C-B5C1D1BF19F8} = {C18C73B9-5FCA-450D-ADB0-50B32E5A038D}
+	EndGlobalSection
+EndGlobal
