@@ -6,6 +6,7 @@ open System.ServiceModel
 open System.Threading
 open Mcts_70_503
 
+
 type MyResource() =
     let context = new SynchronizationContext()
     
@@ -24,9 +25,8 @@ type IMyContract =
     abstract MyUnsynchronizedMethod : unit -> unit
 
 
-type MyService() =
-    let resource = new MyResource()
-    
+[<ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)>]
+type MyService(resource : MyResource) =
     interface IMyContract with
         member this.MySynchronizedMethod() =
             printfn "MyService.MySynchronizedMethod(): %d" Thread.CurrentThread.ManagedThreadId
@@ -39,7 +39,10 @@ type MyService() =
 
 
 printfn "main(): %d" Thread.CurrentThread.ManagedThreadId
-let host = new InProcHost<MyService>()
+let resource = new MyResource()
+resource.DoWork()
+let service = new MyService(resource)
+let host = new InProcHost<MyService>(service)
 host.AddEndpoint<IMyContract>()
 host.Open()
 

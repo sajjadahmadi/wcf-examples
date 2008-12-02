@@ -7,6 +7,7 @@ open System.ServiceModel
 open System.Windows.Forms
 open Mcts_70_503
 
+
 type MyForm() as this =
     inherit Form()
     
