@@ -46,3 +46,6 @@ host.Open()
 let proxy = host.CreateProxy<IMyContract>()
 proxy.MySynchronizedMethod()
 proxy.MyUnsynchronizedMethod()
+
+host.CloseProxy(proxy)
+host.Close()
