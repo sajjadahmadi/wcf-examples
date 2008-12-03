@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.ServiceModel.Description;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using System.Diagnostics;
-using System.ServiceModel.Errors;
-using CodeRunner.ServiceModel.ThreadAffinity;
 using System.Threading;
+using CodeRunner.ServiceModel.ThreadAffinity;
 
 namespace System.ServiceModel
 {
@@ -132,7 +128,7 @@ namespace System.ServiceModel
             using (m_AffinitySynchronizer)
             { }
             base.OnClosing();
-        } 
+        }
         #endregion
 
         public ServiceEndpoint AddServiceEndpoint<TContract>(Binding binding, string address)
@@ -265,13 +261,35 @@ namespace System.ServiceModel
         #endregion IThrottling
 
         #region IInProcFactory Members
-
+        public TContract CreateChannel<TContract>(string address)
+            where TContract : class
+        {
+            return CreateChannel<TContract>(new Uri(address));
+        }
+        public TContract CreateChannel<TContract>(Uri address)
+            where TContract : class
+        {
+            ServiceEndpoint ep = GetServiceEndpoint(address);
+            return CreateChannel<TContract>(ep.Binding,new EndpointAddress(address.ToString()));
+        }
         public TContract CreateChannel<TContract>(Binding binding, string address)
             where TContract : class
         {
-            return ChannelFactory<TContract>.CreateChannel(binding, new EndpointAddress(address));
+            return CreateChannel<TContract>(binding, new EndpointAddress(address));
+        }
+        public TContract CreateChannel<TContract>(Binding binding, EndpointAddress address)
+            where TContract : class
+        {
+            return ChannelFactory<TContract>.CreateChannel(binding, address);
+        }
+        ServiceEndpoint GetServiceEndpoint(Uri address)
+        {
+            ServiceEndpoint ep = Description.Endpoints.Find(address);
+            if (ep == null) throw new EndpointNotFoundException("Endpoint not found at address.");
+            return ep;
         }
 
+        //Duplex
         public TContract CreateChannel<TContract, TCallback>(TCallback callback, Binding binding, string address)
             where TContract : class
         {
