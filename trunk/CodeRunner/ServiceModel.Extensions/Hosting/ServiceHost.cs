@@ -269,8 +269,8 @@ namespace System.ServiceModel
         public TContract CreateChannel<TContract>(Uri address)
             where TContract : class
         {
-            ServiceEndpoint ep = GetServiceEndpoint(address);
-            return CreateChannel<TContract>(ep.Binding,new EndpointAddress(address.ToString()));
+            ServiceEndpoint ep = FindServiceEndpoint(address);
+            return CreateChannel<TContract>(ep.Binding, ep.Address);
         }
         public TContract CreateChannel<TContract>(Binding binding, string address)
             where TContract : class
@@ -282,7 +282,7 @@ namespace System.ServiceModel
         {
             return ChannelFactory<TContract>.CreateChannel(binding, address);
         }
-        ServiceEndpoint GetServiceEndpoint(Uri address)
+        ServiceEndpoint FindServiceEndpoint(Uri address)
         {
             ServiceEndpoint ep = Description.Endpoints.Find(address);
             if (ep == null) throw new EndpointNotFoundException("Endpoint not found at address.");

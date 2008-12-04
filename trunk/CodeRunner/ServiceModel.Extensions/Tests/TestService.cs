@@ -1,5 +1,5 @@
 ﻿
-namespace System.ServiceModel.Examples
+namespace System.ServiceModel.Test
 {
     [ServiceContract]
     public interface ITestContract

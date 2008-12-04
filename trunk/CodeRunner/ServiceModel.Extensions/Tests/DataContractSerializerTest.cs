@@ -5,7 +5,7 @@ using System.Text;
 using System.Diagnostics;
 using System.Xml.Linq;
 
-namespace System.ServiceModel.Examples
+namespace System.ServiceModel.Test
 {
     /// <summary>
     ///This is a test class for DataContractSerializerTest and is intended

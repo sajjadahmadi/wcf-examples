@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace System.ServiceModel.Examples
+namespace System.ServiceModel.Test
 {
     [TestClass]
     public class InProcFactoryTests

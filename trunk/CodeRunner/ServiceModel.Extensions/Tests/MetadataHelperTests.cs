@@ -3,7 +3,7 @@ using System.ServiceModel.Description;
 using System.ServiceModel.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace System.ServiceModel.Examples
+namespace System.ServiceModel.Test
 {
     [TestClass()]
     public class MetadataHelperTests
@@ -56,7 +56,7 @@ namespace System.ServiceModel.Examples
         [DeploymentItem("System.ServiceModel.Extensions.dll")]
         public void GetEndpointsTest()
         {
-            string mexAddress = "net.tcp://localhost:8000";
+            string mexAddress = "net.tcp://localhost:8080";
             TcpTransportBindingElement bindingElement =
                 new TcpTransportBindingElement();
             ServiceEndpointCollection actual;
