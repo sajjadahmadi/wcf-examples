@@ -1,5 +1,6 @@
 #light
 #r "System.ServiceModel"
+#r "System.Runtime.Serialization"
 #load "InProcHost.fsx"
 open System
 open System.Windows.Forms
@@ -23,8 +24,7 @@ type HostForm() as this =
     
     let host = new InProcHost<MyService>()
     do host.AddEndpoint<IMyContract>()
-    do this.FormClosed.Add(fun e ->
-        host.Close())
+    do this.FormClosed.Add(fun e -> host.Close())
     do host.Open()
 
 
