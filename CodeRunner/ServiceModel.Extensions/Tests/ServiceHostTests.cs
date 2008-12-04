@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel.Description;
 
-namespace System.ServiceModel.Examples
+namespace System.ServiceModel.Test
 {
     [TestClass]
     public class ServiceHostTests

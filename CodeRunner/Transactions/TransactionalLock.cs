@@ -13,22 +13,49 @@ namespace CodeRunner.Transactions
     /// </summary>
     public class TransactionalLock
     {
-        TransactionQueue<KeyValuePair<Transaction, ManualResetEvent>> pendingTransactions
-            = new TransactionQueue<KeyValuePair<Transaction, ManualResetEvent>>();
-        class TransactionQueue<T> : LinkedList<T>
+        TransactionQueue pendingTransactions
+            = new TransactionQueue();
+        class TransactionQueue : LinkedList<QueueItem>
         {
-            public void Enqueue(T item)
+            //LinkedList<QueueItem> queue;
+            public ManualResetEvent Enqueue(Transaction transaction)
             {
-                base.AddLast(item);
+                QueueItem item = new QueueItem(transaction, new ManualResetEvent(false));
+                AddLast(item);
+                return item.ManualEvent;
             }
 
-            public T Dequeue()
+            public QueueItem Dequeue()
             {
-                T item = base.First.Value;
-                base.RemoveFirst();
+                QueueItem item = First.Value;
+                RemoveFirst();
                 return item;
             }
+
+            public void Remove(Transaction transaction)
+            {
+                QueueItem item = this.SingleOrDefault<QueueItem>(i => i.Transaction == transaction);
+                if (item == null) return;
+                Remove(item);
+                ManualResetEvent manualEvent = item.ManualEvent;
+                lock (manualEvent)
+                {
+                    if (manualEvent.SafeWaitHandle.IsClosed == false)
+                    { manualEvent.Set(); }
+                }
+            }
         }
+        class QueueItem
+        {
+            public QueueItem(Transaction transaction, ManualResetEvent manualEvent)
+            {
+                this.Transaction = transaction;
+                this.ManualEvent = manualEvent;
+            }
+            public Transaction Transaction { get; set; }
+            public ManualResetEvent ManualEvent { get; set; }
+        }
+
 
         Transaction owningTransaction;
         Transaction OwningTransaction
@@ -68,6 +95,8 @@ namespace CodeRunner.Transactions
             ManualResetEvent manualEvent;
             try
             {
+                Debug.WriteLine(Thread.CurrentThread.Name);
+
                 if (transaction == null)
                 { return; }
 
@@ -82,44 +111,30 @@ namespace CodeRunner.Transactions
                 }
                 else // Some other transaction owns the lock
                 {
+                    Debug.Assert(transaction.TransactionInformation.Status == TransactionStatus.Active);
+
                     // Queue up the transaction and wait for the other one to complete
-                    manualEvent = QueueTransaction(transaction);
+                    manualEvent = pendingTransactions.Enqueue(transaction);
+
+                    // Since the transaction could abort or time out while in the queued,
+                    // unblock it and remove it from the queue when it completes 
+                    transaction.TransactionCompleted += 
+                        delegate
+                        {
+                            lock (this)
+                            {
+                                pendingTransactions.Remove(transaction);
+                            }
+                        };
                 }
             }
             finally
             {
                 Monitor.Exit(this);
             }
-            
+
             manualEvent.WaitOne();  // Block the calling thread 
             lock (manualEvent) { manualEvent.Close(); }
-        }
-
-        ManualResetEvent QueueTransaction(Transaction transaction)
-        {
-            Debug.Assert(transaction.TransactionInformation.Status == TransactionStatus.Active);
-
-            ManualResetEvent manualEvent = new ManualResetEvent(false);
-            KeyValuePair<Transaction, ManualResetEvent> pair
-                = new KeyValuePair<Transaction, ManualResetEvent>(transaction, manualEvent);
-            pendingTransactions.Enqueue(pair);
-
-            // Since the transaction could abort or time out while in the queued,
-            // unblock it and remove it from the queue when it completes 
-            //transaction.TransactionCompleted += delegate
-            //{
-            //    lock (this)
-            //    {
-            //        pendingTransactions.Remove(pair);
-            //    }
-            //    lock (manualEvent)
-            //    {
-            //        if (manualEvent.SafeWaitHandle.IsClosed == false)
-            //        { manualEvent.Set(); }
-            //    }
-            //};
-
-            return manualEvent;
         }
 
 
@@ -139,15 +154,15 @@ namespace CodeRunner.Transactions
         {
             if (pendingTransactions.Count > 0)
             {
-                KeyValuePair<Transaction, ManualResetEvent> pair = pendingTransactions.Dequeue();
-                Transaction transaction = pair.Key;
-                ManualResetEvent manualEvent = pair.Value;
+                QueueItem item = pendingTransactions.Dequeue();
+                Transaction transaction = item.Transaction;
+                ManualResetEvent manualEvent = item.ManualEvent;
 
-                Lock(transaction); 
+                Lock(transaction);
 
                 lock (manualEvent)
                 {
-                    if (manualEvent.SafeWaitHandle.IsClosed==false)
+                    if (manualEvent.SafeWaitHandle.IsClosed == false)
                     { manualEvent.Set(); }
                 }
             }
