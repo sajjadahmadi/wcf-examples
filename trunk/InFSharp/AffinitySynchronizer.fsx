@@ -41,6 +41,8 @@ type WorkerThread(name : string, context : SynchronizationContext) as this =
 
     member this.ThreadId = t.ManagedThreadId
 
+    member this.QueueCount = workItemQueue.Count
+
     member this.QueueWorkItem(workItem) =
         lock workItemQueue (fun () ->
             workItemQueue.Enqueue(workItem)
@@ -80,22 +82,38 @@ type WorkerThread(name : string, context : SynchronizationContext) as this =
 type AffinitySynchronizer(name : string) as this =
     inherit SynchronizationContext()
     
-    let t = new WorkerThread(name, this)
+    let mutable t : WorkerThread option = None
+    
+    member private this.WorkerThread =
+        match t with
+        | Some t' -> t'
+        | None    ->
+            let t' = new WorkerThread(name, this)
+            t <- Some t'
+            t'
+
+    member this.QueueCount = this.WorkerThread.QueueCount
 
     override this.CreateCopy() = this :> SynchronizationContext
     
     override this.Post(m : SendOrPostCallback, state) =
         let workItem = new WorkItem(m, state)
-        t.QueueWorkItem(workItem) |> ignore
+        this.WorkerThread.QueueWorkItem(workItem) |> ignore
 
     override this.Send(m : SendOrPostCallback, state) =
         if SynchronizationContext.Current = (this :> SynchronizationContext)
             then m.Invoke(state)
             else
                 let workItem = new WorkItem(m, state)
-                t.QueueWorkItem(workItem) |> ignore
+                this.WorkerThread.QueueWorkItem(workItem) |> ignore
                 workItem.WaitHandle.WaitOne() |> ignore
     
     interface IDisposable with
         member this.Dispose() =
-            t.Kill()
+            this.WorkerThread.Kill()
+
+let s = new AffinitySynchronizer("Example")
+s.Post((fun _ -> Thread.Sleep(1000); printfn "%d" Thread.CurrentThread.ManagedThreadId), null)
+printfn "%d threads in queue" s.QueueCount
+s.Send((fun _ -> printfn "%d" Thread.CurrentThread.ManagedThreadId), null)
+printfn "%d threads in queue" s.QueueCount
