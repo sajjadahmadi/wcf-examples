@@ -15,7 +15,7 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
     interface IMyContract
     {
         [OperationContract]
-        void InvokeCallback();
+        void DoSomething();
     }
     interface IMyContractCallback
     {
@@ -26,7 +26,7 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
     class MyService : IMyContract
     {
-        public void InvokeCallback()
+        public void DoSomething()
         {
             // Do something
             IMyContractCallback channel = OperationContext.Current.
@@ -37,11 +37,18 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
     #endregion
 
     #region Client
-    [CallbackThreadAffinityBehavior(typeof(MyCallbackClient), "Callback Thread")]
+    [CallbackThreadAffinityBehavior(typeof(MyCallbackClient), DesignatedThreadName)]
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
     class MyCallbackClient : IMyContractCallback
     {
-        public string m_threadName;
+        private string m_threadName;
+        public const string DesignatedThreadName = "Callback Thread Affinity Thread";
+    
+        public string ActualThreadName
+        {
+            get { return m_threadName; }
+            set { m_threadName = value; }
+        }
         public void OnCallback()
         {
             // Manually lock local resources in case non-WCF threads try 
@@ -59,9 +66,9 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
             : base(callbackInstance, binding, new EndpointAddress(remoteAddress))
         { }
 
-        public void InvokeCallback()
+        public void DoSomething()
         {
-            Channel.InvokeCallback();
+            Channel.DoSomething();
         }
     } 
     #endregion
@@ -104,8 +111,8 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
 
                 MyServiceClient client = new MyServiceClient(callbackContext, new NetNamedPipeBinding(), address);
                 client.Open();
-                client.InvokeCallback();
-                Assert.AreEqual("Callback Thread", callback.m_threadName);
+                client.DoSomething();
+                Assert.AreEqual(MyCallbackClient.DesignatedThreadName, callback.ActualThreadName);
                 client.Close();
             }
         }
