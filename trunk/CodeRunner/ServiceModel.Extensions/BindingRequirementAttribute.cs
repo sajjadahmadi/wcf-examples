@@ -16,11 +16,11 @@ namespace System.ServiceModel
         { }
         void IServiceBehavior.Validate(ServiceDescription description, ServiceHostBase host)
         {
-            if (TransactionFlowRequired == true)
+            if (TransactionFlowRequired)
             {
-                IEndpointBehavior behavior = this;
+                IEndpointBehavior endpointBehavior = this;
                 foreach (ServiceEndpoint endpoint in description.Endpoints)
-                { behavior.Validate(endpoint); }
+                { endpointBehavior.Validate(endpoint); }
             }
         }
         #endregion
@@ -42,7 +42,7 @@ namespace System.ServiceModel
         #region TransactionFlowRequirement
         static void ValidateTransactionFlow(ServiceEndpoint endpoint)
         {
-            Exception exception = new InvalidOperationException("BindingRequirementAttribute requires transaction flow enabled, but binding for the endpoint with contract " + endpoint.Contract.ContractType + " has it disabled");
+            Exception exception = new InvalidOperationException("BindingRequirementAttribute requires transaction flow enabled, but the binding for the '" + endpoint.Contract.ContractType + "' endpoint has it disabled");
 
             foreach (OperationDescription operation in endpoint.Contract.Operations)
             {

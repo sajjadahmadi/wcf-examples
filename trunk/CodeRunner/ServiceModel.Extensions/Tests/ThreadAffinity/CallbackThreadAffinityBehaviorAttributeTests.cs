@@ -96,6 +96,17 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
         // [TestCleanup()]
         // public void MyTestCleanup() { }
         //
+        ServiceHost<MyService> CreateHost(string address)
+        {
+            Binding binding = new NetNamedPipeBinding();
+
+            ServiceHost<MyService> host = new ServiceHost<MyService>();
+            host.AddServiceEndpoint<IMyContract>(binding, address);
+            host.IncludeExceptionDetailInFaults = true;
+            host.Open();
+
+            return host;
+        }
         #endregion
 
         [TestMethod]
@@ -117,16 +128,5 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
             }
         }
 
-        ServiceHost<MyService> CreateHost(string address)
-        {
-            Binding binding = new NetNamedPipeBinding();
-
-            ServiceHost<MyService> host = new ServiceHost<MyService>();
-            host.AddServiceEndpoint<IMyContract>(binding, address);
-            host.IncludeExceptionDetailInFaults = true;
-            host.Open();
-
-            return host;
-        }
     }
 }
