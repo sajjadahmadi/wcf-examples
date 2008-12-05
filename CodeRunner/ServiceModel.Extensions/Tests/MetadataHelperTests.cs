@@ -8,6 +8,23 @@ namespace System.ServiceModel.Test
     [TestClass()]
     public class MetadataHelperTests
     {
+        #region Service
+        [ServiceContract]
+        interface ITestContract
+        {
+            [OperationContract]
+            string MyOperation();
+        }
+
+        class TestService : ITestContract
+        {
+            public string MyOperation()
+            {
+                return "MyResult";
+            }
+        }
+        #endregion
+
         /// <summary>
         ///A test for SupportsContract
         ///</summary>

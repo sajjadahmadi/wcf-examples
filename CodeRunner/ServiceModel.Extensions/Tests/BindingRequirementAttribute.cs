@@ -37,8 +37,8 @@ namespace System.ServiceModel.Extension.Test
             // but it throws a CommunicationObjectFaultedException
             using (ServiceHost host = new ServiceHost(typeof(TestService2)))
             {
-                BasicHttpBinding binding = new BasicHttpBinding();
-                string address = string.Format("http://localhost:8080/{0}", Guid.NewGuid().ToString());
+                BasicHttpBinding binding = new BasicHttpBinding();  // Does not support transactions
+                string address = "http://localhost:8080/" + Guid.NewGuid().ToString();
                 host.AddServiceEndpoint(typeof(ITestContract2), binding, address);
                 host.Open();
             }
@@ -54,7 +54,7 @@ namespace System.ServiceModel.Extension.Test
             {
                 NetNamedPipeBinding binding = new NetNamedPipeBinding();
                 //binding.TransactionFlow = true;
-                string address = string.Format("net.pipe://localhost/{0}", Guid.NewGuid().ToString());
+                string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
                 host.AddServiceEndpoint(typeof(ITestContract2), binding, address);
                 host.Open();
             }

@@ -9,6 +9,23 @@ namespace System.ServiceModel.Test
     [TestClass]
     public class InProcFactoryTests
     {
+        #region Service
+        [ServiceContract]
+        interface ITestContract
+        {
+            [OperationContract]
+            string MyOperation();
+        }
+
+        class TestService : ITestContract
+        {
+            public string MyOperation()
+            {
+                return "MyResult";
+            }
+        }
+        #endregion
+
         [TestMethod]
         public void CreateInstanceTest()
         {
