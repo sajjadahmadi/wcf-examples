@@ -3,6 +3,7 @@
 #r "System.Runtime.Serialization"
 #load "InProcHost.fsx"
 open System
+open System.Threading
 open System.Windows.Forms
 open System.ServiceModel
 open Mcts_70_503
@@ -18,6 +19,7 @@ type IFormManager =
 type MyForm() as this =
     inherit Form()
     
+    let context = SynchronizationContext.Current
     let mutable host : InProcHost<MyForm> option = None
     let label = new Label(Text="0")
     do this.Controls.Add(label)
@@ -33,12 +35,14 @@ type MyForm() as this =
     member this.Host = Option.get host
     
     member this.IncrementLabel() =
-        label.Text <- string (int label.Text + 1)    
+        label.Text <- string (int label.Text + 1)
         
     interface IFormManager with
-        member this.IncrementLabel() = this.IncrementLabel()
+        member this.IncrementLabel() = 
+            context.Send((fun _ -> this.IncrementLabel()), null)
 
 
 let form = new MyForm()
 let proxy = form.Host.CreateProxy<IFormManager>()
+proxy.IncrementLabel()
 form.ShowDialog()
