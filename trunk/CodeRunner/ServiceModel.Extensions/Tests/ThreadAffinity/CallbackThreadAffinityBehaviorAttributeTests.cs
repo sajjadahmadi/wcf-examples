@@ -10,17 +10,17 @@ using CodeRunner.ServiceModel.ThreadAffinity;
 
 namespace CodeRunner.ServiceModel.Test.ThreadAffinity
 {
-    interface IMyContractCallback
-    {
-        [OperationContract]
-        void OnCallback();
-    }
-
+    #region Service
     [ServiceContract(CallbackContract = typeof(IMyContractCallback))]
     interface IMyContract
     {
         [OperationContract]
         void InvokeCallback();
+    }
+    interface IMyContractCallback
+    {
+        [OperationContract]
+        void OnCallback();
     }
 
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
@@ -28,16 +28,34 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
     {
         public void InvokeCallback()
         {
+            // Do something
             IMyContractCallback channel = OperationContext.Current.
                 GetCallbackChannel<IMyContractCallback>();
             channel.OnCallback();
         }
+    } 
+    #endregion
+
+    #region Client
+    [CallbackThreadAffinityBehavior(typeof(MyCallbackClient), "Callback Thread")]
+    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
+    class MyCallbackClient : IMyContractCallback
+    {
+        public string m_threadName;
+        public void OnCallback()
+        {
+            // Manually lock local resources in case non-WCF threads try 
+            // to access this instances resources.
+            lock (this)
+            {
+                m_threadName = Thread.CurrentThread.Name;
+            }
+        }
     }
 
-    [CallbackThreadAffinityBehavior(typeof(MyContractClient), "Callback Thread")]
-    class MyContractClient : DuplexClientBase<IMyContract>, IMyContract
+    class MyServiceClient : DuplexClientBase<IMyContract>, IMyContract
     {
-        public MyContractClient(InstanceContext callbackInstance, Binding binding, string remoteAddress)
+        public MyServiceClient(InstanceContext callbackInstance, Binding binding, string remoteAddress)
             : base(callbackInstance, binding, new EndpointAddress(remoteAddress))
         { }
 
@@ -45,10 +63,11 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
         {
             Channel.InvokeCallback();
         }
-    }
+    } 
+    #endregion
 
     [TestClass]
-    public class CallbackThreadAffinityBehaviorAttributeTests : IMyContractCallback
+    public class CallbackThreadAffinityBehaviorAttributeTests
     {
         #region Additional test attributes
         //
@@ -63,43 +82,44 @@ namespace CodeRunner.ServiceModel.Test.ThreadAffinity
         // public static void MyClassCleanup() { }
         //
         // Use TestInitialize to run code before running each test 
-        [TestInitialize()]
-        public void MyTestInitialize() { m_threadName = null; }
-
+        //[TestInitialize()]
+        //public void MyTestInitialize() { }
+        //
         // Use TestCleanup to run code after each test has run
         // [TestCleanup()]
         // public void MyTestCleanup() { }
         //
         #endregion
 
-        internal string m_threadName;
-
-        public void OnCallback()
-        {
-            m_threadName = Thread.CurrentThread.Name;
-        }
-
         [TestMethod]
         public void CallbackThreadAffinityBehaviorAttributeTest()
         {
             Assert.IsNull(SynchronizationContext.Current);
 
-            Binding binding = new NetNamedPipeBinding();
             string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-
-            using (ServiceHost<MyService> host = new ServiceHost<MyService>())
+            using (ServiceHost<MyService> host = CreateHost(address))
             {
-                host.AddServiceEndpoint<IMyContract>(binding, address);
-                host.IncludeExceptionDetailInFaults = true;
-                host.Open();
-                InstanceContext callbackContext = new InstanceContext(this);
-                MyContractClient client = new MyContractClient(callbackContext, binding, address);
+                MyCallbackClient callback = new MyCallbackClient();
+                InstanceContext callbackContext = new InstanceContext(callback);
+
+                MyServiceClient client = new MyServiceClient(callbackContext, new NetNamedPipeBinding(), address);
                 client.Open();
                 client.InvokeCallback();
-                Thread.Sleep(5000);
-                Assert.AreEqual("Callback Thread", m_threadName);
+                Assert.AreEqual("Callback Thread", callback.m_threadName);
                 client.Close();
             }
+        }
+
+        ServiceHost<MyService> CreateHost(string address)
+        {
+            Binding binding = new NetNamedPipeBinding();
+
+            ServiceHost<MyService> host = new ServiceHost<MyService>();
+            host.AddServiceEndpoint<IMyContract>(binding, address);
+            host.IncludeExceptionDetailInFaults = true;
+            host.Open();
+
+            return host;
         }
     }
 }
