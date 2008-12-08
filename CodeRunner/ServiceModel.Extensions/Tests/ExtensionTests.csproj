@@ -59,11 +59,10 @@
     <Compile Include="ThreadAffinity\AffinitySynchronizerTests.cs" />
     <Compile Include="BindingRequirementAttribute.cs" />
     <Compile Include="DataContractSerializerTest.cs" />
-    <Compile Include="InProcFactoryTests.cs" />
+    <Compile Include="Hosting\InProcFactoryTests.cs" />
     <Compile Include="MetadataHelperTests.cs" />
-    <Compile Include="TestService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServiceHostTests.cs" />
+    <Compile Include="Hosting\ServiceHostTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ServiceModel.Extensions.csproj">
