@@ -13,13 +13,13 @@ namespace System.ServiceModel.Extensions
         const int MessageSizeMultiplier = 5;
 
         static ServiceEndpointCollection GetEndpoints(
-            string mexAddress,
+            Uri mexUri,
             BindingElement bindingElement)
         {
             CustomBinding binding = new CustomBinding(bindingElement);
 
             MetadataExchangeClient MEXClient = new MetadataExchangeClient(binding);
-            MetadataSet metadata = MEXClient.GetMetadata(new EndpointAddress(mexAddress));
+            MetadataSet metadata = MEXClient.GetMetadata(new EndpointAddress(mexUri));
 
             MetadataImporter importer = new WsdlImporter(metadata);
             return importer.ImportAllEndpoints();
@@ -27,26 +27,27 @@ namespace System.ServiceModel.Extensions
 
         public static ServiceEndpointCollection GetEndpoints(string mexAddress)
         {
-            Uri address = new Uri(mexAddress);
-            ServiceEndpointCollection endpoints = null;
-
-            switch (address.Scheme)
+            Uri mexUri = new Uri(mexAddress);
+            TransportBindingElement transportElement;
+            switch (mexUri.Scheme)
             {
                 case "net.tcp":
-                    TcpTransportBindingElement tcpBindingElement =
-                        new TcpTransportBindingElement();
-                    tcpBindingElement.MaxReceivedMessageSize *= MessageSizeMultiplier;
-                    endpoints = GetEndpoints(mexAddress, tcpBindingElement);
-                    return endpoints;
+                    transportElement = new TcpTransportBindingElement();
+                    break;
                 case "net.pipe":
-                    NamedPipeTransportBindingElement pipeBindingElement =
-                        new NamedPipeTransportBindingElement();
-                    pipeBindingElement.MaxReceivedMessageSize *= MessageSizeMultiplier;
-                    endpoints = GetEndpoints(mexAddress, pipeBindingElement);
-                    return endpoints;
+                    transportElement = new NamedPipeTransportBindingElement();
+                    break;
+                case "http":
+                    transportElement = new HttpTransportBindingElement();
+                    break;
+                case "https":
+                    transportElement = new HttpsTransportBindingElement();
+                    break;
                 default:
-                    throw new NotImplementedException("Support for scheme type not implemented.");
+                    throw new NotSupportedException("Scheme not supported.");
             }
+            transportElement.MaxReceivedMessageSize *= MessageSizeMultiplier;
+            return GetEndpoints(mexUri, transportElement); ;
         }
 
         public static bool SupportsContract(
