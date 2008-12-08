@@ -1,5 +1,0 @@
-﻿
-namespace System.ServiceModel.Test
-{
-
-}
