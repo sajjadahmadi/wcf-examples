@@ -30,34 +30,39 @@ namespace System.ServiceModel.Extension.Test
         }
 
         [TestMethod]
-        [ExpectedException(typeof(InvalidOperationException))]
-        public void InvalidBindingType()
+        public void FlowRequiredAndEnabled()
         {
-            // Expect this to throw an InvalidOperationException, 
-            // but it throws a CommunicationObjectFaultedException
-            using (ServiceHost host = new ServiceHost(typeof(TestService2)))
+            using (ServiceHost<TestService2> host = new ServiceHost<TestService2>())
             {
-                BasicHttpBinding binding = new BasicHttpBinding();  // Does not support transactions
-                string address = "http://localhost:8080/" + Guid.NewGuid().ToString();
-                host.AddServiceEndpoint(typeof(ITestContract2), binding, address);
+                NetNamedPipeBinding binding = new NetNamedPipeBinding();
+                binding.TransactionFlow = true;
+                string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
+                host.AddServiceEndpoint<ITestContract2>(binding, address);
                 host.Open();
             }
         }
 
         [TestMethod]
-        //[ExpectedException(typeof(InvalidOperationException))]
-        public void TransactionFlowDisabled()
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void FlowRequiredButNotSupported()
         {
-            // Expect this to throw an InvalidOperationException, 
-            // but it throws a CommunicationObjectFaultedException
-            using (ServiceHost<TestService2> host = new ServiceHost<TestService2>())
-            {
-                NetNamedPipeBinding binding = new NetNamedPipeBinding();
-                //binding.TransactionFlow = true;
-                string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-                host.AddServiceEndpoint(typeof(ITestContract2), binding, address);
-                host.Open();
-            }
+            ServiceHost host = new ServiceHost(typeof(TestService2));
+            BasicHttpBinding binding = new BasicHttpBinding();  // Does not support transactions
+            string address = "http://localhost:8080/" + Guid.NewGuid().ToString();
+            host.AddServiceEndpoint(typeof(ITestContract2), binding, address);
+            host.Open();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void FlowRequiredButNotEnabled()
+        {
+            ServiceHost<TestService2> host = new ServiceHost<TestService2>();
+            NetNamedPipeBinding binding = new NetNamedPipeBinding();
+            binding.TransactionFlow = false;  // default
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
+            host.AddServiceEndpoint(typeof(ITestContract2), binding, address);
+            host.Open();
         }
     }
 }
