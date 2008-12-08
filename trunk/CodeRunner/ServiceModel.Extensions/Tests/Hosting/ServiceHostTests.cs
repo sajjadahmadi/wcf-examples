@@ -29,29 +29,56 @@ namespace System.ServiceModel.Test
         #endregion
 
         [TestMethod]
-        public void EnableMetadataExchangeTest()
+        public void EnableMetadataExchange()
         {
             ServiceHost<TestService> host;
-
-            host = new ServiceHost<TestService>("http://localhost:8080");
-            host.AddServiceEndpoint(typeof(ITestContract), new WSHttpBinding(), "Test");
-            host.EnableMetadataExchange();
-            Assert.IsTrue(host.MetadataExchangeEnabled);
-            Assert.AreEqual(1, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
-                ep.Contract.ContractType == typeof(IMetadataExchange)));
-
-            host = new ServiceHost<TestService>("http://localhost:8080", "net.tcp://localhost:8081");
-            host.AddServiceEndpoint(typeof(ITestContract), new WSHttpBinding(), "Test");
-            Assert.IsFalse(host.MetadataExchangeEnabled);
-            host.EnableMetadataExchange();
-            Assert.AreEqual(2, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
-                ep.Contract.ContractType == typeof(IMetadataExchange)));
+            using (host = new ServiceHost<TestService>("http://localhost:8080"))
+            {
+                host.AddServiceEndpoint(typeof(ITestContract), new WSHttpBinding(), "Test");
+                host.EnableMetadataExchange();
+                Assert.IsTrue(host.MetadataExchangeEnabled);
+                Assert.AreEqual(1, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
+                    ep.Contract.ContractType == typeof(IMetadataExchange)));
+            }
         }
 
         [TestMethod]
-        public void TypeSafeSingletonTest()
+        public void EnableMetadataExchange_MultipleBaseAddresses()
         {
+            ServiceHost<TestService> host;
+            using (host = new ServiceHost<TestService>("http://localhost:8080", "net.tcp://localhost:8081"))
+            {
+                host.AddServiceEndpoint(typeof(ITestContract), new WSHttpBinding(), "Test");
+                Assert.IsFalse(host.MetadataExchangeEnabled);
+                host.EnableMetadataExchange();
+                Assert.AreEqual(2, host.Description.Endpoints.Count<ServiceEndpoint>(ep =>
+                    ep.Contract.ContractType == typeof(IMetadataExchange)));
+            }
+        }
 
+        [TestMethod]
+        public void CreateMultipleChannelProxies()
+        {
+            string address = "net.pipe://localhost/";
+            using (ServiceHost<TestService> host = new ServiceHost<TestService>())
+            {
+                host.AddServiceEndpoint<ITestContract>(new NetNamedPipeBinding(), address);
+                host.Open();
+                ITestContract proxy1 = host.CreateChannel<ITestContract>(new NetNamedPipeBinding(), address);
+                ITestContract proxy2 = host.CreateChannel<ITestContract>(new NetNamedPipeBinding(), address);
+                Assert.AreNotSame(proxy1, proxy2);
+                Assert.AreEqual<string>("MyResult", proxy1.MyOperation());
+                Assert.AreEqual<string>("MyResult", proxy2.MyOperation());
+                ((ICommunicationObject)proxy1).Close();
+                ((ICommunicationObject)proxy2).Close();
+            }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void TypeSafeSingleton()
+        {
+            Assert.Inconclusive("This test was never written.  Does it need to be here?");
         }
     }
 }
