@@ -43,6 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reference Projects", "Refer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Extensions", "..\CodeRunner\ServiceModel.Extensions\ServiceModel.Extensions.csproj", "{02565A66-4153-4217-BED5-55DAC69808D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaitHandle", "Concurrency\Asynchronous Calls\WaitHandle\WaitHandle.csproj", "{1FE307B2-0EE8-46A6-935B-9EE9E0BB5B88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,10 @@ Global
 		{02565A66-4153-4217-BED5-55DAC69808D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FE307B2-0EE8-46A6-935B-9EE9E0BB5B88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FE307B2-0EE8-46A6-935B-9EE9E0BB5B88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FE307B2-0EE8-46A6-935B-9EE9E0BB5B88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FE307B2-0EE8-46A6-935B-9EE9E0BB5B88}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +120,7 @@ Global
 		{989EB0FD-E1CE-4EA7-AD98-3B61EFED81C6} = {B389EABA-B505-4FBC-A548-20B511D4C30D}
 		{10CFA6B7-B0F5-4CD4-9750-AE1C56753D5E} = {3375E588-5DAA-41B5-8DAF-4B50F58E633C}
 		{93ED8347-6143-4526-8066-BCB4F42CB17D} = {E40746F3-3109-4738-84C1-6602F9E7C155}
+		{1FE307B2-0EE8-46A6-935B-9EE9E0BB5B88} = {E40746F3-3109-4738-84C1-6602F9E7C155}
 		{02565A66-4153-4217-BED5-55DAC69808D0} = {3F11D4A3-F2E0-4A09-A270-18AAF8DE25F6}
 	EndGlobalSection
 EndGlobal
