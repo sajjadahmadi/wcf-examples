@@ -55,7 +55,7 @@ namespace System.ServiceModel.Test
         /// A test for SupportsContract
         ///</summary>
         [TestMethod()]
-        public void SupportsContractTest0()
+        public void SupportsContractOverload1()
         {
             ServiceHost<TestService> host;
             using (host = new ServiceHost<TestService>("net.pipe://localhost/" + Guid.NewGuid().ToString()))
@@ -75,7 +75,7 @@ namespace System.ServiceModel.Test
         /// A test for SupportsContract
         ///</summary>
         [TestMethod()]
-        public void SupportsContractTest1()
+        public void SupportsContractOverload2()
         {
             ServiceHost<TestService> host;
             using (host = new ServiceHost<TestService>("net.pipe://localhost/" + Guid.NewGuid().ToString()))

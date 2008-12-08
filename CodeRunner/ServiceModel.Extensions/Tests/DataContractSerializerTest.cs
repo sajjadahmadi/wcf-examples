@@ -35,9 +35,8 @@ namespace System.ServiceModel.Test
             Assert.AreEqual(432, o.Value);
         }       
         
-
         [TestMethod()]
-        public void WriteObjectTest()
+        public void DataContractSerializer_WriteObject()
         {
             XmlObjectSerializer serializer = new DataContractSerializer<TestDataContract>();
             MemoryStream stream = new MemoryStream();
@@ -54,7 +53,7 @@ namespace System.ServiceModel.Test
         }
 
         [TestMethod()]
-        public void ReadObjectTest()
+        public void DataContractSerializer_ReadObject()
         {
             DataContractSerializer<TestDataContract> target = new DataContractSerializer<TestDataContract>();
             Stream stream = new MemoryStream(Encoding.Default.GetBytes(TestDataContract.SER_DATA));
