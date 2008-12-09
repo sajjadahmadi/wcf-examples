@@ -5,6 +5,7 @@ using System.Text;
 using System.ServiceModel;
 using System.Diagnostics;
 using System.ServiceModel.Channels;
+using System.Threading;
 
 namespace CodeRunner.Service
 {
@@ -72,8 +73,6 @@ namespace CodeRunner.Client
 
                 /* Do some work */
 
-                Debug.Assert(result1.IsCompleted == false);
-
                 int sum;
 
                 sum = proxy.EndAdd(result1);  // This may block
@@ -85,7 +84,7 @@ namespace CodeRunner.Client
                 Debug.Assert(sum == 9);
 
 
-                (proxy as ICommunicationObject).Close();
+                proxy.Close();
             }
         }
     }

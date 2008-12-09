@@ -68,25 +68,22 @@ namespace CodeRunner.Client
 
                 CalculatorClient proxy = new CalculatorClient(new NetNamedPipeBinding(), address);
 
-                IAsyncResult result1 = proxy.BeginAdd(2, 3, null, null);
-                IAsyncResult result2 = proxy.BeginAdd(4, 5, null, null);
+                ManualResetEvent completeEvent = new ManualResetEvent(false);
+                int sum = 0;
+
+                AsyncCallback completion = delegate(IAsyncResult result)
+                {
+                    Debug.Assert(result.IsCompleted == true);
+                    sum = proxy.EndAdd(result);  // This will not block
+                    completeEvent.Set();
+                };
+
+                proxy.BeginAdd(2, 3, completion, null);
 
                 /* Do some work */
 
-                int sum;
-
-                result1.AsyncWaitHandle.WaitOne(10);  // This will wait up to 10ms for result1 to complete
-                WaitHandle[] handleArray = { result1.AsyncWaitHandle, result2.AsyncWaitHandle };
-                WaitHandle.WaitAll(handleArray, 10);  // This will wait up to 10ms for ALL to complete
-                WaitHandle.WaitAny(handleArray, 10);  // This will wait up to 10ms for ANY to complete
-
-                sum = proxy.EndAdd(result1);  // This will block only if wait above did not complete
-                Debug.Assert(result1.IsCompleted == true);
+                completeEvent.WaitOne();
                 Debug.Assert(sum == 5);
-
-                sum = proxy.EndAdd(result2);  // This will block only if wait above did not complete
-                Debug.Assert(result2.IsCompleted == true);
-                Debug.Assert(sum == 9);
 
                 proxy.Close();
             }
