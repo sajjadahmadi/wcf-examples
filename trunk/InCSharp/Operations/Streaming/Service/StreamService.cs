@@ -12,13 +12,9 @@ namespace Service
     
     public class StreamService : IStreamServiceContract
     {
-        #region IStreamServiceContract Members
-
         public Stream EchoStream(Stream stream)
         {
             return stream;
         }
-
-        #endregion
     }
 }
