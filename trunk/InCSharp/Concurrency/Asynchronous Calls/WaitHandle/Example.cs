@@ -74,6 +74,8 @@ namespace CodeRunner.Client
 
                 /* Do some work */
 
+                Debug.Assert(result1.IsCompleted == false);
+
                 int sum;
 
                 result1.AsyncWaitHandle.WaitOne(10);  // Wait 10ms for this to complete
@@ -82,10 +84,13 @@ namespace CodeRunner.Client
                 WaitHandle.WaitAny(handleArray, 10);  // Wait 10ms for ANY to complete
 
                 sum = proxy.EndAdd(result1);  // This will block only if wait above did not complete
+                Debug.Assert(result1.IsCompleted == true);
                 Debug.Assert(sum == 5);
 
                 sum = proxy.EndAdd(result2);  // This will block only if wait above did not complete
+                Debug.Assert(result2.IsCompleted == true);
                 Debug.Assert(sum == 9);
+
 
                 (proxy as ICommunicationObject).Close();
             }
