@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaitHandle", "Concurrency\A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Completion Callback", "Concurrency\Asynchronous Calls\Completion Callback\Completion Callback.csproj", "{A3C3B218-AC28-4E49-92E5-3C879D6C344A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Callback SynchronizationContext", "Concurrency\Asynchronous Calls\Callback SynchronizationContext\Callback SynchronizationContext.csproj", "{1F657E99-2368-44CE-BD6F-5D654374E43A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{A3C3B218-AC28-4E49-92E5-3C879D6C344A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A3C3B218-AC28-4E49-92E5-3C879D6C344A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A3C3B218-AC28-4E49-92E5-3C879D6C344A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F657E99-2368-44CE-BD6F-5D654374E43A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F657E99-2368-44CE-BD6F-5D654374E43A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F657E99-2368-44CE-BD6F-5D654374E43A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F657E99-2368-44CE-BD6F-5D654374E43A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -128,6 +134,7 @@ Global
 		{93ED8347-6143-4526-8066-BCB4F42CB17D} = {E40746F3-3109-4738-84C1-6602F9E7C155}
 		{1FE307B2-0EE8-46A6-935B-9EE9E0BB5B88} = {E40746F3-3109-4738-84C1-6602F9E7C155}
 		{A3C3B218-AC28-4E49-92E5-3C879D6C344A} = {E40746F3-3109-4738-84C1-6602F9E7C155}
+		{1F657E99-2368-44CE-BD6F-5D654374E43A} = {E40746F3-3109-4738-84C1-6602F9E7C155}
 		{02565A66-4153-4217-BED5-55DAC69808D0} = {3F11D4A3-F2E0-4A09-A270-18AAF8DE25F6}
 	EndGlobalSection
 EndGlobal
