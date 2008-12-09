@@ -72,13 +72,18 @@ namespace CodeRunner.Client
 
                 /* Do some work */
 
+                Debug.Assert(result1.IsCompleted == false);
+
                 int sum;
 
                 sum = proxy.EndAdd(result1);  // This may block
+                Debug.Assert(result1.IsCompleted == true);
                 Debug.Assert(sum == 5);
 
                 sum = proxy.EndAdd(result2);  // This may block
+                Debug.Assert(result2.IsCompleted == true);
                 Debug.Assert(sum == 9);
+
 
                 (proxy as ICommunicationObject).Close();
             }
