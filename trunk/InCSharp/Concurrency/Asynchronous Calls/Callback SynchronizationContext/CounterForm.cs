@@ -42,6 +42,7 @@ namespace CodeRunner
             Debug.Assert(result.IsCompleted == true);
 
             int count = proxy.EndIncrement(result);  // This will not block
+            result.AsyncWaitHandle.Close();          // Clean up
             SendOrPostCallback callback = delegate
                         {
                             Debug.Assert(Thread.CurrentThread.Name == "Form Thread");
