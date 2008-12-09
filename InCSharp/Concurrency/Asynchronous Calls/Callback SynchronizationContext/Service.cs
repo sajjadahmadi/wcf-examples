@@ -13,7 +13,6 @@ namespace CodeRunner.Service
     {
         public int Increment(int number)
         {
-            Thread.Sleep(1000);
             return ++number;
         }
     }
