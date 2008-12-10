@@ -7,7 +7,7 @@
     <ProjectGuid>{0E0C0D14-140A-44E8-8908-F2DF66F125A2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>System.ServiceModel.Examples</RootNamespace>
+    <RootNamespace>CodeRunner.ServiceModel.Examples</RootNamespace>
     <AssemblyName>Faults</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

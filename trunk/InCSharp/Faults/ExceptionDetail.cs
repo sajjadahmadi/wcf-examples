@@ -1,27 +1,58 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.ServiceModel;
+using System;
+using System.Runtime.Serialization;
+using System.ServiceModel.Channels;
 
-namespace System.ServiceModel.Examples
+namespace CodeRunner.ServiceModel.Examples
 {
     [TestClass]
     public class FaultExceptionDetail
     {
-        #region Additional test attributes
+        // Contracts
+        [ServiceContract]
+        interface IMyContract
+        {
+            [OperationContract]
+            void ThrowClrException();
+        }
+
+        // Service
+        [ServiceBehavior(IncludeExceptionDetailInFaults = true)] // ExpectedException
+        class MyService : IMyContract
+        {
+            public void ThrowClrException()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        // Client
+        class MyContractClient : ClientBase<IMyContract>, IMyContract
+        {
+            public MyContractClient() { }
+            public MyContractClient(Binding binding, string remoteAddress) :
+                base(binding, new EndpointAddress(remoteAddress)) { }
+
+            public void ThrowClrException()
+            { Channel.ThrowClrException(); }
+        }
+
+        #region Host
         static NetNamedPipeBinding binding;
         static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         static ServiceHost<MyService> host;
 
-        // Use ClassInitialize to run code before running the first test in the class
         [ClassInitialize()]
         public static void MyClassInitialize(TestContext testContext)
         {
             binding = new NetNamedPipeBinding();
             host = new ServiceHost<MyService>();
             host.AddServiceEndpoint<IMyContract>(binding, address);
-            host.IncludeExceptionDetailInFaults = true;
+            // host.IncludeExceptionDetailInFaults = true;
             host.Open();
         }
 
-        // Use ClassCleanup to run code after all tests in a class have run
         [ClassCleanup()]
         public static void MyClassCleanup()
         {
@@ -34,15 +65,15 @@ namespace System.ServiceModel.Examples
         public void ExceptionDetail()
         {
             MyContractClient client = new MyContractClient(binding, address);
-            client.Open();
             try
-            { client.ThrowClrException(); }
+            {
+                client.ThrowClrException();
+            }
             catch (FaultException<ExceptionDetail> ex)
             {
                 Assert.AreEqual("System.NotImplementedException", ex.Detail.Type);
                 throw;
             }
-            client.Close();
         }
     }
 }
