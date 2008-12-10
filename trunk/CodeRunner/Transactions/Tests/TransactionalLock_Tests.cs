@@ -55,7 +55,6 @@ namespace Transactions.Tests
 
         [TestMethod]
         public void MultipleLocksWithQueueAndTimeout()
-            // TODO:  Recreate this f'ing test!
         {
             TransactionalLock _lock = new TransactionalLock();
 
@@ -64,6 +63,7 @@ namespace Transactions.Tests
                 _lock.Lock();
                 Assert.IsTrue(_lock.IsLocked);
                 Assert.AreEqual(0, _lock.PendingTransactionCount);
+                Assert.Inconclusive("TODO: Complete this test!");
             }
         }
 
