@@ -14,7 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{20A9BF9B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Extensions", "ServiceModel.Extensions\ServiceModel.Extensions.csproj", "{02565A66-4153-4217-BED5-55DAC69808D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTests", "ServiceModel.Extensions\Tests\ExtensionTests.csproj", "{182D2818-5B2A-4B66-AB43-63D74FD5259C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Extensions", "ServiceModel.Extensions\Tests\ServiceModel.Extensions.csproj", "{182D2818-5B2A-4B66-AB43-63D74FD5259C}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
