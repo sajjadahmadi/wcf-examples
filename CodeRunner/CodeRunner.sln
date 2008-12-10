@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transactions", "Transaction
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{20A9BF9B-2827-4559-901B-2D18A937F73C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceModel.Extensions", "ServiceModel.Extensions\ServiceModel.Extensions.csproj", "{02565A66-4153-4217-BED5-55DAC69808D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExtensionTests", "ServiceModel.Extensions\Tests\ExtensionTests.csproj", "{182D2818-5B2A-4B66-AB43-63D74FD5259C}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = CodeRunner.vsmdi
@@ -29,11 +33,20 @@ Global
 		{28E99C00-DCD3-4D2F-80A9-D498EC348962}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28E99C00-DCD3-4D2F-80A9-D498EC348962}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28E99C00-DCD3-4D2F-80A9-D498EC348962}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02565A66-4153-4217-BED5-55DAC69808D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{28E99C00-DCD3-4D2F-80A9-D498EC348962} = {20A9BF9B-2827-4559-901B-2D18A937F73C}
+		{182D2818-5B2A-4B66-AB43-63D74FD5259C} = {20A9BF9B-2827-4559-901B-2D18A937F73C}
 	EndGlobalSection
 EndGlobal
