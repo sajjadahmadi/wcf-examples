@@ -1,37 +1,45 @@
-﻿using System.ServiceModel.Description;
-using System.ServiceModel.Dispatcher;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ServiceModel.Channels;
+using System.ServiceModel.Description;
+using System.Reflection;
 
 namespace System.ServiceModel.Errors
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public class ErrorHandlerBehaviorAttribute : Attribute, IErrorHandler, IServiceBehavior
+    public class ErrorHandlerBehaviorAttribute : Attribute, IErrorHandlerBehavior
     {
-        #region IServiceBehavior Members
-        protected Type ServiceType { get; set; }
+        IErrorHandlerBehavior behavior;
 
-        void IServiceBehavior.AddBindingParameters(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters) { }
-        void IServiceBehavior.ApplyDispatchBehavior(ServiceDescription description, ServiceHostBase host)
+        public ErrorHandlerBehaviorAttribute(Type behaviorType)
         {
-            ServiceType = description.ServiceType;
-            foreach (ChannelDispatcher dispatcher in host.ChannelDispatchers)
-            { dispatcher.ErrorHandlers.Add(this); }
+            behavior = Assembly.GetCallingAssembly().CreateInstance(behaviorType.Name) as IErrorHandlerBehavior ;
         }
-        void IServiceBehavior.Validate(ServiceDescription serviceDescription, ServiceHostBase serviceHostBase) { }
-        #endregion
 
         #region IErrorHandler Members
 
-        bool IErrorHandler.HandleError(Exception error)
-        {
-            // TODO: Handle error here!
-            return false;
-        }
+        public bool HandleError(Exception error)
+        { return behavior.HandleError(error); }
 
-        void IErrorHandler.ProvideFault(Exception error, System.ServiceModel.Channels.MessageVersion version, ref System.ServiceModel.Channels.Message fault)
+        public void ProvideFault(Exception error, MessageVersion version, ref Message fault)
+        { behavior.ProvideFault(error, version, ref fault); }
+
+        #endregion
+
+        #region IServiceBehavior Members
+
+        public void AddBindingParameters(ServiceDescription description, ServiceHostBase host, Collection<ServiceEndpoint> endpoints, BindingParameterCollection bindingParameters)
+        { behavior.AddBindingParameters(description, host, endpoints, bindingParameters); }
+        public void ApplyDispatchBehavior(ServiceDescription description, ServiceHostBase host)
+        { behavior.ApplyDispatchBehavior(description, host); }
+        public void Validate(ServiceDescription description, ServiceHostBase host)
+        { behavior.Validate(description, host); }
+
+        #endregion
+
+        #region IErrorHandlerBehavior Members
+
+        public Type ServiceType
         {
-            ErrorHandlerHelper.PromoteException(ServiceType, error, version, ref fault);
+            get { return behavior.ServiceType; }
         }
 
         #endregion

@@ -56,8 +56,10 @@
     <Compile Include="DataContractSerializer.cs" />
     <Compile Include="DuplexChannelFactory.cs" />
     <Compile Include="DuplexClientBase.cs" />
-    <Compile Include="Errors\ErrorHandlerBehaviorAttribute.cs" />
     <Compile Include="Errors\ErrorHandlerHelper.cs" />
+    <Compile Include="Errors\ErrorHandlerBehaviorAttribute.cs" />
+    <Compile Include="Errors\IErrorHandlerBehavior.cs" />
+    <Compile Include="Errors\PromoteExceptionBehavior.cs" />
     <Compile Include="Hosting\FormHost.cs">
       <SubType>Form</SubType>
     </Compile>

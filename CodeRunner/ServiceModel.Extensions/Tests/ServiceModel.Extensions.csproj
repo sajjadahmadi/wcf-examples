@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Errors\PromoteExceptionBehavior.cs" />
     <Compile Include="Hosting\IThreadAffinityTests.cs" />
     <Compile Include="ThreadAffinity\CallbackThreadAffinityBehaviorAttributeTests.cs" />
     <Compile Include="ThreadAffinity\ThreadAffinityBehaviorAttributeTests.cs" />

@@ -1,6 +1,7 @@
 ﻿using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.ServiceModel.Errors;
 
 namespace System.ServiceModel.Examples
 {
@@ -16,12 +17,13 @@ namespace System.ServiceModel.Examples
         }
 
         // Service
-        [ServiceBehavior(IncludeExceptionDetailInFaults = true)] // ExpectedException
+        [ServiceBehavior(IncludeExceptionDetailInFaults = true)] 
+        [ErrorHandlerBehavior(typeof(PromoteExceptionBehavior))]
         class MyService : IMyContract
         {
             public void MyMethod()
-            { 
-                throw new FaultException("Untyped Fault."); 
+            {
+                throw new FaultException("Untyped Fault.");
             }
         }
 
@@ -33,8 +35,8 @@ namespace System.ServiceModel.Examples
                 base(binding, new EndpointAddress(remoteAddress)) { }
 
             public void MyMethod()
-            { 
-                Channel.MyMethod(); 
+            {
+                Channel.MyMethod();
             }
         }
 
@@ -48,9 +50,7 @@ namespace System.ServiceModel.Examples
         {
             binding = new NetNamedPipeBinding();
             host = new ServiceHost<MyService>();
-            handler = new BasicErrorHandler();
             host.AddServiceEndpoint<IMyContract>(binding, address);
-            host.AddErrorHandler(handler);
             host.Open();
         }
 
@@ -61,17 +61,6 @@ namespace System.ServiceModel.Examples
             host.Close();
         }
         #endregion
-
-        // Basic Error handler
-        static BasicErrorHandler handler;
-        class BasicErrorHandler : IErrorHandler
-        {
-            internal bool ProvideFaultCalled { get; set; }
-            bool IErrorHandler.HandleError(Exception error)
-            { return false; }
-            void IErrorHandler.ProvideFault(Exception error, MessageVersion version, ref Message fault)
-            { ProvideFaultCalled = true; }
-        }
 
         [TestMethod]
         [ExpectedException(typeof(FaultException))]
@@ -84,7 +73,6 @@ namespace System.ServiceModel.Examples
             }
             finally
             {
-                Assert.IsTrue(handler.ProvideFaultCalled);
                 client.Close();
             }
         }
