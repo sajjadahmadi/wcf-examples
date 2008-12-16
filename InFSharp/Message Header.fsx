@@ -27,20 +27,7 @@ type MyService() =
             let hdrs = OperationContext.Current.IncomingMessageHeaders
             printfn "\nIncomingHeaders\n-----------------"
             for h in hdrs do
-                printfn "%s: %s\n" h.Name (string h)
-
-
-type MyServiceClient() =
-    inherit ClientBase<IMyContract>(new NetNamedPipeBinding(), new EndpointAddress("net.pipe://localhost"))
-    
-    let c = base.ChannelFactory.CreateChannel()
-    
-    member this.MyMethod() =
-        let hdrs = OperationContext.Current.OutgoingMessageHeaders
-        printfn "OutgoingHeaders\n------------------"
-        for h in hdrs do
-            printfn "%s: %s\n" h.Name (string h)
-        c.MyMethod()
+                printfn "%s: %A\n" h.Name h
 
 
 let binding = new NetNamedPipeBinding()
@@ -50,12 +37,14 @@ host.IncludeExceptionDetailInFaults <- true
 host.AddEndpoint<IMyContract>(binding)
 host.Open()
 
-let client = new MyServiceClient()
+let factory = new ChannelFactory<IMyContract>(new NetNamedPipeBinding())
+let proxy = factory.CreateChannel(new EndpointAddress("net.pipe://localhost"))
 let headerData = { Member1 = "value" }
 let header = new MessageHeader<MyCustomType>(headerData)
-using (new OperationContextScope(client.InnerChannel)) (fun scope ->
+
+using (new OperationContextScope(proxy :?> IContextChannel)) (fun scope ->
     OperationContext.Current.OutgoingMessageHeaders.Add(
         header.GetUntypedHeader("MyCustomType", "ServiceModelEx"))
-    client.MyMethod()
+    proxy.MyMethod()
     Threading.Thread.Sleep(100))
-client.Close()
+
