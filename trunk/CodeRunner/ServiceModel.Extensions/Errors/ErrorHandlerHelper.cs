@@ -20,14 +20,15 @@ namespace System.ServiceModel.Errors
         /// <param name="fault"></param>
         public static void PromoteException(Type serviceType, Exception error, MessageVersion version, ref Message fault)
         {
-            // TODO: Why are we checking this?
             if (error is FaultException && error.GetType().IsGenericType)
             {
+                // No need to promote... Already FaultException<T>
                 Debug.Assert(error.GetType().GetGenericTypeDefinition() == typeof(FaultException<>));
-                return;
+                return; 
             }
 
-            if (!ExceptionInContract(serviceType, error)) return;
+            bool inContract = ExceptionInContract(serviceType, error);
+            if (!inContract) return;
 
             try
             {
@@ -66,9 +67,11 @@ namespace System.ServiceModel.Errors
 
         static string GetServiceMethodName(Exception error)
         {
+            // TODO: Couldn't we get the method name some other way?
             const string WCFPrefix = "SyncInvoke";
             int start = error.StackTrace.IndexOf(WCFPrefix);
-            if (start != -1) { Debug.Fail("Method not found."); return string.Empty; }
+            
+            Debug.Assert(start != -1, "Method not found. Did they change the prefix?");
 
             string trimmed = error.StackTrace.Substring(start + WCFPrefix.Length);
             string[] parts = trimmed.Split('(');

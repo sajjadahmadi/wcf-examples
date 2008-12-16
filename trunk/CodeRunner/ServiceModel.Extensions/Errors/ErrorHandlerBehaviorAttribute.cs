@@ -11,16 +11,20 @@ namespace System.ServiceModel.Errors
 
         public ErrorHandlerBehaviorAttribute(Type behaviorType)
         {
-            behavior = Assembly.GetCallingAssembly().CreateInstance(behaviorType.Name) as IErrorHandlerBehavior ;
+            behavior = Activator.CreateInstance(behaviorType) as IErrorHandlerBehavior ;
         }
 
         #region IErrorHandler Members
 
         public bool HandleError(Exception error)
-        { return behavior.HandleError(error); }
+        { 
+            return behavior.HandleError(error); 
+        }
 
         public void ProvideFault(Exception error, MessageVersion version, ref Message fault)
-        { behavior.ProvideFault(error, version, ref fault); }
+        { 
+            behavior.ProvideFault(error, version, ref fault); 
+        }
 
         #endregion
 

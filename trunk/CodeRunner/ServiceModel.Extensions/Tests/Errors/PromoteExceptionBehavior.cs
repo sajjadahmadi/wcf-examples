@@ -2,6 +2,7 @@
 using System.ServiceModel.Dispatcher;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel.Errors;
+using System.Diagnostics;
 
 namespace System.ServiceModel.Examples
 {
@@ -13,17 +14,19 @@ namespace System.ServiceModel.Examples
         interface IMyContract
         {
             [OperationContract]
+            [FaultContract(typeof(ApplicationException))]
             void MyMethod();
         }
 
         // Service
         [ServiceBehavior(IncludeExceptionDetailInFaults = true)] 
         [ErrorHandlerBehavior(typeof(PromoteExceptionBehavior))]
+        [DebuggerNonUserCode()]
         class MyService : IMyContract
         {
             public void MyMethod()
             {
-                throw new FaultException("Untyped Fault.");
+                throw new ApplicationException("This should get promoted to a fault exception.");
             }
         }
 
@@ -63,8 +66,8 @@ namespace System.ServiceModel.Examples
         #endregion
 
         [TestMethod]
-        [ExpectedException(typeof(FaultException))]
-        public void BasicErrorHandler_ProvideFault()
+        [ExpectedException(typeof(FaultException<ApplicationException>))]
+        public void ErrorHandlerBehavior_PromoteExceptionBehavior()
         {
             MyContractClient client = new MyContractClient(binding, address);
             try
