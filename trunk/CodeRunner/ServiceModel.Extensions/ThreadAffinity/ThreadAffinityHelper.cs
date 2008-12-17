@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.ServiceModel.Dispatcher;
-using System.Diagnostics;
 
 namespace CodeRunner.ServiceModel.ThreadAffinity
 {

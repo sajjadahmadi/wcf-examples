@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.ServiceModel.Channels;
 using System.Diagnostics;
+using System.ServiceModel.Channels;
 
 namespace System.ServiceModel
 {
