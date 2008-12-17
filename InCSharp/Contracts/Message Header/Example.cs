@@ -11,7 +11,6 @@ namespace CodeRunner
 {
     class Example
     {
-        static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         // Contracts
         [DataContract]
         class MyCustomType
@@ -65,7 +64,8 @@ namespace CodeRunner
 
         static void Main(string[] args)
         {
-            using (ServiceHost host = new ServiceHost(typeof(MyService), new Uri(address)))
+            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
+            using (ServiceHost host = new ServiceHost(typeof(MyService)))
             {
                 host.AddServiceEndpoint(typeof(IMyContract), new NetNamedPipeBinding(), address);
                 host.Open();
