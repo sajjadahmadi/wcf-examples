@@ -1,8 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
 using System.ServiceModel;
-using System;
-using System.Runtime.Serialization;
 using System.ServiceModel.Channels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CodeRunner.ServiceModel.Examples
 {

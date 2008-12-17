@@ -1,7 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
-using System.Reflection;
 
 namespace System.ServiceModel.Errors
 {

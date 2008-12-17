@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.ServiceModel;
-using System.Threading;
 using System.Windows.Forms;
-using CodeRunner.Client;
 
 namespace CodeRunner
 {

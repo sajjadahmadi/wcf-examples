@@ -1,6 +1,6 @@
 ﻿using System;
-using System.ServiceModel;
 using System.Diagnostics;
+using System.ServiceModel;
 
 namespace SelfHosting {
 

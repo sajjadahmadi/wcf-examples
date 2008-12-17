@@ -1,5 +1,5 @@
-﻿using System.ServiceModel.Dispatcher;
-using System.ServiceModel.Description;
+﻿using System.ServiceModel.Description;
+using System.ServiceModel.Dispatcher;
 
 namespace System.ServiceModel.Errors
 {
