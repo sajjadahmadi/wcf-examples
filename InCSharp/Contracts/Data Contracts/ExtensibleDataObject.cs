@@ -1,13 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel;
-using System.ServiceModel.Extensions;
-using System.Runtime.Serialization;
 
-namespace System.ServiceModel.Examples
+namespace CodeRunner
 {
     [TestClass]
     public class ExtensibleDataObjectExample
@@ -43,14 +37,14 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void FromPersonToContactAndBack()
         {
-            // Serialize new Person
+            // Serialize Person
             Person p = new Person() { Name = "Mark", Age = 35 };
             string xml = DataContractSerializer<Person>.Serialize(p);
 
-            // Deserialize as Contact & expect Address to be default
+            // Deserialize as Contact & expect Address to be null
             Contact c = DataContractSerializer<Contact>.Deserialize(xml);
             Assert.AreEqual("Mark", c.Name);
-            Assert.AreEqual(default(string), c.Address);
+            Assert.IsNull(c.Address);
 
             // Reserialize Contact and Deserialize as Person
             // Expect Name & Age to have been preserved
@@ -67,7 +61,7 @@ namespace System.ServiceModel.Examples
             Contact c = new Contact() { Name = "Mark", Address = "1234 South Main St." };
             string xml = DataContractSerializer<Contact>.Serialize(c);
 
-            // Deserialize as Person & expect Age to be defaul
+            // Deserialize as Person & expect Age to be default
             Person p = DataContractSerializer<Person>.Deserialize(xml);
             Assert.AreEqual("Mark", c.Name);
             Assert.AreEqual(default(int), p.Age);
