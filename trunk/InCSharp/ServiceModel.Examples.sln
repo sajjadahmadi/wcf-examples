@@ -55,13 +55,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Security", "Security", "{85
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data Contracts", "Contracts\Data Contracts\Data Contracts.csproj", "{834D28AC-1DB8-483F-8D72-04E9A24A7245}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Security", "Security\Security\Security.csproj", "{660DBB65-5F3B-4706-91CB-F8833B7BDF72}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{32E38CF4-C294-4D53-B40C-06CC89E56EC7}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		ServiceModel.Examples.vsmdi = ServiceModel.Examples.vsmdi
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Security\Authentication\Authentication.csproj", "{660DBB65-5F3B-4706-91CB-F8833B7BDF72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authorization", "Security\Authorization\Authorization.csproj", "{8CAE9428-CB07-4545-8097-931D28C71861}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -144,6 +146,10 @@ Global
 		{660DBB65-5F3B-4706-91CB-F8833B7BDF72}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{660DBB65-5F3B-4706-91CB-F8833B7BDF72}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{660DBB65-5F3B-4706-91CB-F8833B7BDF72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CAE9428-CB07-4545-8097-931D28C71861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CAE9428-CB07-4545-8097-931D28C71861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CAE9428-CB07-4545-8097-931D28C71861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CAE9428-CB07-4545-8097-931D28C71861}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -170,5 +176,6 @@ Global
 		{6FE976EA-3C61-45CD-99D3-54A57E8B78BC} = {69A9D19F-9484-4BE8-B0B8-6F6BDA5EB2F8}
 		{834D28AC-1DB8-483F-8D72-04E9A24A7245} = {69A9D19F-9484-4BE8-B0B8-6F6BDA5EB2F8}
 		{660DBB65-5F3B-4706-91CB-F8833B7BDF72} = {85DF7C49-E071-40BA-8E5A-9E08A9B5256E}
+		{8CAE9428-CB07-4545-8097-931D28C71861} = {85DF7C49-E071-40BA-8E5A-9E08A9B5256E}
 	EndGlobalSection
 EndGlobal
