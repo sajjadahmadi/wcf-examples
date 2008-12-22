@@ -1,7 +1,6 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-namespace Mcts_70_503
 open System
 open System.IO
 open System.Diagnostics
