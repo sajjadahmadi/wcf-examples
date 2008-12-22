@@ -25,7 +25,7 @@ module internal InProcHost =
         | "net.pipe" -> NetPipe
         | "http"     -> Http
         | "https"    -> Https
-        | _          -> failwith "unkown scheme"
+        | _          -> failwith "unknown scheme"
         
     let getBaseUri (host: ServiceHost) scheme =
         let tryScheme (u: Uri) =
