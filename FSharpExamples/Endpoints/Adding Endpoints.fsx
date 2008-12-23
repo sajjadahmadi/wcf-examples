@@ -1,11 +1,8 @@
 #light
 #r "System.ServiceModel"
-#r "../System.ServiceModel.FSharp.dll"
 open System
 open System.ServiceModel
 open System.ServiceModel.Description
-open System.ServiceModel.FSharp.Uri
-open System.ServiceModel.FSharp.ServiceHost
 
 
 [<ServiceContract>]
@@ -15,10 +12,10 @@ type MyService() =
         printfn "MyService.MyMethod()"
 
 
-let host = create<MyService> None
-
+let uri = new Uri("net.tcp://localhost")
 let wsBinding = new WSHttpBinding()
 let tcpBinding = new NetTcpBinding()
+let host = new ServiceHost(typeof<MyService>, [| uri |])
 
 // An Endpoint is comprised of three things:
 //   Address
@@ -26,10 +23,10 @@ let tcpBinding = new NetTcpBinding()
 //   Contract
 host.AddServiceEndpoint(typeof<MyService>, wsBinding, "http://localhost:8000/MyService")
 host.AddServiceEndpoint(typeof<MyService>, tcpBinding, "net.tcp://localhost:8001/MyService")
-host.AddServiceEndpoint(typeof<MyService>, tcpBinding, "MyService", uri "net.tcp://localhost:8002")
+host.AddServiceEndpoint(typeof<MyService>, tcpBinding, "MyService", new Uri("net.tcp://localhost:8002"))
 
-opn host
+host.Open()
 printfn "Service opened at following URI's:"
-listenUris host |> Seq.iter (fun u -> printfn "  %A" u)
-Console.ReadKey(true) |> ignore
-close host
+host.Description.Endpoints
+|> Seq.iter (fun ep -> printfn "  %A" ep.Address.Uri)
+host.Close()
