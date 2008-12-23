@@ -1,11 +1,10 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.ServiceModel
 open System.ServiceModel.Channels
+
 
 type IMyContractCallback =
     [<OperationContract>]
@@ -25,21 +24,17 @@ type IMyContract =
 
 
 [<ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)>]
+// Try example with next line on and off and compare stack traces
+[<CallbackBehavior(IncludeExceptionDetailInFaults = true)>]
 type MyService() =
     interface IMyContract with
         member this.DoFaultException() =
             let callback = OperationContext.Current.GetCallbackChannel<IMyContractCallback>()
-            try
-                callback.ThrowFaultException()
-            with :? FaultException as ex ->
-                printfn "%s: %s" (ex.GetType().Name) ex.Message
+            callback.ThrowFaultException()
         
         member this.DoOtherException() =
             let callback = OperationContext.Current.GetCallbackChannel<IMyContractCallback>()
-            try
-                callback.ThrowOtherException()
-            with ex ->
-                printfn "%s: %s" (ex.GetType().Name) ex.Message
+            callback.ThrowOtherException()
 
 type MyContractClient(callbackInstance: obj, binding: Binding, remoteAddress: EndpointAddress) =
     inherit DuplexClientBase<IMyContract>(callbackInstance, binding, remoteAddress)
@@ -53,26 +48,29 @@ type MyCallbackClient() =
         member this.ThrowOtherException() =
             failwith "Some Other Exception"
         
-        
-let host = new InProcHost<MyService>()
-host.AddEndpoint<IMyContract>()
+
+let uri = new Uri("net.tcp://localhost")
+let binding = new NetTcpBinding()
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
 let callback = new MyCallbackClient()
-let client = new MyContractClient(callback, new NetNamedPipeBinding(), new EndpointAddress("net.pipe://localhost"))
+let client = new MyContractClient(callback, binding, new EndpointAddress(string uri))
 let proxy = client.ChannelFactory.CreateChannel()
 
 proxy.DoFaultException()
 printfn "Proxy state: %A\n\n" (proxy :?> ICommunicationObject).State
 
-// With IPC binding, when the callback throws an exception not in the contract,
+// With TCP binding, when the callback throws an exception not in the contract,
 //   the client that called the service in the first place immediately receives
 //   a CommunicationException, *even if the service catches the exception*
 try
     proxy.DoOtherException()
 with ex ->
-    printfn "%s: %s" (ex.GetType().Name) ex.Message
+    printfn "%s: %s\n\n" (ex.GetType().Name) ex.Message
+    
 printfn "Proxy state: %A\n\n" (proxy :?> ICommunicationObject).State
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()
