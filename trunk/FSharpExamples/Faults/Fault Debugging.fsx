@@ -29,7 +29,7 @@ let host = new ServiceHost(typeof<MyService>, [| uri |])
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress("net.tcp://localhost"))
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 try
     proxy.MethodWithError()
 with

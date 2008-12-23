@@ -63,7 +63,7 @@ host.Open()
 let frmAsync = async { Application.Run(new MyForm()) }
 Async.Spawn frmAsync
 
-let proxy = ChannelFactory<IFormManager>.CreateChannel(binding, new EndpointAddress("net.tcp://localhost"))
+let proxy = ChannelFactory<IFormManager>.CreateChannel(binding, new EndpointAddress(string uri))
 proxy.IncrementLabel()
 proxy.IncrementLabel()
 proxy.IncrementLabel()

@@ -49,7 +49,7 @@ let host = new ServiceHost(service, [| uri |])
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress("net.tcp://localhost"))
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 proxy.MySynchronizedMethod()
 proxy.MyUnsynchronizedMethod()
 
