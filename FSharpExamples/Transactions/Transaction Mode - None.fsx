@@ -2,12 +2,11 @@
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 #r "System.Transactions"
-#load "InProcHost.fsx"
 open System
 open System.ServiceModel
+open System.ServiceModel.Channels
 open System.Transactions
 open System.Diagnostics
-open Mcts_70_503
 
 
 let printTrans() =
@@ -33,13 +32,13 @@ type MyService() =
             printTrans()
 
 // The None transaction mode means the service never has a transaction
-
-let host = new InProcHost<MyService>()
-let binding = new NetNamedPipeBinding(TransactionFlow = false)
-host.AddEndpoint<IMyContract>(binding)
-host.IncludeExceptionDetailInFaults <- true
+let uri = new Uri("net.tcp://localhost")
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+let binding = new NetTcpBinding(TransactionFlow = false)
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
-let proxy = host.CreateProxy<IMyContract>()
+
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 
 printfn "No Scope"
 proxy.MyMethod()
@@ -58,5 +57,5 @@ printfn "---------------------"
 scope.Complete()
 scope.Dispose()
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()

@@ -2,12 +2,11 @@
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 #r "System.Transactions"
-#load "InProcHost.fsx"
 open System
 open System.ServiceModel
+open System.ServiceModel.Channels
 open System.Transactions
 open System.Diagnostics
-open Mcts_70_503
 
 
 let printTrans() =
@@ -22,7 +21,7 @@ let printTrans() =
 [<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
-    [<TransactionFlow(TransactionFlowOption.NotAllowed)>]
+    [<TransactionFlow(TransactionFlowOption.Mandatory)>]
     abstract MyMethod : unit -> unit
         
 
@@ -34,18 +33,22 @@ type MyService() =
             printTrans()
             scope.Complete()
 
-// The Service mode ensures that the service always has a transaction
-//   separate from any transaction its clients may or may not have
 
-let host = new InProcHost<MyService>()
-let binding = new NetNamedPipeBinding(TransactionFlow = false)
-host.AddEndpoint<IMyContract>(binding)
-host.IncludeExceptionDetailInFaults <- true
+// The Client mode ensures the service only uses the client's transaction
+let uri = new Uri("net.tcp://localhost")
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+// The Client mode requires the use of a transaction-aware binding with
+//   transaction flow enabled
+let binding = new NetTcpBinding(TransactionFlow = true)
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
-let proxy = host.CreateProxy<IMyContract>()
+
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 
 printfn "No Scope"
-proxy.MyMethod()
+try
+    proxy.MyMethod()
+with ex -> printfn "%s" ex.Message
 printfn "---------------------"
 
 let scope = new TransactionScope()
@@ -61,6 +64,5 @@ printfn "---------------------"
 scope.Complete()
 scope.Dispose()
 
-
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()
