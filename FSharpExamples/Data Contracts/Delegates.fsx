@@ -1,7 +1,7 @@
 #light
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#load "Helpers.fsx"
+#load "Serialization.fsx"
 open System
 open System.Runtime.Serialization
 
@@ -14,5 +14,5 @@ type MyDataContract() =
                            and set v = f <- v
       
 let x = MyDataContract()
-let xData = Helpers.serialize x
+let xData = Serialization.serialize x
 printfn "%s" xData

@@ -1,8 +1,6 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.Collections.Generic
 open System.ServiceModel
@@ -97,13 +95,15 @@ type MyEventClient() =
 
 
 
+let uri = new Uri("net.tcp://localhost")
+let binding = new NetTcpBinding()
 let publisher = new MyPublisher()
-let host = new InProcHost<MyPublisher>(publisher)
-host.AddEndpoint<IMyContract>()
+let host = new ServiceHost(publisher, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
 let callback = new MyEventClient()
-let client = new MyContractClient(callback, new NetNamedPipeBinding(), new EndpointAddress("net.pipe://localhost"))
+let client = new MyContractClient(callback, binding, new EndpointAddress(string uri))
 let proxy = client.ChannelFactory.CreateChannel()
 
 // Subscribe to events
@@ -126,5 +126,5 @@ Threading.Thread.Sleep(100)
 printfn "==Press any key to END=="
 Console.ReadKey(true)
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()
