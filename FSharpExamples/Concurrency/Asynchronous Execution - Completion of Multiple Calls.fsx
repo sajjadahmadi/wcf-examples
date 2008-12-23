@@ -54,7 +54,7 @@ let main =
         host.AddServiceEndpoint(typeof<ServiceSide.ICalculator>, binding, "") |> ignore
         host.Open()
 
-        let address = new EndpointAddress("net.tcp://localhost")
+        let address = new EndpointAddress(string uri)
         use client = new CalculatorClient(binding, address)
         let proxy = client :> ICalculator
 

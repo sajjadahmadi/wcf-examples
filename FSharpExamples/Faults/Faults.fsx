@@ -29,7 +29,7 @@ let host = new ServiceHost(typeof<Calculator>, [| uri |])
 host.AddServiceEndpoint(typeof<ICalculator>, binding, "")
 host.Open()
 
-let proxy = ChannelFactory<ICalculator>.CreateChannel(binding, new EndpointAddress("net.tcp://localhost"))
+let proxy = ChannelFactory<ICalculator>.CreateChannel(binding, new EndpointAddress(string uri))
 printfn "%f / %f = %f\n\n" 4.0 2.0 (proxy.Divide(4.0, 2.0))
 
 try

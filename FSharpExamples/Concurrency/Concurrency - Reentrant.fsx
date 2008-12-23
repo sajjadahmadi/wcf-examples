@@ -41,7 +41,7 @@ host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
 let callback = new MyCallbackClient()
-let client = new MyContractClient(callback, new NetTcpBinding(), new EndpointAddress("net.tcp://localhost"))
+let client = new MyContractClient(callback, new NetTcpBinding(), new EndpointAddress(string uri))
 let proxy = client.ChannelFactory.CreateChannel()
 proxy.DoSomething()
 
