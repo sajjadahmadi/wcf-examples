@@ -66,7 +66,7 @@ let main =
 
         printfn "2 + 3 = %d" (proxy.EndAdd(asyncResult1))
         printfn "4 + 5 = %d" (proxy.EndAdd(asyncResult2))
-        client.Close()
+        (proxy :?> ICommunicationObject).Close()
         host.Close() }
         
 Async.Spawn main

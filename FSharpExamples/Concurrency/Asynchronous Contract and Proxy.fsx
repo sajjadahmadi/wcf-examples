@@ -61,5 +61,5 @@ proxy.BeginAdd(2, 3, (fun result ->
     
 printfn "Press any key to exit..."
 Console.ReadKey(true)
-client.Close()
+(proxy :?> ICommunicationObject).Close()
 host.Close()

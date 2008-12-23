@@ -65,5 +65,5 @@ printfn "2 + 3 = %d" (proxy.EndAdd(asyncResult))
     
 printfn "Press any key to exit..."
 Console.ReadKey(true)
-client.Close()
+(proxy :?> ICommunicationObject).Close()
 host.Close()
