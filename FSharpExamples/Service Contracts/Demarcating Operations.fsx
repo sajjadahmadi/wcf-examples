@@ -1,11 +1,11 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.Diagnostics
 open System.ServiceModel
+open System.ServiceModel.Channels
+
 
 [<ServiceContract(SessionMode = SessionMode.Required)>]
 type IOrderManager =
@@ -21,6 +21,7 @@ type IOrderManager =
     [<OperationContract(IsInitiating = false, IsTerminating = true)>]
     abstract ProcessOrders : unit -> bool
 
+
 type OrderManager() =
     let mutable total = 0
     
@@ -33,11 +34,14 @@ type OrderManager() =
         
         member this.ProcessOrders() = printfn "Processing orders..."; true
 
-let host = new InProcHost<OrderManager>()
-host.AddEndpoint<IOrderManager>()
+
+let uri = new Uri("net.tcp://localhost")
+let binding = new NetTcpBinding()
+let host = new ServiceHost(typeof<OrderManager>, [| uri |])
+host.AddServiceEndpoint(typeof<IOrderManager>, binding, "")
 host.Open()
 
-let proxy = host.CreateProxy<IOrderManager>()
+let proxy = ChannelFactory<IOrderManager>.CreateChannel(binding, new EndpointAddress(string uri))
 // Calling a non-initiaing operation first will error
 try
     proxy.AddItem(1)
@@ -47,7 +51,7 @@ proxy.SetCustomerId(1)
 proxy.AddItem(4)
 proxy.AddItem(5)
 proxy.AddItem(6)
-printfn "Total = %A" (proxy.GetTotal())
+printfn "Total = %0.2f" (proxy.GetTotal())
 proxy.ProcessOrders()
 
 // Session has been closed; no more messages may be sent
@@ -55,5 +59,5 @@ try
     proxy.SetCustomerId(1)
 with ex -> printfn "\n\n%s\n" ex.Message
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()
