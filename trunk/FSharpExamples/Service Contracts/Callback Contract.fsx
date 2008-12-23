@@ -45,5 +45,5 @@ let client = new MyContractClient(callback, binding, new EndpointAddress(string 
 let proxy = client.ChannelFactory.CreateChannel()
 proxy.DoSomething()
 
-client.Close()
+(proxy :?> ICommunicationObject).Close()
 host.Close()
