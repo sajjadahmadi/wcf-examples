@@ -1,11 +1,9 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
 open System
 open System.Runtime.Serialization
 open System.ServiceModel
-open Mcts_70_503
 
 
 [<DataContract>]
@@ -28,13 +26,13 @@ type MyService() =
                 printfn "%s: %A\n" h.Name h
 
 
-let host = new InProcHost<MyService>()
-host.IncludeExceptionDetailInFaults <- true
-host.AddEndpoint<IMyContract>()
+let uri = new Uri("net.tcp://localhost")
+let binding = new NetTcpBinding()
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let factory = new ChannelFactory<IMyContract>(new NetNamedPipeBinding())
-let proxy = factory.CreateChannel(new EndpointAddress("net.pipe://localhost"))
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 let headerData = { Member1 = "value" }
 let header = new MessageHeader<MyCustomType>(headerData)
 

@@ -1,11 +1,10 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.Diagnostics
 open System.ServiceModel
+open System.ServiceModel.Channels
 
 [<ServiceContract>]
 type IMyContract =
@@ -28,28 +27,30 @@ type MyService() =
             printfn "MyService.Dispose()"
 
 
-
 // Sessions are supported with net.pipe, net.tcp, and WS HTTP if security
 //   or reliable messaging are turned on.
-
-let host = new InProcHost<MyService>()
-host.AddEndpoint<IMyContract>(new NetNamedPipeBinding())
-host.AddEndpoint<IMyContract>(new BasicHttpBinding())
+let tcpUri = new Uri("net.tcp://localhost")
+let httpUri = new Uri("http://localhost")
+let tcpBinding = new NetTcpBinding()
+let httpBinding = new BasicHttpBinding()
+let host = new ServiceHost(typeof<MyService>, [| tcpUri; httpUri |])
+host.AddServiceEndpoint(typeof<IMyContract>, tcpBinding, "")
+host.AddServiceEndpoint(typeof<IMyContract>, httpBinding, "")
 host.Open()
 
 printfn "Per-Session (Named Pipe Binding)\n----------------------"
-let mutable proxy = host.CreateProxy<IMyContract>()
+let proxy1 = ChannelFactory<IMyContract>.CreateChannel(tcpBinding, new EndpointAddress(string tcpUri))
 
-proxy.MyMethod()
-proxy.MyMethod()
+proxy1.MyMethod()
+proxy1.MyMethod()
 
-host.CloseProxy(proxy)
+(proxy1 :?> ICommunicationObject).Close()
 
 printfn "\nPer-Session (Basic HTTP Binding)\n----------------------"
-proxy <- host.CreateProxy<IMyContract, BasicHttpBinding>()
+let proxy2 = ChannelFactory<IMyContract>.CreateChannel(httpBinding, new EndpointAddress(string httpUri))
 
-proxy.MyMethod()
-proxy.MyMethod()
+proxy2.MyMethod()
+proxy2.MyMethod()
 
-host.CloseProxy(proxy)
+(proxy2 :?> ICommunicationObject).Close()
 host.Close()

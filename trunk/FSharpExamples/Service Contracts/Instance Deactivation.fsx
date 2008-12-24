@@ -1,11 +1,11 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.Diagnostics
 open System.ServiceModel
+open System.ServiceModel.Channels
+
 
 [<ServiceContract(SessionMode = SessionMode.Required)>]
 type IMyContract =
@@ -14,6 +14,7 @@ type IMyContract =
     
     [<OperationContract>]
     abstract MyOtherMethod : unit -> unit
+
 
 [<ServiceBehavior>]
 type MyService() =
@@ -30,16 +31,19 @@ type MyService() =
         member this.Dispose() =
             printfn "Disposing..."
 
-let host = new InProcHost<MyService>()
-host.AddEndpoint<IMyContract>()
+
+let uri = new Uri("net.tcp://localhost")
+let binding = new NetTcpBinding()
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let proxy = host.CreateProxy<IMyContract>()
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 
 proxy.MyOtherMethod()
 proxy.MyMethod()
 System.Threading.Thread.Sleep(100)
 printfn "-----------------"
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()
