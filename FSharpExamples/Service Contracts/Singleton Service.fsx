@@ -1,16 +1,17 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.Diagnostics
 open System.ServiceModel
+open System.ServiceModel.Channels
+
 
 [<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
     abstract MyMethod : unit -> unit
+
 
 // Try the following to highlight the differences
 //[<ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)>]
@@ -29,15 +30,18 @@ type MyService() =
         member this.Dispose() =
             printfn "MyService.Dispose()"
 
-let host = new InProcHost<MyService>()
-host.AddEndpoint<IMyContract>(new BasicHttpBinding())
+
+let uri = new Uri("http://localhost")
+let binding = new BasicHttpBinding()
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let proxy = host.CreateProxy<IMyContract>()
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 
 proxy.MyMethod()
 proxy.MyMethod()
 proxy.MyMethod()
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()

@@ -1,16 +1,17 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.Diagnostics
 open System.ServiceModel
+open System.ServiceModel.Channels
+
 
 [<ServiceContract(SessionMode = SessionMode.Required)>]
 type IMyContract =
     [<OperationContract>]
     abstract MyMethod : unit -> unit
+
 
 [<ServiceContract(SessionMode = SessionMode.NotAllowed)>]
 type IMyOtherContract =
@@ -40,17 +41,21 @@ type MySingleton() =
         member this.Dispose() =
             printfn "MySingleton.Dispose()"
 
-let host = new InProcHost<MySingleton>()
-host.AddEndpoint<IMyContract>(new WSHttpBinding(SecurityMode.None, true))
-host.AddEndpoint<IMyOtherContract>(new BasicHttpBinding(), "other")
+
+let uri = new Uri("http://localhost")
+let wsBinding = new WSHttpBinding(SecurityMode.None, true)
+let httpBinding = new BasicHttpBinding()
+let host = new ServiceHost(typeof<MySingleton>, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, wsBinding, "")
+host.AddServiceEndpoint(typeof<IMyOtherContract>, httpBinding, "basic")
 host.Open()
 
-let proxy1 = host.CreateProxy<IMyContract>()
-proxy1.MyMethod()
-proxy1.MyMethod()
-host.CloseProxy(proxy1)
+let proxy1 = ChannelFactory<IMyContract>.CreateChannel(wsBinding, new EndpointAddress(string uri))
+proxy1.MyMethod() // 1
+proxy1.MyMethod() // 2
+(proxy1 :?> ICommunicationObject).Close()
 
-let proxy2 = host.CreateProxy<IMyOtherContract>()
-proxy2.MyOtherMethod()
-host.CloseProxy(proxy2)
+let proxy2 = ChannelFactory<IMyOtherContract>.CreateChannel(httpBinding, new EndpointAddress(string uri + "/basic"))
+proxy2.MyOtherMethod() // 3
+(proxy2 :?> ICommunicationObject).Close()
 host.Close()

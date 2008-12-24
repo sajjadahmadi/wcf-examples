@@ -1,34 +1,38 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.ServiceModel
+open System.ServiceModel.Channels
 open System.ServiceModel.Description
+
 
 [<ServiceContract(SessionMode = SessionMode.Required)>]
 type IMyContract =
     [<OperationContract>]
     abstract MyMethod : unit -> unit
 
+
 type MyService() =
     interface IMyContract with
         member this.MyMethod() = printfn "%s" "MyService.MyMethod()"
 
-let host = new InProcHost<MyService>()
-host.AddEndpoint<IMyContract>(new NetNamedPipeBinding(SendTimeout = new TimeSpan(0, 0, 5)))
+
+let uri = new Uri("net.tcp://localhost")
+let binding = new NetTcpBinding(SendTimeout = new TimeSpan(0, 0, 5))
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 let throttle = new ServiceThrottlingBehavior(MaxConcurrentSessions = 1)
-host.InnerHost.Description.Behaviors.Add(throttle)
+host.Description.Behaviors.Add(throttle)
 host.Open()
 
-let proxy1 = host.CreateProxy<IMyContract>()
+let proxy1 = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri)) 
 proxy1.MyMethod()
 
-let proxy2 = host.CreateProxy<IMyContract>()
+let proxy2 = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri)) 
 try
     proxy2.MyMethod()
 with ex -> printfn "\n%s\n" ex.Message
 
-host.CloseProxy(proxy1)
+(proxy1 :?> ICommunicationObject).Close()
 host.Close()

@@ -1,12 +1,11 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.IO
 open System.Text
 open System.ServiceModel
+open System.ServiceModel.Channels
 
 let newStream (s: string) =
     let data = Encoding.UTF8.GetBytes(s)
@@ -15,6 +14,7 @@ let newStream (s: string) =
 let read (s: Stream) =
     let reader = new StreamReader(s)
     reader.ReadToEnd()
+
 
 [<ServiceContract>]
 type IMyContract =
@@ -40,12 +40,13 @@ type MyService() =
             printfn "%s" (read stream)
             
             
-let host = new InProcHost<MyService>()
+let uri = new Uri("http://localhost")
 let binding = new BasicHttpBinding(TransferMode = TransferMode.Streamed)
-host.AddEndpoint<IMyContract>(binding)
+let host = new ServiceHost(typeof<MyService>, [| uri |])
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let proxy = host.CreateProxy<IMyContract>()
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 proxy.StreamRequest(newStream "proxy.StreamRequest()")
 
 let response = proxy.StreamReply()
@@ -59,5 +60,5 @@ Threading.Thread.Sleep(100)
 printfn "==Press any key to END=="
 Console.ReadKey(true)
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()

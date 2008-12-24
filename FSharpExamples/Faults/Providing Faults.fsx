@@ -1,17 +1,18 @@
 #light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#load "InProcHost.fsx"
-open Mcts_70_503
 open System
 open System.ServiceModel
+open System.ServiceModel.Channels
 open System.ServiceModel.Description
 open System.ServiceModel.Dispatcher
+
 
 [<ServiceContract>]
 type ICalculator =
     [<OperationContract>]
     abstract Divide : double * double -> double
+
 
 type Calculator() =
     interface ICalculator with
@@ -20,6 +21,7 @@ type Calculator() =
             | 0.0  ->
                 raise (new DivideByZeroException())
             | _    -> n1 / n2
+
 
 type MyErrorHandler() =
     interface IErrorHandler with
@@ -44,13 +46,14 @@ type ErrorServiceBehavior() =
             ()
 
 
-let host = new InProcHost<Calculator>()
-host.AddEndpoint<ICalculator>()
-host.InnerHost.Description.Behaviors.Add(new ErrorServiceBehavior())
+let uri = new Uri("net.tcp://localhost")
+let binding = new NetTcpBinding()
+let host = new ServiceHost(typeof<Calculator>, [| uri |])
+host.AddServiceEndpoint(typeof<ICalculator>, binding, "")
+host.Description.Behaviors.Add(new ErrorServiceBehavior())
 host.Open()
 
-
-let proxy = host.CreateProxy<ICalculator>()
+let proxy = ChannelFactory<ICalculator>.CreateChannel(binding, new EndpointAddress(string uri))
 
 try
     proxy.Divide(4.0, 0.0) |> ignore
@@ -59,7 +62,7 @@ with ex ->
     printfn "Proxy state = %A\n\n" (proxy :?> ICommunicationObject).State
 
 try
-    host.CloseProxy(proxy)
+    (proxy :?> ICommunicationObject).Close()
 with _ -> ()
 host.Close()
 
