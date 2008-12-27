@@ -84,7 +84,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\MyData\MCTS\WCF\CodeRunner\ServiceModel.Extensions\ServiceModel.Extensions.csproj">
+    <ProjectReference Include="..\..\..\..\CodeRunner\ServiceModel.Extensions\ServiceModel.Extensions.csproj">
       <Project>{02565A66-4153-4217-BED5-55DAC69808D0}</Project>
       <Name>ServiceModel.Extensions</Name>
     </ProjectReference>
