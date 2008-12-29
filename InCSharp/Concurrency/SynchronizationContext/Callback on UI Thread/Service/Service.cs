@@ -1,6 +1,6 @@
 ﻿using System.ServiceModel;
 
-namespace CodeRunner
+namespace WcfExamples
 {
     [ServiceContract(CallbackContract = typeof(ICounterCallback))]
     interface ICounter

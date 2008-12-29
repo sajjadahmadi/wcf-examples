@@ -3,7 +3,7 @@ using System.ServiceModel;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace CodeRunner
+namespace WcfExamples
 {
     [CallbackBehavior(UseSynchronizationContext = false)]
     public partial class ClientForm : Form, ICounterCallback
