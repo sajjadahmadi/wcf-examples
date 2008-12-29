@@ -2,7 +2,7 @@
 using System.ServiceModel;
 using System.Windows.Forms;
 
-namespace CodeRunner
+namespace WcfExamples
 {
     public partial class HostForm : Form
     {

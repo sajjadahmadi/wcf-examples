@@ -2,7 +2,7 @@
 using System.ServiceModel;
 using CodeRunner.ServiceModel.Hosting;
 
-namespace CodeRunner
+namespace WcfExamples
 {
     [ServiceContract]
     interface ICounter

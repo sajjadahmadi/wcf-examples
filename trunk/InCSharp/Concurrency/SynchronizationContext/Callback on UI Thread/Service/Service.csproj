@@ -8,7 +8,7 @@
     <ProjectGuid>{12DE461B-CFA7-445C-805B-E67A47A000BD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeRunner</RootNamespace>
+    <RootNamespace>WcfExamples</RootNamespace>
     <AssemblyName>CounterService</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

@@ -1,4 +1,4 @@
-﻿namespace CodeRunner
+﻿namespace WcfExamples
 {
     partial class CounterForm
     {
