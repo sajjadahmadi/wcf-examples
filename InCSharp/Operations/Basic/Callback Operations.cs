@@ -17,7 +17,8 @@ namespace System.ServiceModel.Examples
     [ServiceContract(CallbackContract = typeof(IMyContractCallback))]
     interface IMyContract : IConnectionManagement
     {
-        // Transcender suggests making these one-way operations, also.
+        // In addition to the callback operation, Transcender suggests 
+        // making these one-way operations, also.
         // However, Juval (pg 172) recommends against it.  
         [OperationContract]
         void DoSomething();
@@ -132,9 +133,9 @@ namespace System.ServiceModel.Examples
                 IMyContractCallback callback = new ClientSideCallback();
                 MyContractClient proxy = new MyContractClient(callback, new NetNamedPipeBinding(), new EndpointAddress(address));
 
-                proxy.Connect();
+                proxy.Connect();     // Register callbacks
                 proxy.DoSomething();
-                proxy.Disconnect();
+                proxy.Disconnect();  // Unregister callbacks
 
                 Assert.IsTrue(proxy.CallbackOccured);
             }
