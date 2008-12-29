@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ServiceModel;
 
-namespace CodeRunner.Service
+namespace WcfExamples.Overloading.Service
 {
     [ServiceContract]
     public interface ICalculator
@@ -27,7 +27,7 @@ namespace CodeRunner.Service
     }
 }
 
-namespace CodeRunner.Client
+namespace WcfExamples.Overloading.Client
 {
     [ServiceContract(ConfigurationName = "ICalculator")]
     public interface ICalculator
@@ -41,7 +41,7 @@ namespace CodeRunner.Client
 
     class CalculatorClient : ClientBase<ICalculator>, ICalculator
     {
-        static Uri address = new Uri("net.pipe://localhost/"+ Guid.NewGuid().ToString());
+        static Uri address = new Uri("net.pipe://localhost/" + Guid.NewGuid().ToString());
 
         public CalculatorClient()
             : base(new NetNamedPipeBinding(), new EndpointAddress(address))
