@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Transactions;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Transactions;
 
 namespace CodeRunner.Transactions
 {
@@ -118,7 +116,7 @@ namespace CodeRunner.Transactions
 
                     // Since the transaction could abort or time out while in the queued,
                     // unblock it and remove it from the queue when it completes 
-                    transaction.TransactionCompleted += 
+                    transaction.TransactionCompleted +=
                         delegate
                         {
                             lock (this)
