@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CodeRunner
+namespace WcfExamples
 {
     [TestClass]
     public class ExtensibleDataObjectExample
