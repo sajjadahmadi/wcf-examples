@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net;
+using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using System.Diagnostics;
-using System.Security.Principal;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CodeRunner.Security
 {
@@ -99,7 +94,7 @@ namespace CodeRunner.Security
             using (ServiceHost host = new ServiceHost(typeof(MyService)))
             {
                 host.AddServiceEndpoint(typeof(IMyContract), new NetTcpBinding(), address);
-                /* Impersonate all */ 
+                /* Impersonate all */
                 host.Authorization.ImpersonateCallerForAllOperations = true;
                 host.Open();
 

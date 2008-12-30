@@ -1,10 +1,5 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Diagnostics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel;
-using System.Diagnostics;
 
 namespace System.ServiceModel.Examples
 {
@@ -68,7 +63,7 @@ namespace System.ServiceModel.Examples
                     // the serivce is in a faulted state until the next call.
                 }
                 catch (CommunicationException) { };
-                
+
                 Assert.AreEqual(CommunicationState.Faulted, comm.State);
 
                 try

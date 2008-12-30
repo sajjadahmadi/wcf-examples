@@ -1,11 +1,6 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel;
+﻿using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using System.ServiceModel.Description;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.ServiceModel.Examples
 {
@@ -108,12 +103,12 @@ namespace System.ServiceModel.Examples
                 host.Open();
 
                 Assert.AreEqual(CommunicationState.Opened, host.State);
-                
+
                 IPingService service1 = ChannelFactory<IPingService>.CreateChannel(
                     new NetNamedPipeBinding(),
                     new EndpointAddress(address));
                 Assert.AreEqual(true, service1.Ping());
-                
+
                 IPingService service2;
                 try
                 {

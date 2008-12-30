@@ -1,12 +1,7 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Transactions;
+﻿using System.Runtime.Serialization;
 using System.ServiceModel.Channels;
-using System.Diagnostics;
-using System.Runtime.Serialization;
+using System.Transactions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.ServiceModel.Examples
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel.Channels;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.ServiceModel.Examples
 {
