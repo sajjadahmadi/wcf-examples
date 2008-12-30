@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Transactions;
 using System.Diagnostics;
+using System.Transactions;
 
 namespace CodeRunner.Transactions
 {
@@ -80,7 +78,7 @@ namespace CodeRunner.Transactions
 
         #endregion
 
-        void SetValue(T v)  
+        void SetValue(T v)
         {
             _lock.Lock();
             if (_currentTransaction == null)
@@ -144,7 +142,7 @@ namespace CodeRunner.Transactions
         public override int GetHashCode()
         { return Value.GetHashCode(); }
         public override bool Equals(object obj)
-        { return Value.Equals(obj); } 
+        { return Value.Equals(obj); }
         #endregion
     }
 }
