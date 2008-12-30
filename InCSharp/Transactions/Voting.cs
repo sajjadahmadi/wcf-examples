@@ -1,10 +1,5 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CodeRunner.Transactions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Transactions;
-using CodeRunner.Transactions;
 
 namespace System.ServiceModel.Examples
 {
@@ -96,7 +91,7 @@ namespace System.ServiceModel.Examples
             {
                 // Some work
                 Voting.StringResource.Value = "New Value";
-                throw new FaultException<string>( "An error occured and the transaction was aborted.");
+                throw new FaultException<string>("An error occured and the transaction was aborted.");
             }
 
         }
@@ -126,14 +121,14 @@ namespace System.ServiceModel.Examples
         {
             Assert.AreEqual("Original Value", StringResource.Value);
             IChangeResource channel = host.CreateChannel<IChangeResource>(binding, address);
-            
+
             try
-            { 
-                channel.ChangeThenFault(); 
-            }
-            catch (FaultException<string> ex) 
             {
-                Assert.AreEqual("An error occured and the transaction was aborted.", 
+                channel.ChangeThenFault();
+            }
+            catch (FaultException<string> ex)
+            {
+                Assert.AreEqual("An error occured and the transaction was aborted.",
                     ex.Detail);
             }
 

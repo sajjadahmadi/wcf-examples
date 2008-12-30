@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using System.Diagnostics;
-using System.Security.Principal;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CodeRunner.Security
 {
@@ -27,7 +21,7 @@ namespace CodeRunner.Security
         class MyService : IMyContract
         {
             // Impersonation occures here
-            [OperationBehavior(Impersonation = ImpersonationOption.Required)] 
+            [OperationBehavior(Impersonation = ImpersonationOption.Required)]
             public void MyMethod()
             {
                 // Do work as client and auto-revert

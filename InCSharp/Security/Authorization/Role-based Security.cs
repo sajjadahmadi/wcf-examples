@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.ServiceModel;
-using System.ServiceModel.Description;
-using System.Security.Permissions;
-using System.ServiceModel.Channels;
-using System.Security.Principal;
-using System.Threading;
 using System.Diagnostics;
+using System.Security.Permissions;
+using System.Security.Principal;
+using System.ServiceModel;
+using System.Threading;
 
 namespace CodeRunner
 {
@@ -45,7 +39,7 @@ namespace CodeRunner
                 // Run-time condition
                 if (isCustomer && !isTeller)
                 {
-                    if (amount > 5000) 
+                    if (amount > 5000)
                     {
                         string message = "Customer not authorized to transfer this amount.";
                         throw new UnauthorizedAccessException(message);
