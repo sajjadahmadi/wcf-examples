@@ -12,7 +12,7 @@ namespace WcfExamples.Bindings
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class CustomeBindingExample
+    public class CustomBindingExample
     {
         [ServiceContract(Name = "MyService")]
         interface IMyContract
@@ -44,7 +44,7 @@ namespace WcfExamples.Bindings
         [TestMethod]
         public void TestMethod1()
         {
-            string address = "http://localhost:8000/MyService" //+ Guid.NewGuid().ToString();
+            string address = "http://localhost:8888/MyService"; //+ Guid.NewGuid().ToString();
             using (ServiceHost host = new ServiceHost(typeof(MyService)))
             {
                 SymmetricSecurityBindingElement ssbe = new SymmetricSecurityBindingElement();
@@ -70,6 +70,7 @@ namespace WcfExamples.Bindings
                     typeof(IMyContract),
                     binding,
                     address);
+                host.Open();
 
                 MyServiceClient proxy = new MyServiceClient(binding, address);
                 proxy.Open();
