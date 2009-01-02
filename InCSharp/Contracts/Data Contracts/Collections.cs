@@ -1,20 +1,15 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 using System.Xml.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Runtime.Serialization;
-using System.IO;
-using System.Diagnostics;
 
 namespace WcfExamples.CollectionDataContract
 {
     [CollectionDataContract(Name = "MyCollectionOf{0}")]
     class MyCollection<T>
         : List<T>
-    {
-    }
+    { }
 
     [TestClass]
     public class CollectionDataContractExample

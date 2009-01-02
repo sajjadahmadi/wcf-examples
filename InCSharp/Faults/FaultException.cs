@@ -70,7 +70,7 @@ namespace CodeRunner.ServiceModel.Examples
             { Channel.ThrowUntypedFault(); }
         }
 
-        #region Additional test attributes
+        #region Host
         static NetNamedPipeBinding binding;
         static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
         static ServiceHost<MyService> host;
