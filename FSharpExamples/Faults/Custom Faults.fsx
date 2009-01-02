@@ -37,6 +37,9 @@ try
     proxy.MyMethod()
 with :? FaultException<MyCustomFault> as ex -> 
     printfn "%A: %s" (ex.GetType()) ex.Detail.Message
+    printfn "  Action: %s" ex.Action
+    printfn "  Code:   %s" ex.Code.Name
+    printfn "  Reason: %A" ex.Reason
 
 (proxy :?> ICommunicationObject).Close()
 host.Close()
