@@ -18,14 +18,15 @@ namespace WcfExamples.Bindings
         interface IMyContract
         {
             [OperationContract]
-            void MyMethod();
+            string MyMethod();
         }
 
+        [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
         class MyService : IMyContract
         {
-            public void MyMethod()
+            public string MyMethod()
             {
-                // Do something
+                return "Do something";
             }
         }
 
@@ -35,21 +36,18 @@ namespace WcfExamples.Bindings
                 : base(binding, new EndpointAddress(address))
             { }
 
-            public void MyMethod()
+            public string MyMethod()
             {
-                Channel.MyMethod();
+                return Channel.MyMethod();
             }
         }
 
         [TestMethod]
-        public void TestMethod1()
+        public void CreateCustomBinding()
         {
-            string address = "http://localhost:8888/MyService"; //+ Guid.NewGuid().ToString();
+            string address = "http://localhost:8888/MyService/" + Guid.NewGuid().ToString();
             using (ServiceHost host = new ServiceHost(typeof(MyService)))
             {
-                SymmetricSecurityBindingElement ssbe = new SymmetricSecurityBindingElement();
-                ssbe.LocalServiceSettings.InactivityTimeout = new TimeSpan(0, 10, 0);
-
                 BindingElementCollection bec = new BindingElementCollection();
                 // The recommended order for BindingElements is: 
                 // TransactionFlow, 
@@ -60,7 +58,6 @@ namespace WcfExamples.Bindings
                 // StreamSecurity, 
                 // MessageEncoding, 
                 // Transport.
-                bec.Add(ssbe);
                 bec.Add(new TextMessageEncodingBindingElement());
                 bec.Add(new HttpTransportBindingElement());
 
@@ -72,11 +69,11 @@ namespace WcfExamples.Bindings
                     address);
                 host.Open();
 
-                MyServiceClient proxy = new MyServiceClient(binding, address);
-                proxy.Open();
-                proxy.MyMethod();
-
-                proxy.Close();
+                using (MyServiceClient proxy = new MyServiceClient(binding, address))
+                {
+                    var response = proxy.MyMethod();
+                    Assert.AreEqual("Do something", response);
+                }
             }
         }
     }
