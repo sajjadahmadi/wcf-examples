@@ -3,6 +3,7 @@ using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 
 namespace CodeRunner.ServiceModel.Examples
 {
@@ -52,6 +53,7 @@ namespace CodeRunner.ServiceModel.Examples
                 }
             }
 
+            [DebuggerNonUserCode]
             public void ThrowUntypedFault()
             { throw new FaultException("Untyped Fault."); }
         }
@@ -92,7 +94,7 @@ namespace CodeRunner.ServiceModel.Examples
         #endregion
 
         [TestMethod]
-        [ExpectedException(typeof(FaultException<MyFault>))]
+        [ExpectedException(typeof(FaultException<MyFault>), "Some application error.")]
         public void TypedFault()
         {
             MyContractClient client = new MyContractClient(binding, address);
@@ -101,13 +103,12 @@ namespace CodeRunner.ServiceModel.Examples
         }
 
         [TestMethod]
-        [ExpectedException(typeof(FaultException))]
+        [ExpectedException(typeof(FaultException), "Untyped Fault.")]
         public void UntypedFault()
         {
             MyContractClient client = new MyContractClient(binding, address);
             client.ThrowUntypedFault();
             client.Close();
         }
-
     }
 }
