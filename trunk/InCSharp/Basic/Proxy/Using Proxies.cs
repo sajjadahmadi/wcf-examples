@@ -7,6 +7,8 @@ namespace WcfExamples
     [TestClass]
     public class Program
     {
+        // Contract - Generated via Self Hosting Example
+
         // Service
         class MyService : IMyContract
         {
