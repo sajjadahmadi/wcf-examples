@@ -2,10 +2,10 @@
 using System.Diagnostics;
 using System.ServiceModel;
 
-namespace SelfHosting {
-
-    class Program {
-
+namespace WcfExamples
+{
+    class SelfHosting
+    {
         static void Main(string[] args) {
             ServiceHost host = new ServiceHost(typeof(MyService));
             host.Open();
@@ -20,13 +20,15 @@ namespace SelfHosting {
     }
 
     [ServiceContract]
-    interface IMyContract {
+    interface IMyContract
+    {
 
         [OperationContract]
         string MyOperation();
     }
 
-    class MyService : IMyContract {
+    class MyService : IMyContract
+    {
 
         public string MyOperation() {
             return "MyResult";

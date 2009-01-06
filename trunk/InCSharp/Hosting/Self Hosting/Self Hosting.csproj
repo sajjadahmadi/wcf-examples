@@ -8,7 +8,7 @@
     <ProjectGuid>{96625DD1-8A7B-475F-B912-F0F4820928F0}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Self_Hosting</RootNamespace>
+    <RootNamespace>WcfExamples</RootNamespace>
     <AssemblyName>Self Hosting</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
