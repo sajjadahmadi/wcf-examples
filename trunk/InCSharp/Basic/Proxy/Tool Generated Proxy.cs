@@ -26,29 +26,29 @@ public interface IMyContractChannel : IMyContract, System.ServiceModel.IClientCh
 
 [System.Diagnostics.DebuggerStepThroughAttribute()]
 [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "3.0.0.0")]
-public partial class MyContractClient : System.ServiceModel.ClientBase<IMyContract>, IMyContract
+public partial class ToolGeneratedProxy : System.ServiceModel.ClientBase<IMyContract>, IMyContract
 {
     
-    public MyContractClient()
+    public ToolGeneratedProxy()
     {
     }
     
-    public MyContractClient(string endpointConfigurationName) : 
+    public ToolGeneratedProxy(string endpointConfigurationName) : 
             base(endpointConfigurationName)
     {
     }
     
-    public MyContractClient(string endpointConfigurationName, string remoteAddress) : 
+    public ToolGeneratedProxy(string endpointConfigurationName, string remoteAddress) : 
             base(endpointConfigurationName, remoteAddress)
     {
     }
     
-    public MyContractClient(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
+    public ToolGeneratedProxy(string endpointConfigurationName, System.ServiceModel.EndpointAddress remoteAddress) : 
             base(endpointConfigurationName, remoteAddress)
     {
     }
     
-    public MyContractClient(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
+    public ToolGeneratedProxy(System.ServiceModel.Channels.Binding binding, System.ServiceModel.EndpointAddress remoteAddress) : 
             base(binding, remoteAddress)
     {
     }
