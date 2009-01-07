@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="Errors\PromoteExceptionBehavior.cs" />
     <Compile Include="Hosting\IThreadAffinityTests.cs" />
+    <Compile Include="Hosting\IThrottling Tests.cs" />
     <Compile Include="ThreadAffinity\CallbackThreadAffinityBehaviorAttributeTests.cs" />
     <Compile Include="ThreadAffinity\ThreadAffinityBehaviorAttributeTests.cs" />
     <Compile Include="ThreadAffinity\AffinitySynchronizerTests.cs" />
