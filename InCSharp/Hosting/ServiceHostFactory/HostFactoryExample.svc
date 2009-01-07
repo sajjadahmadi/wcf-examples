@@ -1,0 +1,16 @@
+﻿<%@ ServiceHost Factory="MyServiceHostFactory" Language="C#" Debug="true" Service="MyService" CodeBehind="~/App_Code/MyService.cs" %>
+
+using System;
+using System.ServiceModel;
+using System.Diagnostics;
+using System.ServiceModel.Activation;
+
+public class MyServiceHostFactory : ServiceHostFactory
+{
+    public override ServiceHostBase CreateServiceHost(string constructorString, Uri[] baseAddresses) {
+        var sh = base.CreateServiceHost(constructorString, baseAddresses);
+        sh.Opened += delegate { Debug.WriteLine("ServiceHost Opened"); };
+        sh.Closed += delegate { Debug.WriteLine("ServiceHost Closed"); };
+        return sh;
+    }
+}
