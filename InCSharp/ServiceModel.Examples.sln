@@ -85,7 +85,27 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bindings", "Basic\Bindings\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Hosting", "Hosting", "{5E46E3B2-EBB4-4965-8672-1BF3B259EFF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Self Hosting", "Hosting\Self Hosting\Self Hosting.csproj", "{96625DD1-8A7B-475F-B912-F0F4820928F0}"
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ServiceHostFactory", "Hosting\ServiceHostFactory\", "{5E9F510D-C0CD-473B-B6D4-7C7E4ED72A1A}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "3.5"
+		Debug.AspNetCompiler.VirtualPath = "/ServiceHostFactory"
+		Debug.AspNetCompiler.PhysicalPath = "Hosting\ServiceHostFactory\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\ServiceHostFactory\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/ServiceHostFactory"
+		Release.AspNetCompiler.PhysicalPath = "Hosting\ServiceHostFactory\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\ServiceHostFactory\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "2699"
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console Host", "Hosting\Console Host\Console Host.csproj", "{96625DD1-8A7B-475F-B912-F0F4820928F0}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -200,6 +220,10 @@ Global
 		{B5557648-94C4-48A0-AA16-68752649E4F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5557648-94C4-48A0-AA16-68752649E4F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5557648-94C4-48A0-AA16-68752649E4F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E9F510D-C0CD-473B-B6D4-7C7E4ED72A1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E9F510D-C0CD-473B-B6D4-7C7E4ED72A1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E9F510D-C0CD-473B-B6D4-7C7E4ED72A1A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E9F510D-C0CD-473B-B6D4-7C7E4ED72A1A}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -238,6 +262,7 @@ Global
 		{8CAE9428-CB07-4545-8097-931D28C71861} = {85DF7C49-E071-40BA-8E5A-9E08A9B5256E}
 		{90424F8C-A606-4C6D-A2F4-676A51735577} = {91B29036-46DE-41DA-96FC-734BA53D7672}
 		{ECAA06F3-F01F-47AB-9FDB-E276A1C650AC} = {C7584917-2710-4176-9176-A15B3C9E27EA}
+		{5E9F510D-C0CD-473B-B6D4-7C7E4ED72A1A} = {5E46E3B2-EBB4-4965-8672-1BF3B259EFF9}
 		{96625DD1-8A7B-475F-B912-F0F4820928F0} = {5E46E3B2-EBB4-4965-8672-1BF3B259EFF9}
 	EndGlobalSection
 EndGlobal
