@@ -29,7 +29,7 @@ namespace WcfExamples
             var data = new DataMemberEmitDefaultValueFalse();
             var s = DataContractSerializer<DataMemberEmitDefaultValueFalse>.Serialize(data);
             var doc = XDocument.Parse(s);
-            string expected = "<DataMemberExample.DataMemberEmitDefaultValue xmlns=\"http://schemas.datacontract.org/2004/07/WcfExamples\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" />";
+            string expected = "<DataMemberExample.DataMemberEmitDefaultValueFalse xmlns=\"http://schemas.datacontract.org/2004/07/WcfExamples\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\" />";
             Assert.AreEqual(expected, doc.ToString());
         }
 
