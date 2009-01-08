@@ -9,7 +9,7 @@ namespace System.ServiceModel.Examples
     public class PerCallServiceTests
     {
         #region  Service
-        [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = true)]
+        [ServiceBehavior(ReleaseServiceInstanceOnTransactionComplete = true)] // Default
         class PerCallService : InstanceIdSetter, IInstanceIdGetter
         {
             [OperationBehavior(TransactionScopeRequired = true)]
@@ -33,7 +33,7 @@ namespace System.ServiceModel.Examples
                 host.Open();
                 Guid first = proxy.GetInstanceId();
                 Guid second = proxy.GetInstanceId();
-                Assert.AreNotEqual(second, first);
+                Assert.AreNotEqual(second, first, "Expected a different instance.");
             }
         }
 

@@ -26,10 +26,10 @@ namespace WcfExamples.MessageContracts
         }
 
         // Service
-        [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
+        [ServiceBehavior]
         class MyService : IMyContract
         {
-            [OperationBehavior(TransactionScopeRequired = true)]
+            [OperationBehavior]
             public string GetHeaderString()
             {
                 MyCustomType headerData =
