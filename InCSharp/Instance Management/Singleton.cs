@@ -73,25 +73,26 @@ namespace System.ServiceModel.Examples
         public void SingletonSessionsTests()
         {
             Binding binding = new WSHttpBinding();
-            using (ServiceHost<SingletonCounter> host =
-                      new ServiceHost<SingletonCounter>("http://localhost/"))
+            string address = "http://localhost/" + Guid.NewGuid().ToString();
+            using (ServiceHost host =
+                      new ServiceHost(typeof(SingletonCounter), new Uri(address)))
             {
-                host.AddServiceEndpoint<ISessionRequired>(binding, "withSession");
-                host.AddServiceEndpoint<ISessionNotAllowed>(binding, "woutSession");
+                host.AddServiceEndpoint(typeof(ISessionRequired), binding, "withSession");
+                host.AddServiceEndpoint(typeof(ISessionNotAllowed), binding, "woutSession");
 
                 host.Open();
 
                 ISessionRequired withSession =
                     ChannelFactory<ISessionRequired>.CreateChannel(
                         binding,
-                        new EndpointAddress("http://localhost/withSession"));
+                        new EndpointAddress(address + "/withSession"));
                 withSession.IncrementCounter();
                 ((ICommunicationObject)withSession).Close();
 
                 ISessionNotAllowed woutSession =
                     ChannelFactory<ISessionNotAllowed>.CreateChannel(
                         binding,
-                        new EndpointAddress("http://localhost/woutSession"));
+                        new EndpointAddress(address + "/woutSession"));
                 woutSession.IncrementCounter();
                 ((ICommunicationObject)woutSession).Close();
 
@@ -107,15 +108,14 @@ namespace System.ServiceModel.Examples
 
             string address = "http://localhost/" + Guid.NewGuid().ToString();
             Binding binding = new WSHttpBinding();
-            using (ServiceHost<SingletonCounter> host =
-                 new ServiceHost<SingletonCounter>(myCounter))
+            using (ServiceHost host = new ServiceHost(myCounter))
             {
                 // Host
-                host.AddServiceEndpoint<ICounter>(binding, address);
+                host.AddServiceEndpoint(typeof(ICounter), binding, address);
                 host.Open();
 
                 // Client
-                ICounter counter = host.CreateChannel<ICounter>(binding, address);
+                ICounter counter = ChannelFactory<ICounter>.CreateChannel(binding, new EndpointAddress(address));
                 counter.IncrementCounter();
                 Assert.AreEqual(6, counter.GetCurrentValue());
                 ((ICommunicationObject)counter).Close();
