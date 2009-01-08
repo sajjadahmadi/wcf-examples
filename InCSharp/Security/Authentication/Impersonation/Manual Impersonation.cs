@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Principal;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -6,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace CodeRunner.Security
 {
     [TestClass]
-    public class ImpersonationAll
+    public class ManualImpersonation
     {
         // Contracts
         [ServiceContract]
@@ -20,10 +21,26 @@ namespace CodeRunner.Security
         [ServiceBehavior(IncludeExceptionDetailInFaults = true)]
         class MyService : IMyContract
         {
-            // Impersonation occures here               
-            [OperationBehavior(Impersonation = ImpersonationOption.Allowed)]
             public void MyMethod()
             {
+                // Manual impersonation occures here
+                WindowsImpersonationContext context =
+                    ServiceSecurityContext.Current.WindowsIdentity.Impersonate();
+                try
+                {
+                    // Do work as client
+                }
+                finally
+                {
+                    // Revert
+                    context.Undo();
+                }
+
+                // Equivelent to above... 
+                using (context = ServiceSecurityContext.Current.WindowsIdentity.Impersonate())
+                {
+                    // Do work as client; reverts automatically on Dispose
+                }
             }
         }
 
@@ -38,26 +55,34 @@ namespace CodeRunner.Security
             { Channel.MyMethod(); }
         }
 
-        [TestMethod]
-        public void VerifyImpersonationOnAllOperations()
+        #region Host
+        static string address = "net.tcp://localhost:8001/" + Guid.NewGuid().ToString();
+        static ServiceHost host;
+
+        [ClassInitialize()]
+        public static void MyClassInitialize(TestContext testContext)
         {
-            string address = "net.tcp://localhost:8002/" + Guid.NewGuid().ToString();
-            using (ServiceHost host = new ServiceHost(typeof(MyService)))
-            {
-                host.AddServiceEndpoint(typeof(IMyContract), new NetTcpBinding(), address);
-                // Impersonation VERIFIED here               
-                host.Authorization.ImpersonateCallerForAllOperations = true;
-                host.Open();
+            host = new ServiceHost(typeof(MyService));
+            host.AddServiceEndpoint(typeof(IMyContract), new NetTcpBinding(), address);
+            host.Open();
+        }
 
-                using (MyContractClient proxy =
-                    new MyContractClient(new NetTcpBinding(), address))
-                {
-                    proxy.Open();
-                    proxy.MyMethod();
-                    proxy.Close();
-                }
-
+        [ClassCleanup()]
+        public static void MyClassCleanup()
+        {
+            if (host.State == CommunicationState.Opened)
                 host.Close();
+        }
+        #endregion
+
+        [TestMethod]
+        public void ManuallyImpersonateClient()
+        {
+            using (MyContractClient proxy =
+                new MyContractClient(new NetTcpBinding(), address))
+            {
+                proxy.Open();
+                proxy.MyMethod();
             }
         }
     }
