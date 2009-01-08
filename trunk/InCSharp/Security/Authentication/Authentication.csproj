@@ -41,9 +41,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Impersonation\Impersonation on All Methods.cs" />
-    <Compile Include="Impersonation\Declarative Impersonation.cs" />
     <Compile Include="Impersonation\Manual Impersonation.cs" />
+    <Compile Include="Impersonation\Declarative Impersonation.cs" />
+    <Compile Include="Impersonation\ImpersonateCallerForAllOperations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Alternative Credentials.cs" />
   </ItemGroup>
