@@ -18,14 +18,11 @@ type IMyService =
 type MyService() =
     interface IMyService with
         member this.GetData() =
-            let stream = new MemoryStream()
-            let writer = new StreamWriter(stream, AutoFlush = true)
-            writer.Write("<test>test</test>")
-            stream.Position <- 0L
-            let xdr = XmlDictionaryReader.CreateTextReader(stream, XmlDictionaryReaderQuotas.Max)
+            let reader = new StringReader("<test>test</test>")
+            let xr = XmlReader.Create(reader)
             
             let ver = OperationContext.Current.IncomingMessageVersion
-            let msg = Message.CreateMessage(ver, "urn:IMyService/GetDataResponse", xdr)
+            let msg = Message.CreateMessage(ver, "urn:IMyService/GetDataResponse", xr)
             printfn "%A\n---------------------------------" msg
             msg
 
