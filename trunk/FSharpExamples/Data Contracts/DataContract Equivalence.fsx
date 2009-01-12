@@ -5,7 +5,7 @@
 open System
 open System.Runtime.Serialization
 
-[<DataContract(Name="Person")>]
+[<DataContract(Name="Person", Namespace="")>]
 type Person =
     { [<DataMember>]
       mutable Name : string;
@@ -13,7 +13,7 @@ type Person =
       [<DataMember>]
       mutable Age : int }
 
-[<DataContract(Name="Person")>]
+[<DataContract(Name="Person", Namespace="")>]
 type Employee =
     { [<DataMember(Name="Name")>]
       mutable FullName : string;
