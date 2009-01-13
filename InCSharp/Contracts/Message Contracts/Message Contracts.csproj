@@ -32,8 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MessageHeader.cs" />
-    <Compile Include="MessageContract.cs" />
+    <Compile Include="OperationContext Headers.cs" />
+    <Compile Include="MessageHeader Attribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

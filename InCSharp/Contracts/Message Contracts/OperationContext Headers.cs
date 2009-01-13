@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace WcfExamples.MessageContracts
 {
     [TestClass]
-    public class CustomHeaderExample
+    public class OperationContextHeadersExample
     {
         // Contracts
         [DataContract]
