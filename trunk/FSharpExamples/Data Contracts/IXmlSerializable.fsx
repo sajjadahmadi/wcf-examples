@@ -27,13 +27,12 @@ type ItemSerializer(item : Item) =
         and set v = item' <- v
 
     static member GetSchema(schemaSet : XmlSchemaSet) =
-        let ns = "http://www.thatindigogirl.com/samples/2006/06"
-        let schemaString = sprintf "<xs:schema xmlns:tns='%s' xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='%s' elementFormDefault='qualified' attributeFormDefault='unqualified'><xs:complexType name='Item'><xs:sequence><xs:element name='Name' type='xs:string' nillable='false'/></xs:sequence></xs:complexType></xs:schema>" ns ns
+        let schemaString = sprintf "<xs:schema xmlns:tns='http://tempuri.org' xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://tempuri.org' elementFormDefault='qualified' attributeFormDefault='unqualified'><xs:complexType name='Item'><xs:sequence><xs:element name='Name' type='xs:string' nillable='false'/></xs:sequence></xs:complexType></xs:schema>"
 
         let schema = XmlSchema.Read(new StringReader(schemaString), null)
         schemaSet.XmlResolver <- new XmlUrlResolver()
         schemaSet.Add(schema) |> ignore
-        new XmlQualifiedName("Item", ns)
+        new XmlQualifiedName("Item", "")
 
     interface IXmlSerializable with
         member this.GetSchema() =
@@ -53,20 +52,25 @@ type ItemSerializer(item : Item) =
             this.Item <- item
         
         member this.WriteXml(writer : XmlWriter) =
-            let ns = "http://www.thatindigogirl.com/samples/2006/06"
-            writer.WriteElementString("Name", ns, this.Item.Name)
+            writer.WriteElementString("Name", "", this.Item.Name)
 
 
 [<ServiceContract(Name = "IMyContract")>]
 type IMyContract =
     [<OperationContract>]
-    abstract MyMethod : ItemSerializer -> unit
+    abstract MyMethod : ItemSerializer -> unit // Note different signature in server vs. client contract
+    
+    [<OperationContract>]
+    abstract MyOtherMethod : unit -> ItemSerializer
 
 
 [<ServiceContract(Name = "IMyContract")>]
 type IMyContractClient =
     [<OperationContract>]
     abstract MyMethod : Item -> unit
+    
+    [<OperationContract>]
+    abstract MyOtherMethod : unit -> Item
 
 
 [<ServiceBehavior(IncludeExceptionDetailInFaults = true)>]
@@ -75,6 +79,10 @@ type MyService() =
         member this.MyMethod(itemSerializer) =
             let item = itemSerializer.Item
             printfn "Service Read: %A" item
+        
+        member this.MyOtherMethod() =
+            let item = { Name = "Server Item" }
+            new ItemSerializer(item)
 
 
 let uri = new Uri("net.tcp://localhost")
@@ -84,6 +92,10 @@ host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
 let proxy = ChannelFactory<IMyContractClient>.CreateChannel(binding, new EndpointAddress(string uri))
-let item = { Name = "Messenger Bag" }
+let item = { Name = "Client Item" }
+// Client uses default DataContractSerializer
+// Server manually deserializes
 proxy.MyMethod(item)
 
+let serverItem = proxy.MyOtherMethod()
+printfn "Client Received: %A" serverItem
