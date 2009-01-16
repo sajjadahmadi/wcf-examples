@@ -9,9 +9,10 @@ open System.Xml.Schema
 open System.Xml.Serialization
 open System.Runtime.Serialization
 open System.ServiceModel
+open System.ServiceModel.Description
 
 
-[<DataContract(Name = "Item", Namespace = "")>]
+[<DataContract(Name = "Item", Namespace = "http://schemas.myexample.org")>]
 type Item =
     { [<DataMember>] mutable Name : string }
 
@@ -19,6 +20,7 @@ type Item =
 [<XmlSchemaProvider("GetSchema")>]
 type ItemSerializer(item : Item) =
     let mutable item' = item
+    let ns = "http://schemas.myexample.org"
     
     new() = ItemSerializer({ Name = "" })
     
@@ -27,12 +29,13 @@ type ItemSerializer(item : Item) =
         and set v = item' <- v
 
     static member GetSchema(schemaSet : XmlSchemaSet) =
-        let schemaString = sprintf "<xs:schema xmlns:tns='http://tempuri.org' xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='http://tempuri.org' elementFormDefault='qualified' attributeFormDefault='unqualified'><xs:complexType name='Item'><xs:sequence><xs:element name='Name' type='xs:string' nillable='false'/></xs:sequence></xs:complexType></xs:schema>"
+        let ns = "http://schemas.myexample.org"
+        let schemaString = sprintf "<xs:schema xmlns:tns='%s' xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='%s' elementFormDefault='qualified' attributeFormDefault='unqualified'><xs:complexType name='Item'><xs:sequence><xs:element name='Name' type='xs:string' nillable='false'/></xs:sequence></xs:complexType></xs:schema>" ns ns
 
         let schema = XmlSchema.Read(new StringReader(schemaString), null)
         schemaSet.XmlResolver <- new XmlUrlResolver()
         schemaSet.Add(schema) |> ignore
-        new XmlQualifiedName("Item", "")
+        new XmlQualifiedName("Item", ns)
 
     interface IXmlSerializable with
         member this.GetSchema() =
@@ -43,7 +46,7 @@ type ItemSerializer(item : Item) =
             while reader.IsStartElement() do
                 reader.MoveToContent() |> ignore
                 reader.Read() |> ignore
-                if reader.IsStartElement("Name") then
+                if reader.IsStartElement("Name", ns) then
                     reader.MoveToContent() |> ignore
                     item.Name <- reader.ReadString()
                     reader.MoveToContent() |> ignore
@@ -52,7 +55,7 @@ type ItemSerializer(item : Item) =
             this.Item <- item
         
         member this.WriteXml(writer : XmlWriter) =
-            writer.WriteElementString("Name", "", this.Item.Name)
+            writer.WriteElementString("Name", ns, this.Item.Name)
 
 
 [<ServiceContract(Name = "IMyContract")>]
@@ -85,13 +88,18 @@ type MyService() =
             new ItemSerializer(item)
 
 
-let uri = new Uri("net.tcp://localhost")
+let netUri = new Uri("net.tcp://localhost")
+let httpUri = new Uri("http://localhost:8080")
 let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, [| netUri; httpUri |])
+let debugBehavior = host.Description.Behaviors.Find<ServiceMetadataBehavior>()
+if debugBehavior = null
+    then host.Description.Behaviors.Add(new ServiceMetadataBehavior(HttpGetEnabled = true))
+    else debugBehavior.HttpGetEnabled <- true
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let proxy = ChannelFactory<IMyContractClient>.CreateChannel(binding, new EndpointAddress(string uri))
+let proxy = ChannelFactory<IMyContractClient>.CreateChannel(binding, new EndpointAddress(string netUri))
 let item = { Name = "Client Item" }
 // Client uses default DataContractSerializer
 // Server manually deserializes
@@ -99,3 +107,8 @@ proxy.MyMethod(item)
 
 let serverItem = proxy.MyOtherMethod()
 printfn "Client Received: %A" serverItem
+
+printfn "\n\nVisit http://localhost:8080?wsdl for metadata"
+printfn "Visit http://localhost:8080/?xsd=xsd2 for Item schema"
+printfn "Press <ENTER> to end the example..."
+Console.ReadLine() |> ignore
