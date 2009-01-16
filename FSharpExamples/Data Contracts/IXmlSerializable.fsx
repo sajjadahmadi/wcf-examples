@@ -28,7 +28,7 @@ type ItemSerializer(item : Item) =
 
     static member GetSchema(schemaSet : XmlSchemaSet) =
         let ns = "http://www.thatindigogirl.com/samples/2006/06"
-        let schemaString = sprintf "<xs:schema xmlns:tns='%s' xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='%s' elementFormDefault='qualified' attributeFormDefault='unqualified'><xs:complexType name='LinkItem'><xs:sequence><xs:element name='Id' type='xs:string' nillable='false'/><xs:element name='Title' type='xs:string' nillable='false'/><xs:element name='Description' type='xs:string' nillable='false'/><xs:element name='DateStart' type='xs:dateTime' nillable='false'/><xs:element name='DateEnd' type='xs:dateTime' nillable='true' minOccurs='0'/><xs:element name='Url' type='xs:string' nillable='false' minOccurs='0'/></xs:sequence></xs:complexType></xs:schema>" ns ns
+        let schemaString = sprintf "<xs:schema xmlns:tns='%s' xmlns:xs='http://www.w3.org/2001/XMLSchema' targetNamespace='%s' elementFormDefault='qualified' attributeFormDefault='unqualified'><xs:complexType name='Item'><xs:sequence><xs:element name='Name' type='xs:string' nillable='false'/></xs:sequence></xs:complexType></xs:schema>" ns ns
 
         let schema = XmlSchema.Read(new StringReader(schemaString), null)
         schemaSet.XmlResolver <- new XmlUrlResolver()
