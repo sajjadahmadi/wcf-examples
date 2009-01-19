@@ -54,6 +54,7 @@
     <Compile Include="CreateMessage with BodyWriter.cs" />
     <Compile Include="CreateMessage with Object.cs" />
     <Compile Include="Message Headers.cs" />
+    <Compile Include="Message.WriteMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
