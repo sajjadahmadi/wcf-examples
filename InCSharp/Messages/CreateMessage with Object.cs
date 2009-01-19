@@ -6,9 +6,9 @@ using System.ServiceModel.Channels;
 using System.Xml;
 using System.IO;
 
-namespace WcfExamples.MessageContracts
+namespace WcfExamples.Messages
 {
-    public class Script
+    public class CreateMessageExample
     {
         [DataContract(Name = "MyData", Namespace = "")]
         class PersonalData
