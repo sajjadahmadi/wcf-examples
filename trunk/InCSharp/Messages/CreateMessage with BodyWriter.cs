@@ -1,15 +1,12 @@
-﻿using System;
+﻿//css_ref System.Runtime.Serialization.dll;
+using System;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
-using System.IO;
 
 namespace WcfExamples.MessageContracts
 {
-    [TestClass]
     public class CreateMessageBodyWriterExample
     {
         // Note:  Does not work the same with NetNamedPipeBinding (binary encoding)
@@ -56,38 +53,40 @@ namespace WcfExamples.MessageContracts
         }
 
         #region Host
-        ServiceHost host;
-        string address = "http://localhost/" + Guid.NewGuid().ToString();
+        static ServiceHost host;
+        static string address = "http://localhost/" + Guid.NewGuid().ToString();
 
-        [TestInitialize()]
-        public void MyTestInitialize()
+        public static void MyTestInitialize()
         {
             host = new ServiceHost(typeof(MyService));
             host.AddServiceEndpoint(typeof(IMyContract), new BasicHttpBinding(), address);
             host.Open();
         }
 
-        [TestCleanup()]
-        public void MyTestCleanup()
+        public static void MyTestCleanup()
         {
             if (host.State == CommunicationState.Opened)
                 host.Close();
         }
         #endregion
 
-        [TestMethod]
-        public void CreateMessageBodyWriter()
+        static public void Main(string[] args)
         {
+            MyTestInitialize();
             IMyContract proxy = ChannelFactory<IMyContract>.CreateChannel(new BasicHttpBinding(), new EndpointAddress(address));
             using (proxy as IDisposable)
             {
                 Message msg = proxy.GetData();
-                Debug.WriteLine(msg.ToString());
+                Console.WriteLine(msg.ToString());
+                Console.WriteLine();
+
                 XmlDictionaryReader xdr = msg.GetReaderAtBodyContents();
                 string exp = "<test>data</test>";
                 string act = xdr.ReadOuterXml();
-                Assert.AreEqual(exp, act);
+                Debug.Assert(exp == act);
+                Console.WriteLine(act);
             }
+            MyTestCleanup();
         }
     }
 }

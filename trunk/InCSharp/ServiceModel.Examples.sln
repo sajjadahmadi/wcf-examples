@@ -109,6 +109,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console Host", "Hosting\Con
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Instrumentation", "Instrumentation", "{CB7A44EA-685D-4F85-BB89-8189ED8D397E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "Messages\Messages.csproj", "{2E5DB569-011C-4081-9681-B5EA70C91AF2}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ServiceModel.Examples.vsmdi
@@ -230,6 +232,10 @@ Global
 		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96625DD1-8A7B-475F-B912-F0F4820928F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E5DB569-011C-4081-9681-B5EA70C91AF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E5DB569-011C-4081-9681-B5EA70C91AF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E5DB569-011C-4081-9681-B5EA70C91AF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E5DB569-011C-4081-9681-B5EA70C91AF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

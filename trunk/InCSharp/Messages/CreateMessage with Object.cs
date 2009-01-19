@@ -3,14 +3,12 @@ using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using System.IO;
 
 namespace WcfExamples.MessageContracts
 {
-    [TestClass]
-    public class CreateMessageObjectExample
+    public class Script
     {
         [DataContract(Name = "MyData", Namespace = "")]
         class PersonalData
@@ -47,11 +45,10 @@ namespace WcfExamples.MessageContracts
         }
 
         #region Host
-        ServiceHost host;
-        string address;
+        static string address;
+        static ServiceHost host;
 
-        [TestInitialize()]
-        public void MyTestInitialize()
+        public static void MyTestInitialize()
         {
             host = new ServiceHost(typeof(MyService));
             address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
@@ -59,26 +56,26 @@ namespace WcfExamples.MessageContracts
             host.Open();
         }
 
-        [TestCleanup()]
-        public void MyTestCleanup()
+        public static void MyTestCleanup()
         {
             if (host.State == CommunicationState.Opened)
                 host.Close();
         }
         #endregion
 
-        [TestMethod]
-        public void CreateMessageFromObject()
+        static public void Main(string[] args)
         {
+            MyTestInitialize();
             IMyContract proxy = ChannelFactory<IMyContract>.CreateChannel(new NetNamedPipeBinding(), new EndpointAddress(address));
             using (proxy as IDisposable)
             {
                 Message msg = proxy.GetData();
-                Debug.WriteLine(msg.ToString());
                 XmlDictionaryReader xdr = msg.GetReaderAtBodyContents();
                 string exp = "<MyData xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\"><Age>35</Age><Name>Mark</Name></MyData>";
-                Assert.AreEqual(exp, xdr.ReadOuterXml());
+                Debug.Assert(exp == xdr.ReadOuterXml());
+                Console.WriteLine(msg.ToString());
             }
+            MyTestCleanup();
         }
     }
 }
