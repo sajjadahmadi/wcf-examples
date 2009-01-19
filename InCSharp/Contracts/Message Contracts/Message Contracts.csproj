@@ -32,6 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CreateMessage\CreateMessage with BodyWriter.cs" />
+    <Compile Include="CreateMessage\CreateMessage with Object.cs" />
     <Compile Include="OperationContext Headers.cs" />
     <Compile Include="MessageHeader Attribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
