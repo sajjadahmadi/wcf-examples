@@ -7,8 +7,16 @@ open System.IO
 open System.Xml.Linq
 open System.Runtime.Serialization
 open System.Runtime.Serialization.Json
+open System.ServiceModel.Dispatcher
 
-
+let serialize<'a> (x: 'a) =
+    let serializer = new DataContractJsonSerializer(typeof<'a>)
+    let stream = new MemoryStream()
+    serializer.WriteObject(stream, x)
+    stream.Position <- 0L
+    let reader = new StreamReader(stream)
+    reader.ReadToEnd()
+    
 let deserialize<'a> (x: string) =
     let stream = new MemoryStream()
     let data = System.Text.Encoding.UTF8.GetBytes(x)
@@ -27,5 +35,13 @@ type Person =
       mutable Age : int }
 
 let personData = "{\"name\":\"Ray\",\"age\":36}"
-let emp = deserialize<Person> personData
-printfn "%A" emp
+let p = deserialize<Person> personData
+printfn "%A\n" p
+
+let test = serialize<Person>({ Name = "Ray"; Age = 36 })
+printfn "%s\n" test
+
+let converter = new JsonQueryStringConverter()
+let result = converter.ConvertStringToValue(personData, typeof<Person>) :?> Person
+printfn "%A" result
+
