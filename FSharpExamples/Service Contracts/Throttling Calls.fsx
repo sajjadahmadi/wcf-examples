@@ -3,7 +3,6 @@
 #r "System.Runtime.Serialization"
 open System
 open System.ServiceModel
-open System.ServiceModel.Channels
 open System.ServiceModel.Description
 
 

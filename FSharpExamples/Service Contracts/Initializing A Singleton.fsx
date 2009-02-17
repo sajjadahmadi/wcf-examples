@@ -2,9 +2,7 @@
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
-open System.Diagnostics
 open System.ServiceModel
-open System.ServiceModel.Channels
 
 
 [<ServiceContract>]
@@ -32,14 +30,14 @@ singleton.Counter <- 42
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
 let host = new ServiceHost(singleton, [| uri |])
-host.AddServiceEndpoint(typeof<IMyContract>, 
+host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
-let proxy = host.CreateProxy<IMyContract>()
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 
 proxy.MyMethod()
 proxy.MyMethod()
 proxy.MyMethod()
 
-host.CloseProxy(proxy)
+(proxy :?> ICommunicationObject).Close()
 host.Close()

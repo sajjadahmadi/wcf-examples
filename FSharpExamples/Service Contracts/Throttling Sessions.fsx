@@ -3,7 +3,6 @@
 #r "System.Runtime.Serialization"
 open System
 open System.ServiceModel
-open System.ServiceModel.Channels
 open System.ServiceModel.Description
 
 
@@ -23,7 +22,7 @@ let binding = new NetTcpBinding(SendTimeout = new TimeSpan(0, 0, 5))
 let host = new ServiceHost(typeof<MyService>, [| uri |])
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 let throttle = new ServiceThrottlingBehavior(MaxConcurrentSessions = 1)
-host.Description.Behaviors.Add(throttle)
+//host.Description.Behaviors.Add(throttle)
 host.Open()
 
 let proxy1 = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri)) 
@@ -32,6 +31,7 @@ proxy1.MyMethod()
 let proxy2 = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri)) 
 try
     proxy2.MyMethod()
+    (proxy2 :?> ICommunicationObject).Close()
 with ex -> printfn "\n%s\n" ex.Message
 
 (proxy1 :?> ICommunicationObject).Close()
