@@ -2,14 +2,14 @@
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
-open System.Diagnostics
 open System.ServiceModel
-open System.ServiceModel.Channels
+
 
 [<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
     abstract MyMethod : unit -> unit
+
 
 [<ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)>]
 type MyService() =

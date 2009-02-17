@@ -18,7 +18,7 @@ type MyClass<'a> =
 [<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
-    abstract MyMethod : MyClass<int> -> unit
+    abstract MyMethod : param1 : MyClass<int> -> unit
 
 
 type MyServiceHost() =
@@ -45,6 +45,6 @@ let endpoints = importer.ImportAllEndpoints()
 let ep = endpoints |> Seq.nth 0
 printfn "%s" ep.Contract.Name
 printfn "  %s" ep.Contract.Operations.[0].Name
-printfn "  %A" ep.Contract.Operations.[0].Messages.[0].Body.Parts.[0].Name
-
+// TODO: Why does the type come out as "<null>"?
+printfn "  %A : %A" ep.Contract.Operations.[0].Messages.[0].Body.Parts.[0].Name ep.Contract.Operations.[0].Messages.[0].Body.Parts.[0].Type
 host.Close()

@@ -2,9 +2,7 @@
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
-open System.Diagnostics
 open System.ServiceModel
-open System.ServiceModel.Channels
 
 
 [<ServiceContract(SessionMode = SessionMode.Required)>]
