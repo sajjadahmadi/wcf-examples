@@ -53,6 +53,7 @@
   <ItemGroup>
     <Compile Include="CreateMessage with BodyWriter.cs" />
     <Compile Include="CreateMessage with Object.cs" />
+    <Compile Include="MessageHeaderArray Attribute.cs" />
     <Compile Include="Message Headers.cs" />
     <Compile Include="Message.WriteMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
