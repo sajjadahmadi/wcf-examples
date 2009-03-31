@@ -111,6 +111,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Instrumentation", "Instrume
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "Messages\Messages.csproj", "{2E5DB569-011C-4081-9681-B5EA70C91AF2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Callbacks", "Callbacks", "{8D144831-B93A-4C47-943B-CAA172EBFCC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Events", "Callbacks\Events\Events.csproj", "{24F5043E-441F-4385-8460-5AB80702442A}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = ServiceModel.Examples.vsmdi
@@ -236,6 +240,10 @@ Global
 		{2E5DB569-011C-4081-9681-B5EA70C91AF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E5DB569-011C-4081-9681-B5EA70C91AF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E5DB569-011C-4081-9681-B5EA70C91AF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24F5043E-441F-4385-8460-5AB80702442A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24F5043E-441F-4385-8460-5AB80702442A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24F5043E-441F-4385-8460-5AB80702442A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24F5043E-441F-4385-8460-5AB80702442A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -272,5 +280,6 @@ Global
 		{ECAA06F3-F01F-47AB-9FDB-E276A1C650AC} = {C7584917-2710-4176-9176-A15B3C9E27EA}
 		{5E9F510D-C0CD-473B-B6D4-7C7E4ED72A1A} = {5E46E3B2-EBB4-4965-8672-1BF3B259EFF9}
 		{96625DD1-8A7B-475F-B912-F0F4820928F0} = {5E46E3B2-EBB4-4965-8672-1BF3B259EFF9}
+		{24F5043E-441F-4385-8460-5AB80702442A} = {8D144831-B93A-4C47-943B-CAA172EBFCC5}
 	EndGlobalSection
 EndGlobal
