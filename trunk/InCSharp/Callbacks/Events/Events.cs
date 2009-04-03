@@ -1,44 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Xml.Serialization;
+using System.ServiceModel;
+using System.Runtime.Serialization;
+using System;
 
-namespace System.ServiceModel.Examples
+namespace CodeRunner.Service
 {
-	enum EventType
-	{
-		Event1 = 1,
-		Event2 = 2,
-		Event3 = 4,
-		AllEvents = Event1 | Event2 | Event3
-	}
-
-
-	[ServiceContract]
-	interface ISubscriptionService
-	{
-		[OperationContract]
-		void Subscribe(EventType mask);
-		[OperationContract]
-		void Unsubscribe(EventType mask);
-	}
-
-	[ServiceContract(CallbackContract = typeof(IPublisherEvents))]
-	interface IPublisherService
-	{
-		[OperationContract]
-		void FireEvents(EventType eventType);
-	}
-
-	interface IPublisherEvents
-	{
-		[OperationContract(IsOneWay = true)]
-		void OnEvent1();
-		[OperationContract(IsOneWay = true)]
-		void OnEvent2(int number);
-		[OperationContract(IsOneWay = true)]
-		void OnEvent3(int number, string text);
-	}
-
 	[ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)]
-	class PublisherService : IPublisherService, ISubscriptionService
+	class PublisherService : IPublisherService
 	{
 		public delegate void GenericEventHandler();
 		public delegate void GenericEventHandler<T>(T t);
@@ -59,8 +28,6 @@ namespace System.ServiceModel.Examples
 			if ((mask & EventType.Event3) == EventType.Event3)
 			{ event3 += subscriber.OnEvent3; }
 		}
-
-		#region IContractWithEvents Members
 
 		public void Unsubscribe(EventType mask)
 		{
@@ -95,17 +62,64 @@ namespace System.ServiceModel.Examples
 					{ throw new InvalidOperationException("Unknown event!"); }
 			}
 		}
-
-		#endregion
 	}
 
-	class MySubscriber : IPublisherEvents
+	[ServiceContract(CallbackContract = typeof(IPublisherEvents))]
+	interface IPublisherService : ISubscriptionOperations
+	{
+		[OperationContract]
+		void FireEvents(EventType eventType);
+	}
+
+	[ServiceContract]
+	interface ISubscriptionOperations
+	{
+		[OperationContract]
+		void Subscribe(EventType mask);
+		[OperationContract]
+		void Unsubscribe(EventType mask);
+	}
+
+	interface IPublisherEvents
+	{
+		[OperationContract(IsOneWay = true)]
+		void OnEvent1();
+		[OperationContract(IsOneWay = true)]
+		void OnEvent2(int number);
+		[OperationContract(IsOneWay = true)]
+		void OnEvent3(int number, string text);
+	}
+
+	[DataContract]
+	enum EventType
+	{
+		[EnumMember]
+		Event1 = 1,
+
+		[EnumMember]
+		Event2 = 2,
+
+		[EnumMember]
+		Event3 = 4,
+
+		[EnumMember]
+		AllEvents = Event1 | Event2 | Event3
+	}
+}
+
+
+
+
+namespace CodeRunner.Client
+{
+	// Pretend like we're using a generated proxy
+	using CodeRunner.Service;
+
+	class EventSubscriber : IPublisherEvents
 	{
 		public EventType EventFired;
 		public int Number;
 		public string Text;
-
-		#region IMyEvents Members
 
 		public void OnEvent1()
 		{ EventFired |= EventType.Event1; }
@@ -122,55 +136,89 @@ namespace System.ServiceModel.Examples
 			Text = text;
 			EventFired |= EventType.Event3;
 		}
-
-		#endregion
 	}
 
 	[TestClass]
 	public class Events
 	{
-		[TestMethod]
-		public void SubscribeToEvents()
+		#region Additional test attributes
+		static string address = "net.pipe://localhost/";
+		static ServiceHost<PublisherService> host;
+
+		[ClassInitialize]
+		public static void StartHost(TestContext context)
 		{
-			string address = "net.pipe://localhost/";
-			using (ServiceHost<PublisherService> host = new ServiceHost<PublisherService>())
-			{
-				host.AddServiceEndpoint<IPublisherService>(new NetNamedPipeBinding(), address);
-				host.Open();
+			host = new ServiceHost<PublisherService>();
+			host.AddServiceEndpoint<IPublisherService>(new NetNamedPipeBinding(), address);
+			host.Open();
+		}
 
-				MySubscriber client = new MySubscriber();
-				IPublisherService channel = DuplexChannelFactory<IPublisherService, IPublisherEvents>
-					 .CreateChannel(client, new NetNamedPipeBinding(), new EndpointAddress(address));
+		[ClassCleanup]
+		public static void StopHost()
+		{
+			using (host) { /* Disposed here */ }
+		}
+		#endregion
 
-				// Subscribed to All, but only fired Event1
-				channel.Subscribe(EventType.AllEvents);
-				channel.FireEvents(EventType.Event1);
-				Assert.AreEqual(EventType.Event1, (client.EventFired & EventType.Event1));
-				Assert.AreEqual(default(int), client.Number);
-				Assert.AreEqual(default(string), client.Text);
+		[TestMethod]
+		public void SubscribeToAll_FireEvent1()
+		{
+			EventSubscriber subscriber = new EventSubscriber();
+			IPublisherService proxy = DuplexChannelFactory<IPublisherService, IPublisherEvents>
+				 .CreateChannel(subscriber, new NetNamedPipeBinding(), new EndpointAddress(address));
 
-				channel.Unsubscribe(EventType.AllEvents);
+			// Subscribe to All, but only fire Event1
+			proxy.Subscribe(EventType.AllEvents);
+			proxy.FireEvents(EventType.Event1);
 
-				// Fired All, but only subscribed to Event2
-				channel.Subscribe(EventType.Event2);
-				channel.FireEvents(EventType.AllEvents);
-				Assert.AreEqual(EventType.Event2, (client.EventFired & EventType.Event2));
-				Assert.AreNotEqual(EventType.AllEvents, (client.EventFired & EventType.AllEvents));
-				Assert.AreEqual(50, client.Number);
-				Assert.AreEqual(default(string), client.Text);
+			Assert.AreEqual(EventType.Event1, (subscriber.EventFired & EventType.Event1));
+			Assert.AreEqual(default(int), subscriber.Number);
+			Assert.AreEqual(default(string), subscriber.Text);
 
-				channel.Unsubscribe(EventType.AllEvents);
+			CloseProxy(proxy);
+		}
 
-				// Subscribed to All, Fired All
-				channel.Subscribe(EventType.AllEvents);
-				channel.FireEvents(EventType.AllEvents);
-				Assert.AreEqual(EventType.AllEvents, (client.EventFired & EventType.AllEvents));
-				Assert.AreEqual(100, client.Number);
-				Assert.AreEqual("All", client.Text);
+		[TestMethod]
+		public void SubscribeToOne_FireAll()
+		{
+			EventSubscriber subscriber = new EventSubscriber();
+			IPublisherService proxy = DuplexChannelFactory<IPublisherService, IPublisherEvents>
+				 .CreateChannel(subscriber, new NetNamedPipeBinding(), new EndpointAddress(address));
 
-				((ICommunicationObject)channel).Close();
-			}
+			// Fired All, but only subscribed to Event2
+			proxy.Subscribe(EventType.Event2);
+			proxy.FireEvents(EventType.AllEvents);
 
+			Assert.AreEqual(EventType.Event2, (subscriber.EventFired & EventType.Event2));
+			Assert.AreNotEqual(EventType.AllEvents, (subscriber.EventFired & EventType.AllEvents));
+			Assert.AreEqual(50, subscriber.Number);
+			Assert.AreEqual(default(string), subscriber.Text);
+
+			CloseProxy(proxy);
+		}
+
+		[TestMethod]
+		public void SubscribeToAll_FireAll()
+		{
+			EventSubscriber subscriber = new EventSubscriber();
+			IPublisherService proxy = DuplexChannelFactory<IPublisherService, IPublisherEvents>
+				 .CreateChannel(subscriber, new NetNamedPipeBinding(), new EndpointAddress(address));
+
+			// Subscribe to All, Fire All
+			proxy.Subscribe(EventType.AllEvents);
+			proxy.FireEvents(EventType.AllEvents);
+
+			Assert.AreEqual(EventType.AllEvents, (subscriber.EventFired & EventType.AllEvents));
+			Assert.AreEqual(100, subscriber.Number);
+			Assert.AreEqual("All", subscriber.Text);
+
+			CloseProxy(proxy);
+		}
+
+		private static void CloseProxy(IPublisherService proxy)
+		{
+			proxy.Unsubscribe(EventType.AllEvents);
+			((ICommunicationObject)proxy).Close();
 		}
 	}
 }
