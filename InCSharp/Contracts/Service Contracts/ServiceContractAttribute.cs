@@ -9,7 +9,7 @@ namespace WcfExamples
     /// and use year and month to differentiate versions of your service.
     /// </summary>
     [ServiceContract(Name = "MyContract",
-        Namespace = "http://schemas.consumersenergy.com/2008/12/wcfexamples/")]
+        Namespace = "http://www.cmsenergy.com/2008/12/wcfexamples/")]
     public interface IMyContract
     {
         [OperationContract]
