@@ -49,6 +49,7 @@
     <Compile Include="Callback Faults.cs" />
     <Compile Include="ErrorHandling.cs" />
     <Compile Include="ExceptionDetail.cs" />
+    <Compile Include="FaultContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FaultException.cs" />
   </ItemGroup>

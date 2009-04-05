@@ -10,33 +10,6 @@ namespace CodeRunner.ServiceModel.Examples
     [TestClass]
     public class FaultExceptionTests
     {
-        [ServiceContract]
-        interface IMyContract
-        {
-            [OperationContract]
-            [FaultContract(typeof(MyFault))]
-            void ThrowTypedFault();
-
-            [OperationContract]
-            void ThrowUntypedFault();
-        }
-
-        [DataContract]
-        class MyFault
-        {
-            private string description;
-
-            public MyFault(string description)
-            { this.description = description; }
-
-            [DataMember]
-            public string Description
-            {
-                get { return description; }
-                set { description = value; }
-            }
-        }
-
         /* Service */
         class MyService : IMyContract
         {
@@ -55,7 +28,9 @@ namespace CodeRunner.ServiceModel.Examples
 
             [DebuggerNonUserCode]
             public void ThrowUntypedFault()
-            { throw new FaultException("Untyped Fault."); }
+            { 
+                throw new FaultException("Untyped Fault."); 
+            }
         }
 
         /* Client */
