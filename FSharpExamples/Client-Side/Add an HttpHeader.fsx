@@ -1,9 +1,7 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
 open System.Net
-open System.Runtime.Serialization
 open System.ServiceModel
 open System.ServiceModel.Channels
 
@@ -28,7 +26,7 @@ type MyService() =
 
 let uri = new Uri("http://localhost:8000")
 let binding = new BasicHttpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
@@ -49,3 +47,5 @@ httpProp.Headers.Add(HttpRequestHeader.UserAgent, "F#")
 
 proxy.MyMethod()
 
+(proxy :?> ICommunicationObject).Close()
+host.Close()

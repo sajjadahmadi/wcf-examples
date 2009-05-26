@@ -1,9 +1,7 @@
-#light
 #r "System.Runtime.Serialization"
 #r "System.ServiceModel"
 open System
 open System.ServiceModel
-open System.ServiceModel.Channels
 open System.ServiceModel.Description
 
 
@@ -20,7 +18,7 @@ type MyService() =
 
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 
@@ -28,3 +26,6 @@ let channel = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAdd
 
 let result = channel.MyOperation()
 printfn "Result: %s" result
+
+(channel :?> ICommunicationObject).Close()
+host.Close()
