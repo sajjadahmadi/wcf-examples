@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -50,7 +49,7 @@ let main =
     async {
         let uri = new Uri("net.tcp://localhost")
         let binding = new NetTcpBinding()
-        use host = new ServiceHost(typeof<ServiceSide.Calculator>, [| uri |])
+        use host = new ServiceHost(typeof<ServiceSide.Calculator>, uri)
         host.AddServiceEndpoint(typeof<ServiceSide.ICalculator>, binding, "") |> ignore
         host.Open()
 
@@ -69,6 +68,6 @@ let main =
         (proxy :?> ICommunicationObject).Close()
         host.Close() }
         
-Async.Spawn main
+Async.Start main
 printfn "Press any key to exit..."
 Console.ReadKey(true) |> ignore

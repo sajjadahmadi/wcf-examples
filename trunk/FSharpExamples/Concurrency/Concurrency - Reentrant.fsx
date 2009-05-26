@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -36,7 +35,7 @@ type MyCallbackClient() =
 
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 

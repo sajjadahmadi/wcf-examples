@@ -1,4 +1,3 @@
-#light
 open System
 open System.Diagnostics
 open System.Collections.Generic
