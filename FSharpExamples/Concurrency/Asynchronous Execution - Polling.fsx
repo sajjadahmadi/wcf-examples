@@ -1,7 +1,7 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
+open System.Threading
 open System.ServiceModel
 open System.ServiceModel.Channels
 
@@ -48,7 +48,7 @@ type CalculatorClient(binding : Binding, address : EndpointAddress) =
 
 let binding = new NetTcpBinding()
 let uri = new Uri("net.tcp://localhost")
-let host = new ServiceHost(typeof<ServiceSide.Calculator>, [| uri |])
+let host = new ServiceHost(typeof<ServiceSide.Calculator>, uri)
 host.AddServiceEndpoint(typeof<ServiceSide.ICalculator>, binding, "")
 host.Open()
 
@@ -61,11 +61,11 @@ let asyncResult = proxy.BeginAdd(2, 3, null, null)
 while not asyncResult.IsCompleted do
     // some other work
     printf "."
-    Threading.Thread.Sleep(10)
+    Thread.Sleep(10)
 
 printfn "2 + 3 = %d" (proxy.EndAdd(asyncResult))
-    
+
 printfn "Press any key to exit..."
-Console.ReadKey(true)
+Console.ReadKey(true) |> ignore
 (proxy :?> ICommunicationObject).Close()
 host.Close()

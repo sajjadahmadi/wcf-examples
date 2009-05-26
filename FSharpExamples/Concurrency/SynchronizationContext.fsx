@@ -1,4 +1,3 @@
-#light
 open System.Threading
 
 let runSync() =
@@ -11,6 +10,7 @@ let runSync() =
 
 
 SynchronizationContext.SetSynchronizationContext(new SynchronizationContext())
-printfn "Main thread:   %d" Thread.CurrentThread.ManagedThreadId
+printfn "Main thread on thread #%d" Thread.CurrentThread.ManagedThreadId
 let st = runSync()
+printfn "Press any key to exit..."
 System.Console.ReadKey(true) |> ignore

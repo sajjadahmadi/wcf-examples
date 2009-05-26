@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -56,12 +55,12 @@ type MyService() =
 
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, uri)
 host.AddServiceEndpoint(typeof<IFormManager>, binding, "")
 host.Open()
 
 let frmAsync = async { Application.Run(new MyForm()) }
-Async.Spawn frmAsync
+Async.Start frmAsync
 
 let proxy = ChannelFactory<IFormManager>.CreateChannel(binding, new EndpointAddress(string uri))
 proxy.IncrementLabel()
@@ -69,6 +68,7 @@ proxy.IncrementLabel()
 proxy.IncrementLabel()
 proxy.IncrementLabel()
 
-Thread.Sleep(3000)
+printfn "Press any key to exit..."
+Console.ReadKey(true) |> ignore
 (proxy :?> ICommunicationObject).Close()
 host.Close()
