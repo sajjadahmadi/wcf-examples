@@ -1,4 +1,3 @@
-#light
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
 open System.IO
@@ -6,6 +5,7 @@ open System.Xml.Linq
 open System.Collections
 open System.Collections.Generic
 open System.Runtime.Serialization
+System.Console.Clear()
 
 
 [<CollectionDataContract(Name="MyCollectionOf{0}")>]

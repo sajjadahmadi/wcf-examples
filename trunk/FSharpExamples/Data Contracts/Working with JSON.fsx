@@ -1,4 +1,3 @@
-#light
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
 #r "System.ServiceModel.Web"
@@ -8,6 +7,7 @@ open System.Xml.Linq
 open System.Runtime.Serialization
 open System.Runtime.Serialization.Json
 open System.ServiceModel.Dispatcher
+Console.Clear()
 
 let serialize<'a> (x: 'a) =
     let serializer = new DataContractJsonSerializer(typeof<'a>)
@@ -33,6 +33,7 @@ type Person =
       
       [<DataMember(Name = "age")>]
       mutable Age : int }
+
 
 let personData = "{\"name\":\"Ray\",\"age\":36}"
 let p = deserialize<Person> personData

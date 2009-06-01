@@ -1,9 +1,10 @@
-#light
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#load "Serialization.fsx"
+#load "Serialization.fs"
 open System
 open System.Runtime.Serialization
+Console.Clear()
+
 
 [<DataContract(Name="Person")>]
 type Person =
@@ -12,6 +13,7 @@ type Person =
       
       [<DataMember(EmitDefaultValue=false)>]
       mutable Age : int }
+
 
 let p1 = { Name = null;
            Age   = 0 }
