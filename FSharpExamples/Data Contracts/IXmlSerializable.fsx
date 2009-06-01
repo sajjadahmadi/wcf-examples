@@ -1,4 +1,3 @@
-#light
 #r "System.Xml"
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
@@ -10,6 +9,7 @@ open System.Xml.Serialization
 open System.Runtime.Serialization
 open System.ServiceModel
 open System.ServiceModel.Description
+Console.Clear()
 
 
 [<DataContract(Name = "Item", Namespace = "http://schemas.myexample.org")>]
@@ -89,7 +89,7 @@ type MyService() =
 
 
 let netUri = new Uri("net.tcp://localhost")
-let httpUri = new Uri("http://localhost:8080")
+let httpUri = new Uri("http://localhost:8082")
 let binding = new NetTcpBinding()
 let host = new ServiceHost(typeof<MyService>, [| netUri; httpUri |])
 let debugBehavior = host.Description.Behaviors.Find<ServiceMetadataBehavior>()
@@ -108,7 +108,7 @@ proxy.MyMethod(item)
 let serverItem = proxy.MyOtherMethod()
 printfn "Client Received: %A" serverItem
 
-printfn "\n\nVisit http://localhost:8080?wsdl for metadata"
-printfn "Visit http://localhost:8080/?xsd=xsd2 for Item schema"
+printfn "\n\nVisit %A?wsdl for metadata" httpUri
+printfn "Visit %A?xsd=xsd2 for Item schema" httpUri
 printfn "Press <ENTER> to end the example..."
 Console.ReadLine() |> ignore

@@ -1,6 +1,3 @@
-#light
-#r "System.Runtime.Serialization"
-#r "System.Xml.Linq"
 open System.IO
 open System.Xml.Linq
 open System.Runtime.Serialization

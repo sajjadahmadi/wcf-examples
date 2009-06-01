@@ -1,9 +1,10 @@
-#light
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#load "Serialization.fsx"
+#load "Serialization.fs"
 open System
 open System.Runtime.Serialization
+Console.Clear()
+
 
 [<DataContract(Name="Person")>]
 type Person =
@@ -12,6 +13,7 @@ type Person =
       
       [<DataMember(IsRequired=true)>]
       mutable Age : int }
+
 
 let graph1 = "<Person xmlns=\"http://schemas.datacontract.org/2004/07/\" xmlns:i=\"http://www.w3.org/2001/XMLSchema-instance\">
   <Age>35</Age>
