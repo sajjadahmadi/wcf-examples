@@ -112,3 +112,6 @@ printfn "\n\nVisit %A?wsdl for metadata" httpUri
 printfn "Visit %A?xsd=xsd2 for Item schema" httpUri
 printfn "Press <ENTER> to end the example..."
 Console.ReadLine() |> ignore
+
+(proxy :?> ICommunicationObject).Close()
+host.Close()
