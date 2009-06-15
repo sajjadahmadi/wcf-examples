@@ -87,3 +87,4 @@ let proxy2 = ChannelFactory<ISomeService>.CreateChannel(binding, new EndpointAdd
 let resp = proxy2.GetProviderContactInfo(req2)
 printfn "Email: %s; Phone: %s" resp.ProviderContactInfo.EmailAddress resp.ProviderContactInfo.PhoneNumber
 (proxy2 :?> ICommunicationObject).Close()
+host.Close()
