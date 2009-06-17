@@ -8,6 +8,7 @@ open System.IdentityModel.Policy
 open System.ServiceModel
 open System.ServiceModel.Description
 open System.ServiceModel.Security
+Console.Clear()
 
 
 [<ServiceContract>]
@@ -20,9 +21,6 @@ type MyService() =
     interface IMyContract with
         member this.MyOperation() =
             "result"
-
-
-type ClaimsState = ClaimsAdded
 
 
 type MyCustomValidator() =
@@ -39,9 +37,9 @@ type MyCustomValidator() =
     
         member this.Evaluate(evaluationContext, state) =
             // Check to see if this method has been called already
-            if state <> null then true
-            else
-                state <- ClaimsAdded
+            printfn "%A" state
+            if state = null then
+                state <- new obj()
                 let claims = new List<Claim>()
                 for claimSet in evaluationContext.ClaimSets do
                     // Look for Name claims in the current claim set
@@ -51,7 +49,9 @@ type MyCustomValidator() =
                         for op in ops do
                             claims.Add(new Claim("http://example.org/claims/allowedoperation", op, Rights.PossessProperty))
                             printfn "  Claim added: %s" op
-                true
+                evaluationContext.AddClaimSet(this, new DefaultClaimSet((this :> IAuthorizationPolicy).Issuer, claims))
+                ()
+            true
             
         member this.Issuer = ClaimSet.System
 
@@ -68,8 +68,9 @@ host.Authorization.ExternalAuthorizationPolicies <- policies.AsReadOnly()
 
 host.Open()
 
-let proxy1 = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
-proxy1.MyOperation()
+let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
+proxy.MyOperation()
+proxy.MyOperation()
 
-(proxy1 :?> ICommunicationObject).Close()
+(proxy :?> ICommunicationObject).Close()
 host.Close()
