@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.ServiceModel;
 using System.IdentityModel.Policy;
 using System.IdentityModel.Claims;
+using System.Diagnostics;
 
 namespace CodeRunner
 {
@@ -13,82 +14,115 @@ namespace CodeRunner
     interface IMyContract
     {
         [OperationContract]
-        string MyOperation();
+        void MyOperation();
     }
 
     class MyService : IMyContract
     {
-        public string MyOperation()
+        public void MyOperation()
         {
-            return "result";
+            // Do something
         }
     }
 
-    enum ClaimStates
+    class MyAuthorizationPolicy : IAuthorizationPolicy
     {
-        ClaimsAdded
-    }
-
-    class MyCustomValidator : IAuthorizationPolicy
-    {
-        ClaimStates ClaimState = ClaimStates.ClaimsAdded;
-
         Guid id = Guid.NewGuid();
 
         string[] GetAllowedOperations(object user)
         {
+            if (user.Equals("EMS\\magood"))
             return new string[] {
                 "http://example.org/MyService/MyOperation", 
                 "http://example.org/MyService/SomeOtherOperation"};
+
+            return new string[] { };
         }
 
-        string IAuthorizationComponent.Id
+        public string Id
         {
             get { return id.ToString(); }
         }
 
-        bool IAuthorizationPolicy.Evaluate(EvaluationContext evaluationContext, ref object state)
+
+        public bool Evaluate(EvaluationContext evaluationContext, ref object state)
         {
+            // If state is null, then this method has already been called
             if (state != null)
-                return true; // What is this for?
-            state = ClaimStates.ClaimsAdded;
+                return true;
+
+            Debug.WriteLine("Inside MyAuthorizationPolicy.Evaluate");
+
             var claims = new List<Claim>();
+            // Iterate through each of the claim sets in the evaluation context.
             foreach (var claimSet in evaluationContext.ClaimSets)
             {
+                // Look for Name claims in the current claim set.
                 foreach (var claim in claimSet.FindClaims(ClaimTypes.Name, Rights.PossessProperty))
                 {
-                    var ops = GetAllowedOperations(claim.Resource);
-                    foreach (var op in ops)
+                    // Get the list of operations the given user (resource) is allowed to call.
+                    var user = claim.Resource;
+                    var ops = GetAllowedOperations(user);
+                    foreach (var operation in ops)
                     {
-                        claims.Add(new Claim("http://example.org/claims/allowedoperation", op, Rights.PossessProperty));
+                        // Add claims to the list
+                        claims.Add(new Claim("http://example.org/claims/allowedoperation", operation, Rights.PossessProperty));
+                        Debug.WriteLine("Claim added: " + operation);
                     }
                 }
             }
+
+            // Add claims to the evaluation context.
+            evaluationContext.AddClaimSet(this, new DefaultClaimSet(this.Issuer, claims));
+
+            // Will signifies that claims have been added.
+            state = new object();
+
             return true;
         }
 
-        ClaimSet IAuthorizationPolicy.Issuer
+        public ClaimSet Issuer
         {
             get { return ClaimSet.System; }
         }
 
+    }
+    [TestClass]
+    public class TestFixture
+    {
         [TestMethod]
-        void TestThis()
+        public void UserIsAuthorized()
         {
-            
+            CallOperation();
+        }
+
+        [TestMethod]
+        public void UserIsNotAuthorized()
+        {
+            // Change current user here
+            CallOperation();
+        }
+
+        private static void CallOperation()
+        {
             var uri = new Uri("net.tcp://localhost:8000");
             var binding = new NetTcpBinding();
-            var host = new ServiceHost(typeof(MyService), uri);
-            host.AddServiceEndpoint(typeof(IMyContract), binding, "");
+            using (var host = new ServiceHost(typeof(MyService), uri))
+            {
+                host.AddServiceEndpoint(typeof(IMyContract), binding, "");
 
-            // Add custom authorization policies
-            var policies = new List<IAuthorizationPolicy>();
-            policies.Add(new MyCustomValidator());
-            host.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
+                // Add custom authorization policies
+                var policies = new List<IAuthorizationPolicy>();
+                policies.Add(new MyAuthorizationPolicy());
+                host.Authorization.ExternalAuthorizationPolicies = policies.AsReadOnly();
 
-            host.Open();
+                host.Open();
 
-            Assert.Inconclusive("Incomplete");
+                var proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(uri.ToString()));
+                proxy.MyOperation();
+                ((ICommunicationObject)proxy).Close();
+            }
         }
+
     }
 }
