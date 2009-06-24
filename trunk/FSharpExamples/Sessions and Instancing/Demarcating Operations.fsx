@@ -113,5 +113,13 @@ try
     proxy.OperationE()
 with ex -> printfn "Error: %s\n" ex.Message
 
+try
+    printfn "=============================\nAttempted order: A, B, D"
+    reset()
+    proxy.OperationA()
+    proxy.OperationB()
+    proxy.OperationD()
+with ex -> printfn "Error: %s\n" ex.Message
+
 (proxy :?> ICommunicationObject).Abort()
 host.Close()
