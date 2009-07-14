@@ -7,6 +7,8 @@ using System.ServiceModel;
 using System.IdentityModel.Policy;
 using System.IdentityModel.Claims;
 using System.Diagnostics;
+using System.Security.Principal;
+using System.Threading;
 
 namespace CodeRunner
 {
@@ -31,12 +33,12 @@ namespace CodeRunner
 
         string[] GetAllowedOperations(object user)
         {
-            if (user.Equals("EMS\\magood"))
-            return new string[] {
-                "http://example.org/MyService/MyOperation", 
-                "http://example.org/MyService/SomeOtherOperation"};
-
-            return new string[] { };
+            if (user.Equals("Domain\\Username"))
+                return new string[] {
+                    "http://example.org/MyService/MyOperation", 
+                    "http://example.org/MyService/SomeOtherOperation"};
+            else
+                return new string[] { };
         }
 
         public string Id
@@ -47,9 +49,8 @@ namespace CodeRunner
 
         public bool Evaluate(EvaluationContext evaluationContext, ref object state)
         {
-            // If state is null, then this method has already been called
             if (state != null)
-                return true;
+                return true; // If state is null, then this method has already been called
 
             Debug.WriteLine("Inside MyAuthorizationPolicy.Evaluate");
 
@@ -88,18 +89,22 @@ namespace CodeRunner
 
     }
     [TestClass]
-    public class TestFixture
+    public class CustomAuthorizationTests
     {
         [TestMethod]
         public void UserIsAuthorized()
         {
+            AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.UnauthenticatedPrincipal);
+            var roles = new string[] { "http://example.org/MyService/MyOperation" };
+            var p = new GenericPrincipal(new GenericIdentity("Domain\\Username"), roles);
+            Thread.CurrentPrincipal = p;
             CallOperation();
+            // Operation is still getting called as the current user
         }
 
         [TestMethod]
         public void UserIsNotAuthorized()
         {
-            // Change current user here
             CallOperation();
         }
 
