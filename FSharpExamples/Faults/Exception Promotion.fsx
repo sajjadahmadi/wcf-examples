@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -64,9 +63,5 @@ with ex ->
     printfn "%A: %s\n\n" (ex.GetType()) ex.Message
     printfn "Proxy state = %A\n\n" (proxy :?> ICommunicationObject).State
 
-try
-    (proxy :?> ICommunicationObject).Close()
-with _ -> ()
+(proxy :?> ICommunicationObject).Close()
 host.Close()
-
-Threading.Thread.Sleep(100)

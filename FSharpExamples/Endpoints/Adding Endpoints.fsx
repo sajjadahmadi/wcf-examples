@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 open System
 open System.ServiceModel

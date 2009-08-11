@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -35,6 +34,7 @@ type MyService() =
         member this.DoOtherException() =
             let callback = OperationContext.Current.GetCallbackChannel<IMyContractCallback>()
             callback.ThrowOtherException()
+
 
 type MyContractClient(callbackInstance: obj, binding: Binding, remoteAddress: EndpointAddress) =
     inherit DuplexClientBase<IMyContract>(callbackInstance, binding, remoteAddress)
