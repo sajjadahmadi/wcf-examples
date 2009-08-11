@@ -7,8 +7,8 @@
     <ProjectGuid>{660DBB65-5F3B-4706-91CB-F8833B7BDF72}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeRunner.SecurityX</RootNamespace>
-    <AssemblyName>SecurityX</AssemblyName>
+    <RootNamespace>CodeRunner.Security</RootNamespace>
+    <AssemblyName>Security</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,11 +36,15 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.IdentityModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Custom Authentication.cs" />
     <Compile Include="Impersonation\Manual Impersonation.cs" />
     <Compile Include="Impersonation\Declarative Impersonation.cs" />
     <Compile Include="Impersonation\ImpersonateCallerForAllOperations.cs" />
