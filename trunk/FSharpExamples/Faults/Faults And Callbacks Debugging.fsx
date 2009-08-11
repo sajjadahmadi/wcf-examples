@@ -59,7 +59,11 @@ let callback = new MyCallbackClient()
 let client = new MyContractClient(callback, binding, new EndpointAddress(string uri))
 let proxy = client.ChannelFactory.CreateChannel()
 
-proxy.DoFaultException()
+try
+    proxy.DoFaultException()
+with ex ->
+    printfn "%s: %s\n\n" (ex.GetType().Name) ex.Message
+    
 printfn "Proxy state: %A\n\n" (proxy :?> ICommunicationObject).State
 
 // With TCP binding, when the callback throws an exception not in the contract,
@@ -72,5 +76,6 @@ with ex ->
     
 printfn "Proxy state: %A\n\n" (proxy :?> ICommunicationObject).State
 
+client.Close()
 (proxy :?> ICommunicationObject).Close()
 host.Close()
