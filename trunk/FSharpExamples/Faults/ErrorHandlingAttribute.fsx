@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -8,13 +7,18 @@ open System.ServiceModel.Description
 open System.ServiceModel.Dispatcher
 
 
+module Printer =
+    let private l = new obj()
+    
+    let print format (args : #obj[]) =
+        let args = Array.ConvertAll(args, fun x -> box x)
+        let f() = Console.WriteLine(format, args)
+        lock l f
+
+
 [<AttributeUsage(AttributeTargets.Class)>]
 type ErrorHandlerBehaviorAttribute() =
     inherit Attribute()
-    
-    let mutable serviceType: Type = null
-    member this.ServiceType with get() = serviceType
-                            and set v = serviceType <- v
     
     interface IServiceBehavior with
         member this.AddBindingParameters(serviceDescription, serviceHostBase, endpoints, bindingParameters) =
@@ -30,12 +34,12 @@ type ErrorHandlerBehaviorAttribute() =
             
     interface IErrorHandler with
         member this.HandleError(error) =
-            printfn "MyErrorHandler.HandleError()"
+            Printer.print "MyErrorHandler.HandleError(): {0}" [| error.Message |]
             false
         
         member this.ProvideFault(error, version, fault) =
-            printfn "MyErrorHandler.ProvideFault(): %A" fault
-            let faultException = new FaultException<int>(3)
+            Printer.print "MyErrorHandler.ProvideFault(): {0}" [| error.Message |]
+            let faultException = new FaultException<int>(-99)
             let messageFault = faultException.CreateMessageFault()
             fault <- Message.CreateMessage(version, messageFault, faultException.Action)
 
@@ -43,6 +47,7 @@ type ErrorHandlerBehaviorAttribute() =
 [<ServiceContract>]
 type ICalculator =
     [<OperationContract>]
+    [<FaultContract(typeof<int>)>]
     abstract Divide : double * double -> double
 
 
@@ -66,13 +71,13 @@ let proxy = ChannelFactory<ICalculator>.CreateChannel(binding, new EndpointAddre
 
 try
     proxy.Divide(4.0, 0.0) |> ignore
-with ex ->
-    printfn "%A: %s\n\n" (ex.GetType()) ex.Message
-    printfn "Proxy state = %A\n\n" (proxy :?> ICommunicationObject).State
+with 
+    | :? FaultException<int> as ex ->
+        Printer.print "{0}: {1}\n\n" [| box (ex.GetType()); box ex.Detail |]
+    | ex                           -> 
+        Printer.print "Expected FailtException<int> but got {0} instead!" [| ex.GetType() |]
 
-try
-    (proxy :?> ICommunicationObject).Close()
-with _ -> ()
+Printer.print "proxy.State = {0}" [| (proxy :?> ICommunicationObject).State |]
+
+(proxy :?> ICommunicationObject).Close()
 host.Close()
-
-Threading.Thread.Sleep(100)

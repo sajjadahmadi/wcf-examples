@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -29,9 +28,7 @@ host.Open()
 let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
 try
     proxy.MethodWithError()
-with ex -> printfn "%s: %s\n%s" (ex.GetType().Name) ex.Message ex.StackTrace
+with ex -> printfn "%s: %s\n%s" (ex.GetType().Name) ex.Message ""//ex.StackTrace
 
-try
-    (proxy :?> ICommunicationObject).Close()
-with _ -> ()
+(proxy :?> ICommunicationObject).Abort()
 host.Close()

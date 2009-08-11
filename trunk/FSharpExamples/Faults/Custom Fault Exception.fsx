@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -41,5 +40,7 @@ with :? FaultException as ex ->
 
 printfn "Host State: %A" host.State
 printfn "Client State: %A" (proxy :?> ICommunicationObject).State
+
+(proxy :?> ICommunicationObject).Close()
 host.Close()
 
