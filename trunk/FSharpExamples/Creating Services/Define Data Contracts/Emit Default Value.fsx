@@ -1,6 +1,6 @@
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#r @"..\bin\Mcts70_503.dll"
+#r @"..\..\bin\Mcts70_503.dll"
 open System
 open System.Runtime.Serialization
 Console.Clear()
