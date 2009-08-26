@@ -1,6 +1,6 @@
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#load "Serialization.fs"
+#r @"..\..\bin\Mcts70_503.dll"
 open System
 open System.Runtime.Serialization
 Console.Clear()
@@ -26,14 +26,14 @@ type Person_New =
       [<DataMember>]
       mutable Address : string } with
     
-    [<OnDeserializing>]
-    member this.OnDeserializing(context: StreamingContext) =
+      [<OnDeserializing>]
+      member this.OnDeserializing(context: StreamingContext) =
         this.Address <- "N/A"
 
 
 let pOld = { Name = "Ray"; Age = 35 } : Person_Old
-let pOldData = Serialization.serialize pOld
+let pOldData = serialize pOld
 printfn "%s\n\n----------------------\n" pOldData
 
-let pNew = Serialization.deserialize<Person_New> pOldData
+let pNew = deserialize<Person_New> pOldData
 printfn "%A" pNew
