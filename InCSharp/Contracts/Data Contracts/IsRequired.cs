@@ -7,7 +7,7 @@ using System;
 namespace WcfExamples
 {
     [TestClass]
-    public class MissingRequiredMember
+    public class IsRequired
     {
         [DataContract]
         public class DataMemberIsRequired
