@@ -55,6 +55,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		ServiceModel.Examples.vsmdi = ServiceModel.Examples.vsmdi
+		ServiceModel.Examples1.vsmdi = ServiceModel.Examples1.vsmdi
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authentication", "Security\Authentication\Authentication.csproj", "{660DBB65-5F3B-4706-91CB-F8833B7BDF72}"
@@ -115,7 +116,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Basic", "Callbacks\Basic\Ba
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = ServiceModel.Examples.vsmdi
+		CategoryFile = ServiceModel.Examples1.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
