@@ -47,7 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections.cs" />
-    <Compile Include="MissingRequiredMember.cs" />
+    <Compile Include="IsRequired.cs" />
     <Compile Include="EmitDefaultValue.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
