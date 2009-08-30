@@ -1,6 +1,7 @@
 #r "System.Xml"
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
+#r @"..\..\bin\Mcts70_503.dll"
 open System
 open System.IO
 open System.Xml
@@ -88,30 +89,22 @@ type MyService() =
             new ItemSerializer(item)
 
 
-let netUri = new Uri("net.tcp://localhost")
-let httpUri = new Uri("http://localhost:8082")
-let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, [| netUri; httpUri |])
-let debugBehavior = host.Description.Behaviors.Find<ServiceMetadataBehavior>()
-if debugBehavior = null
-    then host.Description.Behaviors.Add(new ServiceMetadataBehavior(HttpGetEnabled = true))
-    else debugBehavior.HttpGetEnabled <- true
-host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
+let item = { Name = "Client Item" }
+
+let host = new ExampleHost<MyService, IMyContract>()
+host.EnableHttpGet()
 host.Open()
 
-let proxy = ChannelFactory<IMyContractClient>.CreateChannel(binding, new EndpointAddress(string netUri))
-let item = { Name = "Client Item" }
-// Client uses default DataContractSerializer
-// Server manually deserializes
+let proxy = host.CreateProxyOf<IMyContractClient>()
+//// Client uses default DataContractSerializer
+//// Server manually deserializes
 proxy.MyMethod(item)
+        
 
 let serverItem = proxy.MyOtherMethod()
 printfn "Client Received: %A" serverItem
 
-printfn "\n\nVisit %A?wsdl for metadata" httpUri
-printfn "Visit %A?xsd=xsd2 for Item schema" httpUri
+printfn "\n\nVisit http://localhost?wsdl for metadata"
+printfn "Visit http://localhost?xsd=xsd2 for Item schema"
 printfn "Press <ENTER> to end the example..."
 Console.ReadLine() |> ignore
-
-(proxy :?> ICommunicationObject).Close()
-host.Close()
