@@ -27,6 +27,7 @@ module Common =
         let deserializer = new DataContractSerializer(typeof<'a>)
         deserializer.ReadObject(stream) :?> 'a
 
+
     type ExampleHost<'TService, 'TContract>(uri : string) as this =
         inherit ServiceHost(typeof<'TService>, new Uri(uri))
         
@@ -46,6 +47,15 @@ module Common =
         override this.OnClosing() =
             proxies |> Seq.iter (fun x -> x.Close())
             base.OnClosing()
+            
+            
+    let example<'TService, 'TContract> (f : 'TContract -> unit) =
+        let host = new ExampleHost<'TService, 'TContract>()
+        host.Open()
+        let proxy = host.CreateProxy()
+        f proxy
+        host.Close()
+        
 
     type PrintToConsoleMessageInspector() =
         interface IDispatchMessageInspector with
@@ -56,13 +66,15 @@ module Common =
             member this.BeforeSendReply(reply, correlationState) =
                 printfn "========\nReply\n========\n%A\n" reply
 
+
     type ApplyMessageInspectorBehavior(inspector : IDispatchMessageInspector) =
         interface IEndpointBehavior with
             member this.AddBindingParameters(endpoint, bindingParameters) = ()
             member this.ApplyClientBehavior(endpoint, clientRuntime) = ()
-            member this. Validate(endpoint) = ()
+            member this.Validate(endpoint) = ()
             member this.ApplyDispatchBehavior(endpoint, endpointDispatcher) =
                 endpointDispatcher.DispatchRuntime.MessageInspectors.Add(inspector)
+
 
     [<AttributeUsage(AttributeTargets.Class)>]
     type PrintMessagesToConsoleAttribute() =

@@ -11,12 +11,8 @@ type Service() =
             printfn "Service Operation Called"
 
 
-let host = new ExampleHost<Service, IContract>()
-host.Open()
+example<Service, IContract> (fun proxy ->
+    proxy.Operation())
 
-let proxy = host.CreateProxy()
-proxy.Operation()
-
-host.Close()
 printfn "Done!"
 
