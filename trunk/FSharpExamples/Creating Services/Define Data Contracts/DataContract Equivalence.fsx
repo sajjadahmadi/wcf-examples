@@ -1,6 +1,6 @@
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-#load "Serialization.fs"
+#r @"..\..\bin\Mcts70_503.dll"
 open System
 open System.Runtime.Serialization
 Console.Clear()
@@ -28,8 +28,8 @@ type Employee =
 
 
 let person = { Name = "Ray"; Age = 35 }
-let persondata = Serialization.serialize person
+let persondata = serialize person
 printfn "%s\n\n----------------------\n" persondata
 
-let emp = Serialization.deserialize<Employee> persondata
+let emp = deserialize<Employee> persondata
 printfn "%A" emp
