@@ -1,9 +1,11 @@
 ﻿open System.ServiceModel
 
+
 [<ServiceContract>]
 type IContract =
     [<OperationContract>]
     abstract Operation : unit -> unit
+    
     
 type Service() =
     interface IContract with
