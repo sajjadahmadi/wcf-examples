@@ -1,7 +1,6 @@
 #r "System.Xml.Linq"
 #r "System.Runtime.Serialization"
-open System.IO
-open System.Xml.Linq
+#r @"..\..\bin\Mcts70_503.dll"
 open System.Collections
 open System.Collections.Generic
 open System.Runtime.Serialization
@@ -29,11 +28,4 @@ c.Add("item 1")
 c.Add("item 2")
 c.Add("item 3")
 
-let serializer = new DataContractSerializer(typeof<MyCollection<string>>)
-let stream = new MemoryStream()
-serializer.WriteObject(stream, c)
-stream.Position <- 0L
-let reader = new StreamReader(stream)
-let doc = XDocument.Parse(reader.ReadToEnd())
-printfn "%s" (doc.ToString())
-
+printfn "%s" (serialize<MyCollection<string>> c)
