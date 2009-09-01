@@ -91,20 +91,17 @@ type MyService() =
 
 let item = { Name = "Client Item" }
 
-let host = new ExampleHost<MyService, IMyContract>()
-host.EnableHttpGet()
-host.Open()
+example2<MyService, IMyContract>
+    (fun host -> host.EnableHttpGet())
+    (fun host _ ->
+        let proxy = host.CreateProxyOf<IMyContractClient>()
+        // Client uses default DataContractSerializer
+        // Server manually deserializes
+        proxy.MyMethod(item)
+        let serverItem = proxy.MyOtherMethod()
+        printfn "Client Received: %A" serverItem
 
-let proxy = host.CreateProxyOf<IMyContractClient>()
-//// Client uses default DataContractSerializer
-//// Server manually deserializes
-proxy.MyMethod(item)
-        
-
-let serverItem = proxy.MyOtherMethod()
-printfn "Client Received: %A" serverItem
-
-printfn "\n\nVisit http://localhost?wsdl for metadata"
-printfn "Visit http://localhost?xsd=xsd2 for Item schema"
-printfn "Press <ENTER> to end the example..."
-Console.ReadLine() |> ignore
+        printfn "\n\nVisit http://localhost?wsdl for metadata"
+        printfn "Visit http://localhost?xsd=xsd2 for Item schema"
+        printfn "Press <ENTER> to end the example..."
+        Console.ReadKey() |> ignore)

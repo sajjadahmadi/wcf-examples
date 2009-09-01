@@ -22,5 +22,5 @@ type MyService() =
             printfn "Hi, %s!" name
             
 
-example<MyService, ISomeLegacyService> (fun proxy ->
+example<MyService, ISomeLegacyService> (fun _ proxy ->
     proxy.SomeOp1("You") |> ignore)
