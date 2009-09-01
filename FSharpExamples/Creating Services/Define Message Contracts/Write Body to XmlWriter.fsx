@@ -1,16 +1,16 @@
-#light
 #r "System.Runtime.Serialization"
 #r "System.ServiceModel"
 open System.IO
 open System.Xml
 open System.ServiceModel.Channels
+System.Console.Clear()
 
 let body = "Body"
 
 let stream = new MemoryStream()
 let xmlWriter = XmlDictionaryWriter.CreateTextWriter(stream)
 
-let v = MessageVersion.None
+let v = MessageVersion.Soap12
 let msg = Message.CreateMessage(v, "action", body)
 msg.WriteBody(xmlWriter)
 

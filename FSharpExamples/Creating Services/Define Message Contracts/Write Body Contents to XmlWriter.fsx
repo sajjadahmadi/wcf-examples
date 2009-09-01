@@ -1,4 +1,3 @@
-#light
 #r "System.Runtime.Serialization"
 #r "System.ServiceModel"
 open System.IO
