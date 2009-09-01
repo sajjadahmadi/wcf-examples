@@ -53,6 +53,9 @@ module Common =
             ChannelFactory<'TContract>.CreateChannel(binding, new EndpointAddress(uris.[0]))
             |> addProxy
         
+        member this.CreateChannelFactory() =
+            new ChannelFactory<'TContract>(binding, new EndpointAddress(uris.[0]))
+        
         member this.EnableHttpGet() =
             let debugBehavior = this.Description.Behaviors.Find<ServiceMetadataBehavior>()
             if debugBehavior = null
@@ -93,7 +96,7 @@ module Common =
                 printfn "========\nReply\n========\n%A\n" reply
 
 
-    type ApplyMessageInspectorBehavior(inspector : IDispatchMessageInspector) =
+    type ApplyDispatchMessageInspectorBehavior(inspector : IDispatchMessageInspector) =
         interface IEndpointBehavior with
             member this.AddBindingParameters(endpoint, bindingParameters) = ()
             member this.ApplyClientBehavior(endpoint, clientRuntime) = ()
@@ -102,12 +105,21 @@ module Common =
                 endpointDispatcher.DispatchRuntime.MessageInspectors.Add(inspector)
 
 
+    type ApplyClientMessageInspectorBehavior(inspector : IClientMessageInspector) =
+        interface IEndpointBehavior with
+            member this.AddBindingParameters(endpoint, bindingParameters) = ()
+            member this.Validate(endpoint) = ()
+            member this.ApplyDispatchBehavior(endpoint, endpointDispatcher) = ()
+            member this.ApplyClientBehavior(endpoint, clientRuntime) =
+                clientRuntime.MessageInspectors.Add(inspector)                
+                
+
     [<AttributeUsage(AttributeTargets.Class)>]
     type PrintMessagesToConsoleAttribute() =
         inherit Attribute()
         
         let inspector = new PrintToConsoleMessageInspector()
-        let behavior = new ApplyMessageInspectorBehavior(inspector) :> IEndpointBehavior
+        let behavior = new ApplyDispatchMessageInspectorBehavior(inspector) :> IEndpointBehavior
         
         interface IServiceBehavior with
             member this.AddBindingParameters(description, host, endpoints, bindingParams) = ()
