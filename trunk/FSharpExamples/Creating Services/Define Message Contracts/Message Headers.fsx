@@ -1,10 +1,8 @@
-#light
 #r "System.Runtime.Serialization"
 #r "System.ServiceModel"
-open System.IO
-open System.Xml
 open System.ServiceModel.Channels
 open System.Runtime.Serialization
+System.Console.Clear()
 
 let ns = "http://schemas.mynamespace.org"
 
