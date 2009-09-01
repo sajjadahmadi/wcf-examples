@@ -39,8 +39,11 @@ example<Service, IContract>
         Console.Clear()
         
         factory.Credentials.Windows.ClientCredential <- new NetworkCredential(name, password)
+        factory.Credentials.Windows.AllowedImpersonationLevel <- TokenImpersonationLevel.Anonymous
         let proxy = factory.CreateChannel()
         
-        proxy.ImpersonatingOperation()
-        proxy.NonimpersonatingOperation()
-        (proxy :?> ICommunicationObject).Close())
+        try
+            proxy.ImpersonatingOperation()
+        with ex -> 
+            printfn "%s" ex.Message
+            (proxy :?> ICommunicationObject).Abort())
