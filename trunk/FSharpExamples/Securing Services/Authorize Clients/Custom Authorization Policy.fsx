@@ -1,6 +1,7 @@
 #r "System.ServiceModel"
 #r "System.IdentityModel"
 #r "System.Runtime.Serialization"
+#r @"..\..\bin\Mcts70_503.dll"
 open System
 open System.Collections.Generic
 open System.IdentityModel.Claims
@@ -14,13 +15,13 @@ Console.Clear()
 [<ServiceContract>]
 type IMyContract =
     [<OperationContract>]
-    abstract MyOperation : unit -> string
+    abstract MyOperation : unit -> unit
 
 
 type MyService() =
     interface IMyContract with
         member this.MyOperation() =
-            "result"
+            printfn "MyOperation()"
 
 
 type MyCustomValidator() =
@@ -56,21 +57,12 @@ type MyCustomValidator() =
         member this.Issuer = ClaimSet.System
 
 
-let uri = new Uri("net.tcp://localhost:8000")
-let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, uri)
-host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
-
-// Add custom authorization policies here
-let policies = new List<IAuthorizationPolicy>()
-policies.Add(new MyCustomValidator())
-host.Authorization.ExternalAuthorizationPolicies <- policies.AsReadOnly()
-
-host.Open()
-
-let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
-proxy.MyOperation()
-proxy.MyOperation()
-
-(proxy :?> ICommunicationObject).Close()
-host.Close()
+example2<MyService, IMyContract>
+    (fun host ->
+        // Add custom authorization policies here
+        let policies = new List<IAuthorizationPolicy>()
+        policies.Add(new MyCustomValidator())
+        host.Authorization.ExternalAuthorizationPolicies <- policies.AsReadOnly())
+    (fun _ proxy ->
+        proxy.MyOperation()
+        proxy.MyOperation())
