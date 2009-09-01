@@ -92,7 +92,11 @@ type MyService() =
 let item = { Name = "Client Item" }
 
 example2<MyService, IMyContract>
-    (fun host -> host.EnableHttpGet())
+    (fun() -> 
+        let binding = new BasicHttpBinding()
+        let host = new ExampleHost<MyService, IMyContract>(binding, [|"http://localhost"|])
+        host.EnableHttpGet()
+        host)
     (fun host _ ->
         let proxy = host.CreateProxyOf<IMyContractClient>()
         // Client uses default DataContractSerializer
