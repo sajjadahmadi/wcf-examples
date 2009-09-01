@@ -29,9 +29,6 @@ type Service() =
             sprintf "Hi, %s!" name
 
 
-let host = new ExampleHost<Service, IContract>()
-host.Open()
-
-let proxy = host.CreateProxy()
-proxy.RpcOperation("You")
-proxy.DocumentOperation("You")
+example<Service, IContract>(fun _ proxy ->
+    proxy.RpcOperation("You") |> ignore
+    proxy.DocumentOperation("You") |> ignore)
