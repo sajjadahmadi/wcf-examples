@@ -28,24 +28,29 @@ module Common =
         deserializer.ReadObject(stream) :?> 'a
     
 
-    type ExampleHost<'TService, 'TContract>(uri) as this =
-        inherit ServiceHost(typeof<'TService>, new Uri(uri), new Uri("http://localhost"))
+    type ExampleHost<'TService, 'TContract>(binding : Binding, [<ParamArray>] uris) as this =
+        inherit ServiceHost(typeof<'TService>, uris)
         
         let mutable proxies = []
-        let binding = new NetTcpBinding()
         let addProxy p =
             proxies <- (box p :?> ICommunicationObject) :: proxies
             p
         do this.AddServiceEndpoint(typeof<'TContract>, binding, "") |> ignore
         
-        new() = new ExampleHost<'TService, 'TContract>("net.tcp://localhost")
+        new() = 
+            new ExampleHost<'TService, 'TContract>(new NetTcpBinding(), "net.tcp://localhost")
+            
+        [<OverloadID("ctor1")>]
+        new(binding : Binding, [<ParamArray>] uris : string[]) = 
+            let uris = uris |> Array.map (fun uri -> new Uri(uri))
+            new ExampleHost<'TService, 'TContract>(binding, uris)
         
         member this.CreateProxyOf<'T>() =
-            ChannelFactory<'T>.CreateChannel(binding, new EndpointAddress(uri))
+            ChannelFactory<'T>.CreateChannel(binding, new EndpointAddress(uris.[0]))
             |> addProxy
 
         member this.CreateProxy() =
-            ChannelFactory<'TContract>.CreateChannel(binding, new EndpointAddress(uri))
+            ChannelFactory<'TContract>.CreateChannel(binding, new EndpointAddress(uris.[0]))
             |> addProxy
         
         member this.EnableHttpGet() =
@@ -66,16 +71,16 @@ module Common =
             base.OnClosing()
             
 
-    let example2<'TService, 'TContract> (fini : ExampleHost<'TService, 'TContract> -> unit) (f : ExampleHost<'TService, 'TContract> -> 'TContract -> unit) =
-        let host = new ExampleHost<'TService, 'TContract>()
-        fini host
+    let example2<'TService, 'TContract> (fini : unit -> ExampleHost<'TService, 'TContract>) (f : ExampleHost<'TService, 'TContract> -> 'TContract -> unit) =
+        let host = fini()
         host.Open()
         let proxy = host.CreateProxy()
         f host proxy
         host.Close()
         
     let example<'TService, 'TContract> (f : ExampleHost<'TService, 'TContract> -> 'TContract -> unit) =
-        example2<'TService, 'TContract> (fun _ -> ()) f
+        let fini() = new ExampleHost<'TService, 'TContract>()
+        example2<'TService, 'TContract> fini f
         
 
     type PrintToConsoleMessageInspector() =
