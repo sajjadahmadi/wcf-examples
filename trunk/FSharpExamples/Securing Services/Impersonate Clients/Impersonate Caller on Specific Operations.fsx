@@ -8,7 +8,7 @@ open System.Security.Principal
 Console.Clear()
 
 let whoami() =
-    OperationContext.Current.ServiceSecurityContext.WindowsIdentity.Name
+    WindowsIdentity.GetCurrent().Name
 
 
 [<ServiceContract>]
@@ -29,6 +29,17 @@ type Service() =
         member this.NonimpersonatingOperation() =
             printfn "No impersonation, running as %s" (whoami())
 
-example<Service, IContract>(fun _ proxy ->
-    proxy.ImpersonatingOperation()
-    proxy.NonimpersonatingOperation()) // No difference between calls, is there a way to demonstrate this?
+example<Service, IContract>
+    (fun host _ ->
+        let factory = host.CreateChannelFactory()
+        printf "Enter Windows user name: "
+        let name = Console.ReadLine()
+        printf "Enter Windows password: "
+        let password = Console.ReadLine()
+        
+        factory.Credentials.Windows.ClientCredential <- new NetworkCredential(name, password)
+        let proxy = factory.CreateChannel()
+        
+        proxy.ImpersonatingOperation()
+        proxy.NonimpersonatingOperation()
+        (proxy :?> ICommunicationObject).Close())
