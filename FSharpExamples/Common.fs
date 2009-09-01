@@ -66,16 +66,16 @@ module Common =
             base.OnClosing()
             
 
-    let example2<'TService, 'TContract> (fini : ExampleHost<'TService, 'TContract> -> unit) (f : 'TContract -> unit) =
+    let example2<'TService, 'TContract> (fini : ExampleHost<'TService, 'TContract> -> unit) (f : ExampleHost<'TService, 'TContract> -> 'TContract -> unit) =
         let host = new ExampleHost<'TService, 'TContract>()
         fini host
         host.Open()
         let proxy = host.CreateProxy()
-        f proxy
+        f host proxy
         host.Close()
         
-    let example<'TService, 'TContract> (f : 'TContract -> unit) =
-        example2 (fun _ -> ()) f
+    let example<'TService, 'TContract> (f : ExampleHost<'TService, 'TContract> -> 'TContract -> unit) =
+        example2<'TService, 'TContract> (fun _ -> ()) f
         
 
     type PrintToConsoleMessageInspector() =
