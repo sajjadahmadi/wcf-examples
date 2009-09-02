@@ -62,13 +62,13 @@ module Common =
                 then this.Description.Behaviors.Add(new ServiceMetadataBehavior(HttpGetEnabled = true))
                 else debugBehavior.HttpGetEnabled <- true
         
-        member this.ModifyBehavior<'TBehavior>(f : 'TBehavior -> unit) =
-            let mutable behavior = this.Description.Behaviors.Find<'TBehavior>()
+        member this.IncludeExceptionDetails() =
+            let mutable behavior = this.Description.Behaviors.Find<ServiceDebugBehavior>()
             if behavior = null then
-                behavior <- new 'TBehavior()
+                behavior <- new ServiceDebugBehavior()
                 this.Description.Behaviors.Add(behavior)
-            f behavior
-        
+            behavior.IncludeExceptionDetailInFaults <- true
+                        
         override this.OnClosing() =
             proxies |> Seq.iter (fun x -> x.Close())
             base.OnClosing()
