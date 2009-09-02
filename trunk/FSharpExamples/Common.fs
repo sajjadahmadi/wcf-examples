@@ -111,7 +111,17 @@ module Common =
             member this.Validate(endpoint) = ()
             member this.ApplyDispatchBehavior(endpoint, endpointDispatcher) = ()
             member this.ApplyClientBehavior(endpoint, clientRuntime) =
-                clientRuntime.MessageInspectors.Add(inspector)                
+                clientRuntime.MessageInspectors.Add(inspector)     
+    
+    
+    type ApplyParameterInspectorBehavior(inspector : IParameterInspector) =
+        interface IOperationBehavior with
+            member this.AddBindingParameters(operationDescription, bindingParameters) = ()
+            member this.ApplyClientBehavior(operationDescription, clientOperation) = ()
+            member this.Validate(operationDescription) = ()
+            member this.ApplyDispatchBehavior(operationDescription, dispatchOperation) =
+                dispatchOperation.ParameterInspectors.Add(inspector)            
+                           
                 
 
     [<AttributeUsage(AttributeTargets.Class)>]
