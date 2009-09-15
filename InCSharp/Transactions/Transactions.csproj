@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{90424F8C-A606-4C6D-A2F4-676A51735577}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -50,6 +50,7 @@
     <Compile Include="Instance Management\Per-Session Service.cs" />
     <Compile Include="Instance Management\Per-Call Service.cs" />
     <Compile Include="Instance Management\Instance Management.cs" />
+    <Compile Include="IsolationLevels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Instance Management\Stateful Singleton.cs" />
     <Compile Include="TranscationFlow.cs" />
