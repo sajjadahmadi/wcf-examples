@@ -59,16 +59,6 @@
     <Compile Include="TranscationFlow.cs" />
     <Compile Include="Voting.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\CodeRunner\ServiceModel.Extensions\ServiceModel.Extensions.csproj">
-      <Project>{02565A66-4153-4217-BED5-55DAC69808D0}</Project>
-      <Name>ServiceModel.Extensions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CodeRunner\Transactions\Transactions.csproj">
-      <Project>{FE702AED-3A15-48EE-8E46-04FCADF22D43}</Project>
-      <Name>Transactions %28Reference Projects\Transactions%29</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

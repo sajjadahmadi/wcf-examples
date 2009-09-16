@@ -1,4 +1,5 @@
-﻿using System.ServiceModel.Channels;
+﻿using System;
+using System.ServiceModel.Channels;
 using System.Transactions;
 using CodeRunner.Transactions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,29 +12,29 @@ namespace System.ServiceModel.Examples
         #region Additional test attributes
         string address;
         NetNamedPipeBinding binding;
-        ServiceHost<MySingleton> host;
+        ServiceHost host;
 
         // Use ClassInitialize to run code before running the first test in the class
-        [ClassInitialize()]
+        [ClassInitialize]
         public static void MyClassInitialize(TestContext testContext) { }
 
         // Use ClassCleanup to run code after all tests in a class have run
-        [ClassCleanup()]
+        [ClassCleanup]
         public static void MyClassCleanup() { }
 
         // Use TestInitialize to run code before running each test 
-        [TestInitialize()]
+        [TestInitialize]
         public void MyTestInitialize()
         {
-            address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-            binding = new NetNamedPipeBinding() { TransactionFlow = true };
-            host = new ServiceHost<MySingleton>();
-            host.AddServiceEndpoint<ICounter>(binding, address);
+            address = "net.pipe://localhost/" + Guid.NewGuid();
+            binding = new NetNamedPipeBinding { TransactionFlow = true };
+            host = new ServiceHost(typeof(MySingleton));
+            host.AddServiceEndpoint(typeof(ICounter), binding, address);
             host.Open();
         }
 
         // Use TestCleanup to run code after each test has run
-        [TestCleanup()]
+        [TestCleanup]
         public void MyTestCleanup()
         {
             host.Close();
@@ -52,7 +53,7 @@ namespace System.ServiceModel.Examples
             ReleaseServiceInstanceOnTransactionComplete = false)]
         class MySingleton : ICounter
         {
-            Transactional<int> counter = new Transactional<int>();
+        	readonly Transactional<int> counter = new Transactional<int>();
 
             [OperationBehavior(TransactionScopeRequired = true)]
             public int NextValue()
@@ -73,26 +74,26 @@ namespace System.ServiceModel.Examples
         [TestMethod]
         public void SingletonTest()
         {
-            using (TransactionScope scope = new TransactionScope())
-            using (CounterClient proxy = new CounterClient(binding, address))
+            using (var scope = new TransactionScope())
+            using (var proxy = new CounterClient(binding, address))
             {
-                Assert.AreEqual<int>(1, proxy.NextValue());
-                Assert.AreEqual<int>(2, proxy.NextValue());
+                Assert.AreEqual(1, proxy.NextValue());
+                Assert.AreEqual(2, proxy.NextValue());
                 scope.Complete();
             }
-            using (TransactionScope scope = new TransactionScope())
-            using (CounterClient proxy = new CounterClient(binding, address))
+            using (var scope = new TransactionScope())
+            using (var proxy = new CounterClient(binding, address))
             {
-                Assert.AreEqual<int>(3, proxy.NextValue());
-                Assert.AreEqual<int>(4, proxy.NextValue());
+                Assert.AreEqual(3, proxy.NextValue());
+                Assert.AreEqual(4, proxy.NextValue());
                 // No Complete, transaction will abort and roll back
             }
 
-            using (TransactionScope scope = new TransactionScope())
-            using (CounterClient proxy = new CounterClient(binding, address))
+            using (var scope = new TransactionScope())
+            using (var proxy = new CounterClient(binding, address))
             {
-                Assert.AreEqual<int>(3, proxy.NextValue());
-                Assert.AreEqual<int>(4, proxy.NextValue());
+                Assert.AreEqual(3, proxy.NextValue());
+                Assert.AreEqual(4, proxy.NextValue());
                 scope.Complete();
             }
         }
