@@ -10,7 +10,7 @@ namespace System.ServiceModel.Examples
 
         #region Additional test attributes
         static NetNamedPipeBinding binding;
-        static ServiceHost<MyService> host;
+        static ServiceHost host;
         static string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
 
         // Use ClassInitialize to run code before running the first test in the class
@@ -18,9 +18,8 @@ namespace System.ServiceModel.Examples
         public static void MyClassInitialize(TestContext testContext)
         {
             binding = new NetNamedPipeBinding();
-            host = new ServiceHost<MyService>();
-            host.AddServiceEndpoint<IChangeResource>(binding, address);
-            host.IncludeExceptionDetailInFaults = true;
+			host = new ServiceHost(typeof(MyService));
+            host.AddServiceEndpoint(typeof(IChangeResource), binding, address);
             host.Open();
         }
 
@@ -56,6 +55,8 @@ namespace System.ServiceModel.Examples
             [FaultContract(typeof(string))]
             void ChangeThenFault();
         }
+
+		[ServiceBehavior(IncludeExceptionDetailInFaults=true)]
         class MyService : IChangeResource
         {
             // When TransactionAutoComplete = true, WCF will automatically vote 
@@ -100,27 +101,27 @@ namespace System.ServiceModel.Examples
         public void DeclarativeVotingTest()
         {
             Assert.AreEqual("Original Value", StringResource.Value);
-            IChangeResource channel = host.CreateChannel<IChangeResource>(binding, address);
+            var channel = ChannelFactory<IChangeResource>.CreateChannel(binding, new EndpointAddress(address));
             channel.ChangeWithAutoComplete();
             Assert.AreEqual("New Value", StringResource.Value);
-            host.CloseChannel<IChangeResource>(channel);
+            ((ICommunicationObject)channel).Close();
         }
 
         [TestMethod]
         public void ExplicitVotingTest()
         {
             Assert.AreEqual("Original Value", StringResource.Value);
-            IChangeResource channel = host.CreateChannel<IChangeResource>(binding, address);
-            channel.ChangeWithExplicitComplete();
+			var channel = ChannelFactory<IChangeResource>.CreateChannel(binding, new EndpointAddress(address));
+			channel.ChangeWithExplicitComplete();
             Assert.AreEqual("New Value", StringResource.Value);
-            host.CloseChannel<IChangeResource>(channel);
-        }
+			((ICommunicationObject)channel).Close();
+		}
 
         [TestMethod]
         public void AbortAfterException()
         {
             Assert.AreEqual("Original Value", StringResource.Value);
-            IChangeResource channel = host.CreateChannel<IChangeResource>(binding, address);
+			var channel = ChannelFactory<IChangeResource>.CreateChannel(binding, new EndpointAddress(address));
 
             try
             {
@@ -133,7 +134,7 @@ namespace System.ServiceModel.Examples
             }
 
             Assert.AreEqual("Original Value", StringResource.Value, "Expected rollback.");
-            host.CloseChannel<IChangeResource>(channel);
-        }
+			((ICommunicationObject)channel).Close();
+		}
     }
 }

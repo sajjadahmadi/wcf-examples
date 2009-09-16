@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 using System.ServiceModel.Channels;
 using System.Transactions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -13,8 +14,8 @@ namespace System.ServiceModel.Examples
 		{
 			get
 			{
-				return (UsingServiceSideTransaction == true)
-					 || (UsingClientSideTransaction == true);
+				return UsingServiceSideTransaction
+					 || UsingClientSideTransaction;
 			}
 		}
 
@@ -65,16 +66,16 @@ namespace System.ServiceModel.Examples
 	#region Service
 	// Use the client's isolation level if one exists, otherwise Serializable
 	// Serializable - The highest degree of isolation
-	[ServiceBehavior(TransactionIsolationLevel = IsolationLevel.Unspecified)]
-	[BindingRequirementAttribute(TransactionFlowRequired = true)]
-	partial class TransactionFlowService : INoFlow, ITxFlow
+	[ServiceBehavior(TransactionIsolationLevel = IsolationLevel.Unspecified, IncludeExceptionDetailInFaults = true)]
+	//[BindingRequirementAttribute(TransactionFlowRequired = true)]
+	 class TransactionFlowService : INoFlow, ITxFlow
 	{
-		Guid instanceId = Guid.NewGuid();
+		readonly Guid instanceId = Guid.NewGuid();
 
 		public TransactionInfo GetTransactionInfo()
 		{
-			TransactionInfo info = new TransactionInfo();
-			Transaction tx = Transaction.Current;
+			var info = new TransactionInfo();
+			var tx = Transaction.Current;
 			if (tx != null)
 			{
 				info.UsingServiceSideTransaction = (tx.TransactionInformation.DistributedIdentifier == Guid.Empty);
@@ -180,11 +181,11 @@ namespace System.ServiceModel.Examples
 		static NetNamedPipeBinding txFlowBinding;
 		static NetNamedPipeBinding noFlowBinding;
 
-		static ServiceHost<TransactionFlowService> host;
-		static string noFlowAddress = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-		static string txFlowAddress = "net.pipe://localhost/" + Guid.NewGuid().ToString();
+		static ServiceHost host;
+		static readonly string noFlowAddress = "net.pipe://localhost/" + Guid.NewGuid();
+		static readonly string txFlowAddress = "net.pipe://localhost/" + Guid.NewGuid();
 
-		[ClassInitialize()]
+		[ClassInitialize]
 		public static void MyClassInitialize(TestContext testContext)
 		{
 			txFlowBinding = new NetNamedPipeBinding();
@@ -194,14 +195,13 @@ namespace System.ServiceModel.Examples
 			noFlowBinding = new NetNamedPipeBinding();
 			noFlowBinding.TransactionFlow = false;
 
-			host = new ServiceHost<TransactionFlowService>();
-			host.AddServiceEndpoint<ITxFlow>(txFlowBinding, txFlowAddress);
-			host.AddServiceEndpoint<INoFlow>(txFlowBinding, noFlowAddress);
-			host.IncludeExceptionDetailInFaults = true;
+			host = new ServiceHost(typeof(TransactionFlowService));
+			host.AddServiceEndpoint(typeof(ITxFlow), txFlowBinding, txFlowAddress);
+			host.AddServiceEndpoint(typeof(INoFlow), txFlowBinding, noFlowAddress);
 			host.Open();
 		}
 
-		[ClassCleanup()]
+		[ClassCleanup]
 		public static void MyClassCleanup()
 		{
 			host.Close();
@@ -215,11 +215,11 @@ namespace System.ServiceModel.Examples
 		[TestMethod]
 		public void ScopeNotRequired()
 		{
-			NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
+			var proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
 			proxy.Open();
-			using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
+			using (var tx = new TransactionScope(TransactionScopeOption.RequiresNew))
 			{
-				TransactionInfo info = proxy.ScopeNotRequired();
+				var info = proxy.ScopeNotRequired();
 				Assert.IsFalse(info.HasAmbientTransaction, "Expected no ambient transaction.");
 			}
 			proxy.Close();
@@ -235,11 +235,11 @@ namespace System.ServiceModel.Examples
 		[TestMethod]
 		public void ScopeRequired_FlowUnspecified()
 		{
-			NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
+			var proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
 			proxy.Open();
-			using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
+			using (var tx = new TransactionScope(TransactionScopeOption.RequiresNew))
 			{
-				TransactionInfo info = proxy.FlowUnspecified();
+				var info = proxy.FlowUnspecified();
 				Assert.IsFalse(info.UsingClientSideTransaction, "Expected client-side transaction");
 				Assert.IsTrue(info.UsingServiceSideTransaction);
 			}
@@ -254,9 +254,9 @@ namespace System.ServiceModel.Examples
 		[TestMethod]
 		public void ScopeRequired_NoTransactionScopeOnClient()
 		{
-			NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
+			var proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
 			proxy.Open();
-			TransactionInfo info = proxy.FlowUnspecified();
+			var info = proxy.FlowUnspecified();
 			Assert.IsFalse(info.UsingClientSideTransaction, "Expected client-side transaction");
 			Assert.IsTrue(info.UsingServiceSideTransaction);
 			proxy.Close();
@@ -272,11 +272,11 @@ namespace System.ServiceModel.Examples
 		[TestMethod]
 		public void ScopeRequired_FlowNotAllowed()
 		{
-			NoFlowClient proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
+			var proxy = new NoFlowClient(noFlowBinding, noFlowAddress);
 			proxy.Open();
-			using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
+			using (var tx = new TransactionScope(TransactionScopeOption.RequiresNew))
 			{
-				TransactionInfo info = proxy.FlowNotAllowed();
+				var info = proxy.FlowNotAllowed();
 				Assert.IsTrue(info.UsingServiceSideTransaction, "Expected service-side transaction");
 				Assert.IsFalse(info.UsingClientSideTransaction);
 			}
@@ -292,16 +292,16 @@ namespace System.ServiceModel.Examples
 		[TestMethod]
 		public void ScopeRequired_FlowAllowed()
 		{
-			TxFlowClient proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
+			var proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
 			proxy.Open();
-			using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
+			using (var tx = new TransactionScope(TransactionScopeOption.RequiresNew))
 			{
-				TransactionInfo info = proxy.FlowAllowed();
+				var info = proxy.FlowAllowed();
 				Assert.IsFalse(info.UsingServiceSideTransaction, "Expected client-side transaction.");
 				Assert.IsTrue(info.UsingClientSideTransaction);
 			}
 			{
-				TransactionInfo info = proxy.FlowAllowed();
+				var info = proxy.FlowAllowed();
 				Assert.IsTrue(info.UsingServiceSideTransaction, "Expected service-side transaction.");
 				Assert.IsFalse(info.UsingClientSideTransaction);
 			}
@@ -316,11 +316,11 @@ namespace System.ServiceModel.Examples
 		[TestMethod]
 		public void ScopeRequired_FlowMandatory()
 		{
-			TxFlowClient proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
+			var proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
 			proxy.Open();
-			using (TransactionScope tx = new TransactionScope(TransactionScopeOption.RequiresNew))
+			using (var tx = new TransactionScope(TransactionScopeOption.RequiresNew))
 			{
-				TransactionInfo info = proxy.FlowMandatory();
+				var info = proxy.FlowMandatory();
 				Assert.IsTrue(info.UsingClientSideTransaction, "Expected client-side transaction.");
 				Assert.IsFalse(info.UsingServiceSideTransaction);
 			}
@@ -338,9 +338,9 @@ namespace System.ServiceModel.Examples
 			 "The service operation requires a transaction to be flowed.")]
 		public void ScopeRequired_FlowMandatory_ProtocolException()
 		{
-			TxFlowClient proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
+			var proxy = new TxFlowClient(txFlowBinding, txFlowAddress);
 			proxy.Open();
-			TransactionInfo info = proxy.FlowMandatory();
+			var info = proxy.FlowMandatory();
 			proxy.Close();
 		}
 	}
