@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace System.ServiceModel.Examples
 {
@@ -20,19 +21,19 @@ namespace System.ServiceModel.Examples
         }
         #endregion
 
-        NetNamedPipeBinding binding = new NetNamedPipeBinding();
+    	readonly NetNamedPipeBinding binding = new NetNamedPipeBinding();
 
         [TestMethod]
         public void PerSessionTransactionService()
         {
-            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-            using (ServiceHost<PerSessionService> host = new ServiceHost<PerSessionService>())
-            using (ServiceClient proxy = new ServiceClient(binding, address))
+            var address = "net.pipe://localhost/" + Guid.NewGuid();
+            using (var host = new ServiceHost(typeof(PerSessionService)))
+            using (var proxy = new ServiceClient(binding, address))
             {
-                host.AddServiceEndpoint<IInstanceIdGetter>(binding, address);
+                host.AddServiceEndpoint(typeof(IInstanceIdGetter), binding, address);
                 host.Open();
-                Guid first = proxy.GetInstanceId();
-                Guid second = proxy.GetInstanceId();
+                var first = proxy.GetInstanceId();
+                var second = proxy.GetInstanceId();
                 Assert.AreEqual(second, first);
             }
         }
