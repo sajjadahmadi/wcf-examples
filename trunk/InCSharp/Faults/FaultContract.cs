@@ -7,16 +7,6 @@ using System.ServiceModel;
 
 namespace CodeRunner.ServiceModel.Examples
 {
-    [ServiceContract]
-    interface IMyContract
-    {
-        [OperationContract]
-        [FaultContract(typeof(MyFault))]
-        void ThrowTypedFault();
-
-        [OperationContract]
-        void ThrowUntypedFault();
-    }
 
     [DataContract]
     class MyFault
