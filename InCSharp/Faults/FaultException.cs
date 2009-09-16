@@ -10,7 +10,19 @@ namespace CodeRunner.ServiceModel.Examples
     [TestClass]
     public class FaultExceptionTests
     {
-        /* Service */
+		/* Contract */
+		[ServiceContract]
+		interface IMyContract
+		{
+			[OperationContract]
+			[FaultContract(typeof(MyFault))]
+			void ThrowTypedFault();
+
+			[OperationContract]
+			void ThrowUntypedFault();
+		}
+		
+		/* Service */
         class MyService : IMyContract
         {
             public void ThrowTypedFault()
@@ -36,8 +48,7 @@ namespace CodeRunner.ServiceModel.Examples
         /* Client */
         class MyContractClient : ClientBase<IMyContract>, IMyContract
         {
-            public MyContractClient() { }
-            public MyContractClient(Binding binding, string remoteAddress) :
+        	public MyContractClient(Binding binding, string remoteAddress) :
                 base(binding, new EndpointAddress(remoteAddress)) { }
 
             public void ThrowTypedFault()
