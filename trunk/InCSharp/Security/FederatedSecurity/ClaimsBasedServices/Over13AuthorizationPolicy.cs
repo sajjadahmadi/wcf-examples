@@ -2,6 +2,7 @@
 using System.IdentityModel.Claims;
 using System.IdentityModel.Policy;
 using System.ServiceModel;
+using System.Linq;
 
 namespace ClaimsBasedServices
 {
@@ -23,8 +24,9 @@ namespace ClaimsBasedServices
 			foreach (var claimSet in authorizationContext.ClaimSets)
 			{
 				var claims = claimSet.FindClaims(ClaimTypes.DateOfBirth, Rights.PossessProperty);
-				foreach (var claim in claims)
-					birthDate = Convert.ToDateTime(claim.Resource);
+				var claim = claims.FirstOrDefault();
+				if (claim == null) return false;
+				birthDate = (DateTime?)claim.Resource;
 			}
 			return birthDate.HasValue 
 				? birthDate.Value <= DateTime.Now.AddYears(-13) 
