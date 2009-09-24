@@ -2,13 +2,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.20706</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7C00D0DC-8623-4D5C-8CEA-C95E13223951}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ClaimsBasedServices</RootNamespace>
-    <AssemblyName>ClaimsBasedServices</AssemblyName><TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
+    <AssemblyName>ClaimsBasedServices</AssemblyName>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <MinFrameworkVersionRequired>3.0</MinFrameworkVersionRequired>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -37,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Over13AuthorizationPolicy.cs" />
     <Compile Include="SecureService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
