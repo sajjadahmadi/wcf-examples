@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collections.cs" />
+    <Compile Include="DataContract.Name.cs" />
     <Compile Include="TranscenderExample.cs" />
     <Compile Include="DataContractFormat.cs" />
     <Compile Include="DataContractSerializer.cs" />
