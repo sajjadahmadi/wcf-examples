@@ -38,7 +38,7 @@ host.AddServiceEndpoint(typeof<IMyContract>, tcpBinding, "")
 host.AddServiceEndpoint(typeof<IMyContract>, httpBinding, "")
 host.Open()
 
-printfn "Per-Session (Named Pipe Binding)\n----------------------"
+printfn "Per-Session (NetTcpBinding)\n----------------------"
 let proxy1 = ChannelFactory<IMyContract>.CreateChannel(tcpBinding, new EndpointAddress(string tcpUri))
 
 proxy1.MyMethod()

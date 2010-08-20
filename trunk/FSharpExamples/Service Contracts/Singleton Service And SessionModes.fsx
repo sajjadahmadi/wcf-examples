@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -54,6 +53,7 @@ proxy1.MyMethod() // 2
 (proxy1 :?> ICommunicationObject).Close()
 
 let proxy2 = ChannelFactory<IMyOtherContract>.CreateChannel(httpBinding, new EndpointAddress(string uri + "/basic"))
-proxy2.MyOtherMethod() // 3
+proxy2.MyOtherMethod() // 3 or 1
+proxy2.MyOtherMethod() // 4 or 1
 (proxy2 :?> ICommunicationObject).Close()
 host.Close()
