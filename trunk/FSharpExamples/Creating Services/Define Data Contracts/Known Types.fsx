@@ -9,10 +9,9 @@ let mutable knownTypes : Type[] = [||]
 
 // When no known types are specified, the example errors
 [<DataContract>]
-// This won't work in FSI but it's one way to solve the problem
-//[<KnownType(typeof<Manager>)>]
+[<KnownType(typeof<Manager>)>]
 // You can specify a static method that returns Type[]
-[<KnownType("GetKnownTypes")>]
+//[<KnownType("GetKnownTypes")>]
 type Employee() =
     let mutable name = "Employee1"
 
@@ -24,10 +23,7 @@ type Employee() =
     static member GetKnownTypes() =
         // Only doing it this way because of FSI restrictions
         knownTypes
-
-
-[<DataContract>]
-type Manager() =
+and [<DataContract>] Manager() =
     inherit Employee()
 
     let mutable title = "The Boss"
