@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -33,7 +32,7 @@ let tcpUri = new Uri("net.tcp://localhost")
 let httpUri = new Uri("http://localhost")
 let tcpBinding = new NetTcpBinding()
 let httpBinding = new BasicHttpBinding()
-let host = new ServiceHost(typeof<MyService>, [| tcpUri; httpUri |])
+let host = new ServiceHost(typeof<MyService>, tcpUri, httpUri)
 host.AddServiceEndpoint(typeof<IMyContract>, tcpBinding, "")
 host.AddServiceEndpoint(typeof<IMyContract>, httpBinding, "")
 host.Open()

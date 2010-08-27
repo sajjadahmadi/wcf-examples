@@ -13,9 +13,6 @@ type Body =
 
 let body = { Content = "Content" }
 
-let stream = new MemoryStream()
-let xmlWriter = XmlDictionaryWriter.CreateTextWriter(stream)
-
 let v = MessageVersion.Soap12
 let msg = Message.CreateMessage(v, "action", body)
 

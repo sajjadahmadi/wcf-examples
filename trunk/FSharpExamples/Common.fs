@@ -1,4 +1,6 @@
-﻿[<assembly: AutoOpen("Common.Common")>] do()
+﻿namespace Common
+
+[<assembly: AutoOpen("Common.Common")>] do()
 
 module Common =
     open System
@@ -40,7 +42,6 @@ module Common =
         new() = 
             new ExampleHost<'TService, 'TContract>(new NetTcpBinding(), "net.tcp://localhost")
             
-        [<OverloadID("ctor1")>]
         new(binding : Binding, [<ParamArray>] uris : string[]) = 
             let uris = uris |> Array.map (fun uri -> new Uri(uri))
             new ExampleHost<'TService, 'TContract>(binding, uris)

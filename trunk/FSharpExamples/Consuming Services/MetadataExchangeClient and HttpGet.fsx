@@ -19,17 +19,18 @@ type MyService() =
 
 
 example2<MyService, IMyContract>
-    (fun() ->
+    (fun () ->
         let binding = new BasicHttpBinding()
         let host = new ExampleHost<MyService, IMyContract>(binding, "http://localhost")
         host.Description.Behaviors.Add(new ServiceMetadataBehavior(HttpGetEnabled = true))
         host)
+
     (fun host _ ->
         let binding = host.Description.Endpoints.[0].Binding
         let address = host.Description.Endpoints.[0].Address.ToString()
         
         let mexClient = new MetadataExchangeClient(binding)
-        let metadata = mexClient.GetMetadata(new Uri(address ^ "?wsdl"), MetadataExchangeClientMode.HttpGet)
+        let metadata = mexClient.GetMetadata(new Uri(address + "?wsdl"), MetadataExchangeClientMode.HttpGet)
         let importer = new WsdlImporter(metadata)
 
         let endpoints = importer.ImportAllEndpoints()

@@ -98,7 +98,7 @@ type MyEventClient() =
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
 let publisher = new MyPublisher()
-let host = new ServiceHost(publisher, [| uri |])
+let host = new ServiceHost(publisher, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 

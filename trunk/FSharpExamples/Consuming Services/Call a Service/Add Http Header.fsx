@@ -30,17 +30,18 @@ example2<MyService, IMyContract>
     (fun() -> 
         let binding = new BasicHttpBinding()
         new ExampleHost<MyService, IMyContract>(binding, "http://localhost:8000"))
+
     (fun _ proxy ->
         let scope = new OperationContextScope(proxy :?> IContextChannel)
 
         let outMsgProps = OperationContext.Current.OutgoingMessageProperties
         let httpProp =
-            if outMsgProps.ContainsKey(httpPropName)
-                then outMsgProps.[httpPropName] :?> HttpRequestMessageProperty
-                else
-                    let p = new HttpRequestMessageProperty()
-                    outMsgProps.Add(httpPropName, p)
-                    p
+            if outMsgProps.ContainsKey(httpPropName) then
+                outMsgProps.[httpPropName] :?> HttpRequestMessageProperty
+            else
+                let p = new HttpRequestMessageProperty()
+                outMsgProps.Add(httpPropName, p)
+                p
 
         httpProp.Headers.Add(HttpRequestHeader.UserAgent, "F#")
 

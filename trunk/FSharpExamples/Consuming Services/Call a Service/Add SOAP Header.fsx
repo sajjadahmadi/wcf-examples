@@ -24,7 +24,7 @@ type MyService() =
             let hdrs = OperationContext.Current.IncomingMessageHeaders
             printfn "\nIncomingHeaders\n-----------------"
             for h in hdrs do
-                printfn "%s: %A\n" h.Name h
+                printfn "%s: %O\n" h.Name h
 
 
 example<MyService, IMyContract>(fun _ proxy ->

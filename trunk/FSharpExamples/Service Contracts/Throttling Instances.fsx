@@ -21,7 +21,7 @@ type MyService() =
 
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 let throttle = new ServiceThrottlingBehavior(MaxConcurrentInstances = 1)
 

@@ -37,7 +37,7 @@ type OrderManager() =
 
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<OrderManager>, [| uri |])
+let host = new ServiceHost(typeof<OrderManager>, uri)
 host.AddServiceEndpoint(typeof<IOrderManager>, binding, "")
 host.Open()
 

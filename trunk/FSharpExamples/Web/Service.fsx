@@ -1,4 +1,6 @@
 // Adapted from http://msdn.microsoft.com/en-us/library/bb412178.aspx
+#r "System.ServiceModel"
+#r "System.ServiceModel.Web"
 open System
 open System.ServiceModel
 open System.ServiceModel.Description
@@ -39,6 +41,7 @@ let start() =
     disableHelpPage host
     host.Open()
     printfn "Service is running"
+    printfn "Visit http://localhost:8000/EchoWithGet?s=HttpMessage for example"
 
 let close() =
     host.Close()
