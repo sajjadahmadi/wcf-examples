@@ -30,7 +30,7 @@ type MyService() =
 
 let uri = new Uri("http://localhost")
 let binding = new BasicHttpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 

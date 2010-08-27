@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -21,12 +20,9 @@ type IMyContract =
 type MyService() =
     interface IMyContract with
         member this.DoSomething() =
+            printfn "MyService.DoSomething()"
             let callback = OperationContext.Current.GetCallbackChannel<IMyContractCallback>()
             callback.OnCallback()
-
-
-type MyContractClient(callbackInstance: obj, binding: Binding, remoteAddress: EndpointAddress) =
-    inherit DuplexClientBase<IMyContract>(callbackInstance, binding, remoteAddress)
 
 
 type MyCallbackClient() =
@@ -34,9 +30,13 @@ type MyCallbackClient() =
         member this.OnCallback() = printfn "MyCallbackClient.OnCallback()"
 
 
+type MyContractClient(callbackInstance: obj, binding: Binding, remoteAddress: EndpointAddress) =
+    inherit DuplexClientBase<IMyContract>(callbackInstance, binding, remoteAddress)
+
+
 let uri = new Uri("http://localhost")
 let binding = new WSDualHttpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
+let host = new ServiceHost(typeof<MyService>, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.Open()
 

@@ -1,4 +1,3 @@
-#light
 #r "System.Xml.Linq"
 #r "System.Configuration"
 #r "System.ServiceModel"
@@ -28,7 +27,7 @@ type MyServiceHost() =
 
 let uri = new Uri("net.tcp://localhost")
 let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyServiceHost>, [| uri |])
+let host = new ServiceHost(typeof<MyServiceHost>, uri)
 host.Description.Behaviors.Add(new ServiceMetadataBehavior())
 host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
 host.AddServiceEndpoint(typeof<IMetadataExchange>, binding, "mex")

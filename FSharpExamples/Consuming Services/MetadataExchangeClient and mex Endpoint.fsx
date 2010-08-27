@@ -19,12 +19,13 @@ type MyService() =
 
 
 example2<MyService, IMyContract>
-    (fun() ->
+    (fun () ->
         let host = new ExampleHost<MyService, IMyContract>()
         let binding = host.Description.Endpoints.[0].Binding
         host.Description.Behaviors.Add(new ServiceMetadataBehavior())
         host.AddServiceEndpoint(typeof<IMetadataExchange>, binding, "mex") |> ignore
         host)
+
     (fun host _ ->
         let binding = host.Description.Endpoints.[1].Binding
         let address = host.Description.Endpoints.[1].Address.ToString()

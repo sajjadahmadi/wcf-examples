@@ -2,7 +2,7 @@
 #r "System.ServiceModel"
 #r "System.ServiceModel.Web"
 
-#load "Service.fs"
+#load "Service.fsx"
 
 Service.start()
 printfn "Press enter to quit..."

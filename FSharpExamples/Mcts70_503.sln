@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Mcts70_503", "Mcts70_503.fsproj", "{0EE90951-F3B3-4820-80B0-F2560FA4CFA0}"
 EndProject
 Global

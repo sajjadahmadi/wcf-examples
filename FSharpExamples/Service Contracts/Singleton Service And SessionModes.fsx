@@ -42,7 +42,7 @@ type MySingleton() =
 let uri = new Uri("http://localhost")
 let wsBinding = new WSHttpBinding(SecurityMode.None, true)
 let httpBinding = new BasicHttpBinding()
-let host = new ServiceHost(typeof<MySingleton>, [| uri |])
+let host = new ServiceHost(typeof<MySingleton>, uri)
 host.AddServiceEndpoint(typeof<IMyContract>, wsBinding, "")
 host.AddServiceEndpoint(typeof<IMyOtherContract>, httpBinding, "basic")
 host.Open()
