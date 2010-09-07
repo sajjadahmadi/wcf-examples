@@ -1,5 +1,4 @@
 #r "System.ServiceModel"
-#r @"..\bin\Mcts70_503.dll"
 open System
 open System.ServiceModel
 open System.ServiceModel.Channels
