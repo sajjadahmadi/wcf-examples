@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -35,13 +34,10 @@ type OrderManager() =
         member this.ProcessOrders() = printfn "Processing orders..."; true
 
 
-let uri = new Uri("net.tcp://localhost")
-let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<OrderManager>, uri)
-host.AddServiceEndpoint(typeof<IOrderManager>, binding, "")
+let host = new ServiceHost(typeof<OrderManager>, new Uri("net.tcp://localhost"))
 host.Open()
 
-let proxy = ChannelFactory<IOrderManager>.CreateChannel(binding, new EndpointAddress(string uri))
+let proxy = ChannelFactory<IOrderManager>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
 // Calling a non-initiaing operation first will error
 try
     proxy.AddItem(1)

@@ -2,7 +2,6 @@
 #r "System.Runtime.Serialization"
 open System
 open System.ServiceModel
-Console.Clear()
 
 
 [<ServiceContract(SessionMode = SessionMode.Required)>]
@@ -36,16 +35,13 @@ type MyService() =
         member this.OperationE() = printfn "OperationE()"
 
 
-let uri = new Uri("net.tcp://localhost")
-let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, uri)
-host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
+let host = new ServiceHost(typeof<MyService>, new Uri("net.tcp://localhost"))
 host.Open()
 
-let mutable proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
+let mutable proxy = ChannelFactory<IMyContract>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
 let reset() =
     (proxy :?> ICommunicationObject).Abort()
-    proxy <- ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
+    proxy <- ChannelFactory<IMyContract>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
 
 try
     printfn "=============================\nAttempted order: A, B, C, D, E"
