@@ -1,9 +1,6 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
-open System.IO
-open System.Xml
 open System.Runtime.Serialization
 open System.ServiceModel
 open System.ServiceModel.Channels
@@ -11,8 +8,11 @@ open System.ServiceModel.Channels
 
 [<DataContract(Name = "Person", Namespace = "")>]
 type Person =
-    { [<DataMember>] mutable Name : string;
-      [<DataMember>] mutable Age : int }
+    { [<DataMember>] 
+      mutable Name : string
+
+      [<DataMember>] 
+      mutable Age : int }
 
 
 [<ServiceContract(Namespace = "")>]
@@ -24,24 +24,22 @@ type IMyService =
 type MyService() =
     interface IMyService with
         member this.GetData() =
-            let p = { Name = "Ray"; Age = 36 }
+            let p = { Name = "Ray"; Age = 37 }
             
             let ver = OperationContext.Current.IncomingMessageVersion
             let msg = Message.CreateMessage(ver, "urn:IMyService/GetDataResponse", p)
-            printfn "%A\n---------------------------------" msg
+            printfn "%A\n" msg
             msg
 
 
-let uri = new Uri("http://localhost:8000")
-let binding = new BasicHttpBinding()
-let host = new ServiceHost(typeof<MyService>, [| uri |])
-host.AddServiceEndpoint(typeof<IMyService>, binding, "")
+let host = new ServiceHost(typeof<MyService>, new Uri("http://localhost:8000"))
 host.Open()
 
-let proxy = ChannelFactory<IMyService>.CreateChannel(binding, new EndpointAddress(string uri))
+let proxy = ChannelFactory<IMyService>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
+
 let msg = proxy.GetData()
 let xdr = msg.GetReaderAtBodyContents()
-printfn "%A" (xdr.ReadOuterXml())
+printfn "%O" <| xdr.ReadOuterXml()
 xdr.Close()
 
 (proxy :?> ICommunicationObject).Close()

@@ -1,4 +1,3 @@
-#light
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
 open System
@@ -13,14 +12,12 @@ type ContactInfo() =
     let mutable em = ""
     
     [<DataMember>]
-    member this.PhoneNumber
-        with get() = pn
-        and set v = pn <- v
+    member this.PhoneNumber = pn
+    member this.PhoneNumber with set v = pn <- v
     
     [<DataMember>]
-    member this.EmailAddress
-        with get() = em
-        and set v = em <- v
+    member this.EmailAddress = em
+    member this.EmailAddress with set v = em <- v
 
 
 [<MessageContract(IsWrapped = false)>]
@@ -28,9 +25,8 @@ type ContactInfoRequestMessage() =
     let mutable key = ""
     
     [<MessageHeader>]
-    member this.LicenseKey
-        with get() = key
-        and set v = key <- v
+    member this.LicenseKey = key
+    member this.LicenseKey with set v = key <- v
 
 
 [<MessageContract(IsWrapped = false)>]
@@ -38,9 +34,8 @@ type ContactInfoResponseMessage() =
     let mutable ci = ContactInfo()
     
     [<MessageBodyMember>]
-    member this.ProviderContactInfo
-        with get() = ci
-        and set v = ci <- v
+    member this.ProviderContactInfo = ci
+    member this.ProviderContactInfo with set v = ci <- v
 
 
 [<ServiceContract>]
@@ -63,28 +58,22 @@ type SomeService() =
             respMsg
                 
 
-let uri = new Uri("net.tcp://localhost:8000")
-let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<SomeService>, [| uri |])
-let debug = host.Description.Behaviors.Find<ServiceDebugBehavior>()
-debug.IncludeExceptionDetailInFaults <- true
-host.AddServiceEndpoint(typeof<ISomeService>, binding, "")
+let host = new ServiceHost(typeof<SomeService>, new Uri("net.tcp://localhost:8000"))
 host.Open()
 
 // First attempt calls service with invalid license key
 let req1 = ContactInfoRequestMessage(LicenseKey = "ASdsds")
-let proxy1 = ChannelFactory<ISomeService>.CreateChannel(binding, new EndpointAddress(string uri))
+let proxy1 = ChannelFactory<ISomeService>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
 try
-    let resp = proxy1.GetProviderContactInfo(req1)
-    ()
+    proxy1.GetProviderContactInfo(req1) |> ignore
 with :? FaultException<string> as ex ->
-    printfn "%s\n------------------" ex.Detail
+    printfn "First call failed: %s\n" ex.Detail
     (proxy1 :?> ICommunicationObject).Abort()
 
 // Second attempt calls service with correct key
 let req2 = ContactInfoRequestMessage(LicenseKey = "abc-1234-alpha")
-let proxy2 = ChannelFactory<ISomeService>.CreateChannel(binding, new EndpointAddress(string uri))
+let proxy2 = ChannelFactory<ISomeService>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
 let resp = proxy2.GetProviderContactInfo(req2)
-printfn "Email: %s; Phone: %s" resp.ProviderContactInfo.EmailAddress resp.ProviderContactInfo.PhoneNumber
+printfn "Second call succeeded: Email: %s; Phone: %s" resp.ProviderContactInfo.EmailAddress resp.ProviderContactInfo.PhoneNumber
 (proxy2 :?> ICommunicationObject).Close()
 host.Close()
