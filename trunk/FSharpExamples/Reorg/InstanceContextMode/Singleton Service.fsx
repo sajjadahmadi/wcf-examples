@@ -1,5 +1,4 @@
 #r "System.ServiceModel"
-#r "System.Runtime.Serialization"
 open System
 open System.ServiceModel
 
@@ -10,7 +9,9 @@ type IMyContract =
     abstract MyMethod : unit -> unit
 
 
-[<ServiceBehavior(InstanceContextMode = InstanceContextMode.PerCall)>]
+// Try the following to highlight the differences
+//[<ServiceBehavior(InstanceContextMode = InstanceContextMode.PerSession)>]
+[<ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)>]
 type MyService() =
     let mutable counter = 0
     
@@ -26,14 +27,12 @@ type MyService() =
             printfn "MyService.Dispose()"
 
 
-let uri = new Uri("net.tcp://localhost")
-let binding = new NetTcpBinding()
-let host = new ServiceHost(typeof<MyService>, uri)
-host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
+let host = new ServiceHost(typeof<MyService>, new Uri("http://localhost"))
 host.Open()
 
-let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
+let proxy = ChannelFactory<IMyContract>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
 
+proxy.MyMethod()
 proxy.MyMethod()
 proxy.MyMethod()
 
