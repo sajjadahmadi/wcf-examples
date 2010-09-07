@@ -32,3 +32,5 @@ let endpoints = importer.ImportAllEndpoints()
 printfn "%d Endpoint(s) Found\n--------------" endpoints.Count
 for endpoint in endpoints do
     printfn "  %s (%s): %A" endpoint.Name (endpoint.Binding.GetType().Name) endpoint.Address
+
+host.Close()
