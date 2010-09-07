@@ -1,11 +1,8 @@
-#light
 #r "System.ServiceModel"
-#r "System.Runtime.Serialization"
 open System
 open System.IO
 open System.Text
 open System.ServiceModel
-open System.ServiceModel.Channels
 
 let newStream (s: string) =
     let data = Encoding.UTF8.GetBytes(s)
@@ -31,7 +28,7 @@ type IMyContract =
 type MyService() =
     interface IMyContract with
         member this.StreamReply() =
-            newStream "MyService.IMyContract()"
+            newStream "Stream Reply: This string was read from a Stream."
         
         member this.StreamRequest(stream) =
             printfn "%s" (read stream)
@@ -40,25 +37,19 @@ type MyService() =
             printfn "%s" (read stream)
             
             
-let uri = new Uri("http://localhost")
-let binding = new BasicHttpBinding(TransferMode = TransferMode.Streamed)
-let host = new ServiceHost(typeof<MyService>, [| uri |])
-host.AddServiceEndpoint(typeof<IMyContract>, binding, "")
+let host = new ServiceHost(typeof<MyService>, new Uri("http://localhost"))
 host.Open()
 
-let proxy = ChannelFactory<IMyContract>.CreateChannel(binding, new EndpointAddress(string uri))
-proxy.StreamRequest(newStream "proxy.StreamRequest()")
+let proxy = ChannelFactory<IMyContract>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
+
+proxy.StreamRequest(newStream "Stream Request: This string was read from a Stream.")
 
 let response = proxy.StreamReply()
 printfn "%s" (read response)
 // Client is always responsible for closing reply streams
 response.Close()
 
-proxy.OneWayStream(newStream "proxy.OneWayStream()")
-
-Threading.Thread.Sleep(100)
-printfn "==Press any key to END=="
-Console.ReadKey(true)
+proxy.OneWayStream(newStream "One-Way Stream: This string was read from a Stream.")
 
 (proxy :?> ICommunicationObject).Close()
 host.Close()
