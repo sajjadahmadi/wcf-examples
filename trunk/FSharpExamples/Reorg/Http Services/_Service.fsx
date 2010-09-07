@@ -1,3 +1,4 @@
+module Service
 // Adapted from http://msdn.microsoft.com/en-us/library/bb412178.aspx
 #r "System.ServiceModel"
 #r "System.ServiceModel.Web"
@@ -21,27 +22,23 @@ type IService =
 type Service() =
     interface IService with
         member this.EchoWithGet(s) =
-            sprintf "GET You said %s" s
+            printfn "  In EchoWithGet(s)"
+            sprintf "You said %s" s
         
-        member this.EchoWithPost(s) =
-            sprintf "POST You said %s" s
+        member this.EchoWithPost(s) = 
+            printfn "  In EchoWithPost(s)" 
+            (this :> IService).EchoWithGet(s)
         
 
 let private uri = new Uri("http://localhost:8000")
 let private host = new WebServiceHost(typeof<Service>, uri)
+host.AddServiceEndpoint(typeof<IService>, new WebHttpBinding(), "") |> ignore
+host.Description.Endpoints.[0].Behaviors.Add(new WebHttpBehavior(HelpEnabled=true))
+host.Open()
 
-let private disableHelpPage (host : ServiceHost) =
-    let b = host.Description.Behaviors.Find<ServiceDebugBehavior>()
-    match b with
-    | null -> ()
-    | _    -> b.HttpHelpPageEnabled <- false
-
-let start() =
-    host.AddServiceEndpoint(typeof<IService>, new WebHttpBinding(), "") |> ignore
-    disableHelpPage host
-    host.Open()
-    printfn "Service is running"
-    printfn "Visit http://localhost:8000/EchoWithGet?s=HttpMessage for example"
+printfn "Service is running"
+printfn "Visit http://localhost:8000/EchoWithGet?s=HttpMessage for example\n"
+printfn "Or visit http://localhost:8000/help for the Help page"
 
 let close() =
     host.Close()
