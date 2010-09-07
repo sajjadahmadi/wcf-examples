@@ -38,7 +38,7 @@ let host = new ServiceHost(typeof<OrderManager>, new Uri("net.tcp://localhost"))
 host.Open()
 
 let proxy = ChannelFactory<IOrderManager>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
-// Calling a non-initiaing operation first will error
+// Calling a non-initiating operation first will error
 try
     proxy.AddItem(1)
 with ex -> printfn "%s\n\n" ex.Message
@@ -47,7 +47,7 @@ proxy.SetCustomerId(1)
 proxy.AddItem(4)
 proxy.AddItem(5)
 proxy.AddItem(6)
-printfn "Total = %0.2f" (proxy.GetTotal())
+printfn "Total = %0.2f" <| proxy.GetTotal()
 proxy.ProcessOrders()
 
 // Session has been closed; no more messages may be sent
