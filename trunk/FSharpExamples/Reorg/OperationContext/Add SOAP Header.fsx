@@ -1,10 +1,8 @@
 #r "System.ServiceModel"
 #r "System.Runtime.Serialization"
-#r @"..\..\bin\Mcts70_503.dll"
 open System
 open System.Runtime.Serialization
 open System.ServiceModel
-Console.Clear()
 
 
 [<DataContract>]
@@ -27,11 +25,18 @@ type MyService() =
                 printfn "%s: %O\n" h.Name h
 
 
-example<MyService, IMyContract>(fun _ proxy ->
-    let headerData = { Member1 = "value" }
-    let messageHeader = new MessageHeader<MyCustomType>(headerData)
+let host = new ServiceHost(typeof<MyService>, new Uri("http://localhost"))
+host.Open()
 
-    let scope = new OperationContextScope(proxy :?> IContextChannel)
-    let header = messageHeader.GetUntypedHeader("MyCustomType", "ServiceModelEx")
-    OperationContext.Current.OutgoingMessageHeaders.Add(header)
-    proxy.MyMethod())
+let headerData = { Member1 = "value" }
+let messageHeader = new MessageHeader<MyCustomType>(headerData)
+
+let proxy = ChannelFactory<IMyContract>.CreateChannel(host.Description.Endpoints.[0].Binding, host.Description.Endpoints.[0].Address)
+
+let scope = new OperationContextScope(proxy :?> IContextChannel)
+let header = messageHeader.GetUntypedHeader("MyCustomType", "ServiceModelEx")
+OperationContext.Current.OutgoingMessageHeaders.Add(header)
+
+proxy.MyMethod()
+
+host.Close()
