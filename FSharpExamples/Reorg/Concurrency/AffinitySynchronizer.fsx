@@ -77,8 +77,8 @@ type WorkerThread(name : string, context : SynchronizationContext) as this =
             if not (itemAdded = null) then itemAdded.Close()
                 
 
-[<SecurityPermission(SecurityAction.Demand, ControlThread = true)>]
-type AffinitySynchronizer(name : string) as this =
+//[<SecurityPermission(SecurityAction.Demand, ControlThread = true)>]
+type AffinitySynchronizer(name : string) =
     inherit SynchronizationContext()
     
     let mutable t : WorkerThread option = None
