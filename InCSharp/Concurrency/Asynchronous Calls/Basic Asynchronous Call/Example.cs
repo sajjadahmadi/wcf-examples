@@ -2,28 +2,35 @@
 using System.Diagnostics;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Threading;
+using CodeRunner.Service;
 
 namespace CodeRunner.Service
 {
     [ServiceContract]
-    interface ICalculator
+    internal interface ICalculator
     {
         [OperationContract]
         int Add(int number1, int number2);
     }
-    class Calculator : ICalculator
+
+    internal class Calculator : ICalculator
     {
+        #region ICalculator Members
+
         public int Add(int number1, int number2)
         {
             return number1 + number2;
         }
+
+        #endregion
     }
 }
 
 namespace CodeRunner.Client
 {
     [ServiceContract]
-    interface ICalculator
+    internal interface ICalculator
     {
         [OperationContract]
         int Add(int number1, int number2);
@@ -34,55 +41,64 @@ namespace CodeRunner.Client
         int EndAdd(IAsyncResult result);
     }
 
-    class CalculatorClient : ClientBase<ICalculator>, ICalculator
+    internal class CalculatorClient : ClientBase<ICalculator>, ICalculator
     {
         public CalculatorClient(Binding binding, string address)
             : base(binding, new EndpointAddress(address))
-        { }
+        {
+        }
+
+        #region ICalculator Members
 
         public int Add(int number1, int number2)
-        { return Channel.Add(number1, number2); }
+        {
+            return Channel.Add(number1, number2);
+        }
 
         public IAsyncResult BeginAdd(int number1, int number2, AsyncCallback callback, object asyncState)
-        { return Channel.BeginAdd(number1, number2, callback, asyncState); }
+        {
+            return Channel.BeginAdd(number1, number2, callback, asyncState);
+        }
 
         public int EndAdd(IAsyncResult result)
-        { return Channel.EndAdd(result); }
+        {
+            return Channel.EndAdd(result);
+        }
+
+        #endregion
     }
 
 
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            ServiceHost<Service.Calculator> host;
-            string address = "net.pipe://localhost/" + Guid.NewGuid().ToString();
-            using (host = new ServiceHost<CodeRunner.Service.Calculator>())
+            ServiceHost host;
+            var address = "net.pipe://localhost/" + Guid.NewGuid();
+            using (host = new ServiceHost(typeof(Calculator)))
             {
-                host.AddServiceEndpoint<Service.ICalculator>(new NetNamedPipeBinding(), address);
+                host.AddServiceEndpoint(typeof(Service.ICalculator), new NetNamedPipeBinding(), address);
                 host.Open();
 
-                CalculatorClient proxy = new CalculatorClient(new NetNamedPipeBinding(), address);
+                var proxy = new CalculatorClient(new NetNamedPipeBinding(), address);
 
-                IAsyncResult result1 = proxy.BeginAdd(2, 3, null, null);
-                IAsyncResult result2 = proxy.BeginAdd(4, 5, null, null);
+                var call1 = proxy.BeginAdd(2, 3, null, null);
+                var call2 = proxy.BeginAdd(4, 5, null, null);
 
                 /* Do some work */
 
-                int sum;
-
-                sum = proxy.EndAdd(result1);  // This may block
-                Debug.Assert(result1.IsCompleted == true);
+                var sum = proxy.EndAdd(call1);
+                Debug.Assert(call1.IsCompleted);
                 Debug.Assert(sum == 5);
+                Console.WriteLine("Call 1: {0}", sum);
 
-                sum = proxy.EndAdd(result2);  // This may block
-                Debug.Assert(result2.IsCompleted == true);
+                sum = proxy.EndAdd(call2); // This may block
+                Debug.Assert(call2.IsCompleted);
                 Debug.Assert(sum == 9);
-
+                Console.WriteLine("Call 1: {0}", sum);
 
                 proxy.Close();
             }
         }
     }
 }
-
