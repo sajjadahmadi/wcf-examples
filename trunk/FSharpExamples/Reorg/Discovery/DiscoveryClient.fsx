@@ -34,11 +34,14 @@ host.Description.Endpoints.Add(new UdpDiscoveryEndpoint())
 host.Open()
 printfn "Service listening on %O\n" address
 
-let echoEndpoint = 
-    new DynamicEndpoint(
-        ContractDescription.GetContract(typeof<IEcho>),
-        new NetTcpBinding())
-let channelFactory = new ChannelFactory<IEcho>(echoEndpoint)
+
+let discoveryClient = new DiscoveryClient(new UdpDiscoveryEndpoint())
+let echoServices = discoveryClient.Find(new FindCriteria(typeof<IEcho>))
+discoveryClient.Close()
+
+let echoEndpoint = echoServices.Endpoints.[0]
+
+let channelFactory = new ChannelFactory<IEcho>(new NetTcpBinding(), echoEndpoint.Address)
 let echoChannel = channelFactory.CreateChannel()
 printfn "Service found at %O\n" <| echoEndpoint.Address
 printfn "%s" <| echoChannel.Echo("Discovery!")
