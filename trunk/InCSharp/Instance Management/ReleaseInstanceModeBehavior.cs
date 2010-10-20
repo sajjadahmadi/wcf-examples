@@ -7,6 +7,12 @@ namespace System.ServiceModel.Examples
     interface IMyCounter
     {
         [OperationContract]
+        void SetCount(int count);
+
+        [OperationContract]
+        int GetCount();
+
+        [OperationContract]
         int IncrementCounterReleaseNone();
 
         [OperationContract]
@@ -19,22 +25,23 @@ namespace System.ServiceModel.Examples
         int IncrementCounterReleaseBeforeAndAfter();
     }
 
-    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, IncludeExceptionDetailInFaults=true)]
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, IncludeExceptionDetailInFaults = true)]
     internal class MyService : IMyCounter
     {
         public int Count;
 
-        public MyService()
-            : this(0)
+        public void SetCount(int count)
         {
+            Count = count;
         }
 
-        public MyService(int initialCount)
+        public int GetCount()
         {
-            this.Count = initialCount;
+            return Count;
         }
 
-        [OperationBehavior(ReleaseInstanceMode=ReleaseInstanceMode.None)]
+
+        [OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.None)]
         public int IncrementCounterReleaseNone()
         {
             return ++Count;
@@ -67,21 +74,17 @@ namespace System.ServiceModel.Examples
         {
             Binding binding = new NetNamedPipeBinding();
             var address = "net.pipe://localhost/" + Guid.NewGuid();
-            var instance = new MyService(3);
             using (var host =
-                new ServiceHost(instance, new Uri(address)))
+                new ServiceHost(new MyService(), new Uri(address)))
             {
                 host.AddServiceEndpoint(typeof(IMyCounter), binding, "");
-
                 host.Open();
 
-                var proxy =
-                    ChannelFactory<IMyCounter>.CreateChannel(
-                        binding,
-                        new EndpointAddress(address));
-                Assert.AreEqual(3, instance.Count);
+                var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
+                proxy.SetCount(3);
+                Assert.AreEqual(3, proxy.GetCount());
                 Assert.AreEqual(4, proxy.IncrementCounterReleaseNone());
-                Assert.AreEqual(4, instance.Count);
+                Assert.AreEqual(4, proxy.GetCount());
                 ((ICommunicationObject)proxy).Close();
             }
         }
@@ -91,23 +94,20 @@ namespace System.ServiceModel.Examples
         {
             Binding binding = new NetNamedPipeBinding();
             var address = "net.pipe://localhost/" + Guid.NewGuid();
-            var instance = new MyService(3);
             using (var host =
-                new ServiceHost(instance, new Uri(address)))
+                new ServiceHost(new MyService(), new Uri(address)))
             {
                 host.AddServiceEndpoint(typeof(IMyCounter), binding, "");
-
                 host.Open();
 
-                var proxy =
-                    ChannelFactory<IMyCounter>.CreateChannel(
-                        binding,
-                        new EndpointAddress(address));
-                Assert.AreEqual(3, instance.Count);
-                Assert.AreEqual(1, proxy.IncrementCounterReleaseBefore());
-                Assert.AreEqual(1, instance.Count);
+                var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
+                proxy.SetCount(3);
+                Assert.AreEqual(3, proxy.GetCount());
+                Assert.AreEqual(4, proxy.IncrementCounterReleaseBefore());
+                Assert.AreEqual(4, proxy.GetCount());
                 ((ICommunicationObject)proxy).Close();
             }
         }
+
     }
 }
