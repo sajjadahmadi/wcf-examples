@@ -75,7 +75,7 @@ namespace System.ServiceModel.Examples
             Binding binding = new NetNamedPipeBinding();
             var address = "net.pipe://localhost/" + Guid.NewGuid();
             using (var host =
-                new ServiceHost(new MyService(), new Uri(address)))
+                new ServiceHost(typeof(MyService), new Uri(address)))
             {
                 host.AddServiceEndpoint(typeof(IMyCounter), binding, "");
                 host.Open();
@@ -95,7 +95,7 @@ namespace System.ServiceModel.Examples
             Binding binding = new NetNamedPipeBinding();
             var address = "net.pipe://localhost/" + Guid.NewGuid();
             using (var host =
-                new ServiceHost(new MyService(), new Uri(address)))
+                new ServiceHost(typeof(MyService), new Uri(address)))
             {
                 host.AddServiceEndpoint(typeof(IMyCounter), binding, "");
                 host.Open();
@@ -103,8 +103,48 @@ namespace System.ServiceModel.Examples
                 var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
                 proxy.SetCount(3);
                 Assert.AreEqual(3, proxy.GetCount());
-                Assert.AreEqual(4, proxy.IncrementCounterReleaseBefore());
-                Assert.AreEqual(4, proxy.GetCount());
+                Assert.AreEqual(1, proxy.IncrementCounterReleaseBefore());
+                Assert.AreEqual(1, proxy.GetCount());
+                ((ICommunicationObject)proxy).Close();
+            }
+        }
+
+        [TestMethod]
+        public void ReleaseInstanceModeAfterTest()
+        {
+            Binding binding = new NetNamedPipeBinding();
+            var address = "net.pipe://localhost/" + Guid.NewGuid();
+            using (var host =
+                new ServiceHost(typeof(MyService), new Uri(address)))
+            {
+                host.AddServiceEndpoint(typeof(IMyCounter), binding, "");
+                host.Open();
+
+                var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
+                proxy.SetCount(3);
+                Assert.AreEqual(3, proxy.GetCount());
+                Assert.AreEqual(4, proxy.IncrementCounterReleaseAfter());
+                Assert.AreEqual(0, proxy.GetCount());
+                ((ICommunicationObject)proxy).Close();
+            }
+        }
+
+        [TestMethod]
+        public void ReleaseInstanceModeBeforeAndAfterTest()
+        {
+            Binding binding = new NetNamedPipeBinding();
+            var address = "net.pipe://localhost/" + Guid.NewGuid();
+            using (var host =
+                new ServiceHost(typeof(MyService), new Uri(address)))
+            {
+                host.AddServiceEndpoint(typeof(IMyCounter), binding, "");
+                host.Open();
+
+                var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
+                proxy.SetCount(3);
+                Assert.AreEqual(3, proxy.GetCount());
+                Assert.AreEqual(1, proxy.IncrementCounterReleaseBeforeAndAfter());
+                Assert.AreEqual(0, proxy.GetCount());
                 ((ICommunicationObject)proxy).Close();
             }
         }
