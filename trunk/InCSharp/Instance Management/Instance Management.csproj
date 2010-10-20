@@ -68,6 +68,7 @@
   <ItemGroup>
     <Compile Include="Demarcating Operations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReleaseInstanceModeBehavior.cs" />
     <Compile Include="Singleton.cs" />
     <Compile Include="Throttling.cs" />
   </ItemGroup>
