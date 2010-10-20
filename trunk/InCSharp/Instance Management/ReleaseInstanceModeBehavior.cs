@@ -13,16 +13,16 @@ namespace System.ServiceModel.Examples
         int GetCount();
 
         [OperationContract]
-        int IncrementCounterReleaseNone();
+        int IncrementWithoutRelease();
 
         [OperationContract]
-        int IncrementCounterReleaseBefore();
+        int ReleaseBeforeIncrement();
 
         [OperationContract]
-        int IncrementCounterReleaseAfter();
+        int ReleaseAfterIncrement();
 
         [OperationContract]
-        int IncrementCounterReleaseBeforeAndAfter();
+        int ReleaseBeforeAndAfterIncrement();
     }
 
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, IncludeExceptionDetailInFaults = true)]
@@ -42,25 +42,25 @@ namespace System.ServiceModel.Examples
 
 
         [OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.None)]
-        public int IncrementCounterReleaseNone()
+        public int IncrementWithoutRelease()
         {
             return ++Count;
         }
 
         [OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.BeforeCall)]
-        public int IncrementCounterReleaseBefore()
+        public int ReleaseBeforeIncrement()
         {
             return ++Count;
         }
 
         [OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.AfterCall)]
-        public int IncrementCounterReleaseAfter()
+        public int ReleaseAfterIncrement()
         {
             return ++Count;
         }
 
         [OperationBehavior(ReleaseInstanceMode = ReleaseInstanceMode.BeforeAndAfterCall)]
-        public int IncrementCounterReleaseBeforeAndAfter()
+        public int ReleaseBeforeAndAfterIncrement()
         {
             return ++Count;
         }
@@ -83,7 +83,7 @@ namespace System.ServiceModel.Examples
                 var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
                 proxy.SetCount(3);
                 Assert.AreEqual(3, proxy.GetCount());
-                Assert.AreEqual(4, proxy.IncrementCounterReleaseNone());
+                Assert.AreEqual(4, proxy.IncrementWithoutRelease());
                 Assert.AreEqual(4, proxy.GetCount());
                 ((ICommunicationObject)proxy).Close();
             }
@@ -103,7 +103,7 @@ namespace System.ServiceModel.Examples
                 var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
                 proxy.SetCount(3);
                 Assert.AreEqual(3, proxy.GetCount());
-                Assert.AreEqual(1, proxy.IncrementCounterReleaseBefore());
+                Assert.AreEqual(1, proxy.ReleaseBeforeIncrement());
                 Assert.AreEqual(1, proxy.GetCount());
                 ((ICommunicationObject)proxy).Close();
             }
@@ -123,7 +123,7 @@ namespace System.ServiceModel.Examples
                 var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
                 proxy.SetCount(3);
                 Assert.AreEqual(3, proxy.GetCount());
-                Assert.AreEqual(4, proxy.IncrementCounterReleaseAfter());
+                Assert.AreEqual(4, proxy.ReleaseAfterIncrement());
                 Assert.AreEqual(0, proxy.GetCount());
                 ((ICommunicationObject)proxy).Close();
             }
@@ -143,7 +143,7 @@ namespace System.ServiceModel.Examples
                 var proxy = ChannelFactory<IMyCounter>.CreateChannel(binding, new EndpointAddress(address));
                 proxy.SetCount(3);
                 Assert.AreEqual(3, proxy.GetCount());
-                Assert.AreEqual(1, proxy.IncrementCounterReleaseBeforeAndAfter());
+                Assert.AreEqual(1, proxy.ReleaseBeforeAndAfterIncrement());
                 Assert.AreEqual(0, proxy.GetCount());
                 ((ICommunicationObject)proxy).Close();
             }
