@@ -74,12 +74,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\CodeRunner\ServiceModel.Extensions\ServiceModel.Extensions.csproj">
-      <Project>{02565A66-4153-4217-BED5-55DAC69808D0}</Project>
-      <Name>ServiceModel.Extensions</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
