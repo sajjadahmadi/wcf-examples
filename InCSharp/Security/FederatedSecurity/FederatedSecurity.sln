@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{CA3D21CF-4A94-4AF6-8072-A3CD1C2BD5D7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{829266D7-533A-48DB-BC1C-763CCCC73FEA} = {829266D7-533A-48DB-BC1C-763CCCC73FEA}
@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csp
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "WebHost", "WebHost\", "{829266D7-533A-48DB-BC1C-763CCCC73FEA}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFramework = "3.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
 		ProjectReferences = "{7C00D0DC-8623-4D5C-8CEA-C95E13223951}|ClaimsBasedServices.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/WebHost"
 		Debug.AspNetCompiler.PhysicalPath = "WebHost\"
